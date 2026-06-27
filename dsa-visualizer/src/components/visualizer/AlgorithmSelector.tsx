@@ -36,16 +36,18 @@ export default function AlgorithmSelector() {
               <option value="bubble" className="text-white bg-gray-800">Bubble Sort</option>
               <option value="selection" className="text-white bg-gray-800">Selection Sort</option>
               <option value="insertion" className="text-white bg-gray-800">Insertion Sort</option>
+              <option value="merge" className="text-white bg-gray-800">Merge Sort</option>
+              <option value="quick" className="text-white bg-gray-800">Quick Sort</option>
             </optgroup>
             
             <optgroup label="Searching Algorithms" className="bg-gray-900 text-gray-500 font-semibold">
-              <option value="linear" disabled>Linear Search (Pending)</option>
-              <option value="binary" disabled>Binary Search (Pending)</option>
+              <option value="linear" className="text-white bg-gray-800">Linear Search</option>
+              <option value="binary" className="text-white bg-gray-800">Binary Search</option>
             </optgroup>
             
-            <optgroup label="Graph Algorithms" className="bg-gray-900 text-gray-500 font-semibold">
-              <option value="bfs" disabled>Breadth First Search (Pending)</option>
-              <option value="dfs" disabled>Depth First Search (Pending)</option>
+            <optgroup label="Graph Algorithms" className="bg-gray-900 text-gray-300 font-semibold">
+              <option value="bfs" className="text-white bg-gray-800">Breadth First Search (BFS)</option>
+              <option value="dfs" className="text-white bg-gray-800">Depth First Search (DFS)</option>
             </optgroup>
           </select>
         </div>

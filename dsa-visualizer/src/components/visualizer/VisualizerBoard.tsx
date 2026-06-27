@@ -1,19 +1,17 @@
 "use client";
 
-import React, { useEffect, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useVisualizerStore } from '@/store/useVisualizerStore';
 import { logger } from '@/utils/logger';
 
 export default function VisualizerBoard() {
   const { frames, currentFrameIndex } = useVisualizerStore();
 
-  // Log every frame render to trace the visualization state
   useEffect(() => {
     if (frames.length > 0) {
       logger.debug('VisualizerBoard: Rendering frame', { 
         frameIndex: currentFrameIndex,
-        state: frames[currentFrameIndex].arrayState 
       });
     }
   }, [currentFrameIndex, frames]);
@@ -30,90 +28,138 @@ export default function VisualizerBoard() {
   }
 
   const currentFrame = frames[currentFrameIndex];
-  const { arrayState, activePointers, comparing, swapping, description } = currentFrame;
+  const { 
+    arrayState, activePointers, comparing, swapping, description,
+    auxiliaryArrays, extractedElements, visibleRange
+  } = currentFrame;
 
-  // Calculate maximum value to scale bar heights dynamically
   const maxValue = Math.max(...arrayState, 1);
 
-  // Pre-process the array to ensure strictly unique keys for Framer Motion
-  // This prevents React DOM errors when the user inputs duplicate numbers
   const displayItems = (() => {
     const counts: Record<number, number> = {};
-    const items = arrayState.map((value, index) => {
+    let items = arrayState.map((value, index) => {
       counts[value] = (counts[value] || 0) + 1;
       return {
         value,
-        id: `${value}-${counts[value]}`, // e.g., "81-1", "81-2"
+        id: `${value}-${counts[value]}`,
         originalIndex: index
       };
     });
     
-    // Log the generated stable keys to ensure data integrity
-    logger.debug('VisualizerBoard: Generated stable keys for render loop', { items });
+    if (visibleRange) {
+      items = items.filter(item => item.originalIndex >= visibleRange[0] && item.originalIndex <= visibleRange[1]);
+    }
+
     return items;
   })();
 
+  const renderBar = (value: number, id: string, bgColor: string, pointersAtThisIndex: string[]) => {
+    const heightPercentage = `${(value / maxValue) * 100}%`;
+    return (
+      <motion.div
+        layout
+        key={id}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.8 }}
+        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+        className="flex flex-col items-center justify-end w-12"
+        style={{ height: '100%' }}
+      >
+        <motion.div
+          layout
+          className={`w-full rounded-t-sm shadow-md flex items-end justify-center pb-2 ${bgColor}`}
+          style={{ height: heightPercentage, minHeight: '30px' }}
+        >
+          <span className="text-white text-xs font-bold drop-shadow-md">
+            {value}
+          </span>
+        </motion.div>
+        <div className="h-6 mt-2 flex flex-wrap justify-center gap-1">
+          {pointersAtThisIndex.map((pointer) => (
+            <span 
+              key={pointer} 
+              className="text-[10px] font-mono bg-gray-700 text-white px-1 rounded"
+            >
+              {pointer}
+            </span>
+          ))}
+        </div>
+      </motion.div>
+    );
+  };
+
   return (
     <div className="w-full bg-gray-900 p-6 rounded-lg shadow-xl border border-gray-700 flex flex-col">
-      
-      {/* Description Panel */}
-      <div className="mb-8 min-h-[3rem] p-4 bg-gray-800 rounded border-l-4 border-blue-500 flex items-center">
+      <div className="mb-4 min-h-[3rem] p-4 bg-gray-800 rounded border-l-4 border-blue-500 flex items-center">
         <p className="text-white font-mono text-sm">{description}</p>
       </div>
 
-      {/* Visualization Canvas */}
-      <div className="flex-1 min-h-[250px] flex items-end justify-center gap-2 overflow-x-auto pb-4">
-        {displayItems.map((item) => {
-          const { value, id, originalIndex } = item;
-          
-          // Determine the visual state of the current block using its current index in the array
-          const isComparing = comparing.includes(originalIndex);
-          const isSwapping = swapping && isComparing;
-          
-          let bgColor = 'bg-blue-500'; // Default state
-          if (isComparing) bgColor = 'bg-yellow-500';
-          if (isSwapping) bgColor = 'bg-red-500';
+      {/* Extracted Elements Container (e.g. Pivot for Quick Sort) */}
+      <div className="flex justify-center gap-4 min-h-[80px] mb-4">
+        <AnimatePresence>
+          {extractedElements?.map((ext) => (
+             <div key={ext.id} className="flex flex-col items-center">
+               <span className="text-gray-400 text-xs mb-1 font-mono">{ext.label}</span>
+               <div className="h-[100px] flex items-end">
+                 {renderBar(ext.value, ext.id, 'bg-purple-500', [])}
+               </div>
+             </div>
+          ))}
+        </AnimatePresence>
+      </div>
 
-          // Check if any active pointer is pointing to this index
-          const pointersAtThisIndex = Object.entries(activePointers)
-            .filter(([_, pointerIndex]) => pointerIndex === originalIndex)
-            .map(([pointerName]) => pointerName);
+      {/* Main Visualization Canvas */}
+      <div className="flex-1 min-h-[200px] flex items-end justify-center gap-2 overflow-x-auto pb-4 border-b border-gray-800">
+        <AnimatePresence>
+          {displayItems.map((item) => {
+            const { value, id, originalIndex } = item;
+            
+            const isComparing = comparing.includes(originalIndex);
+            const isSwapping = swapping && isComparing;
+            
+            let bgColor = 'bg-blue-500';
+            if (isComparing) bgColor = 'bg-yellow-500';
+            if (isSwapping) bgColor = 'bg-red-500';
 
-          const heightPercentage = `${(value / maxValue) * 100}%`;
+            const pointersAtThisIndex = Object.entries(activePointers)
+              .filter(([_, pointerIndex]) => pointerIndex === originalIndex)
+              .map(([pointerName]) => pointerName);
 
-          return (
-            <motion.div
-              layout
-              key={id} // Using the composite unique ID here!
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              className="flex flex-col items-center justify-end w-12"
-              style={{ height: '100%' }}
-            >
-              {/* Value Bar */}
-              <motion.div
-                layout
-                className={`w-full rounded-t-sm shadow-md flex items-end justify-center pb-2 ${bgColor}`}
-                style={{ height: heightPercentage, minHeight: '30px' }}
-              >
-                <span className="text-white text-xs font-bold drop-shadow-md">
-                  {value}
-                </span>
-              </motion.div>
+            if (pointersAtThisIndex.includes('found')) bgColor = 'bg-green-500';
 
-              {/* Pointers Display */}
-              <div className="h-6 mt-2 flex flex-wrap justify-center gap-1">
-                {pointersAtThisIndex.map((pointer) => (
-                  <span 
-                    key={pointer} 
-                    className="text-[10px] font-mono bg-gray-700 text-white px-1 rounded"
-                  >
-                    {pointer}
-                  </span>
-                ))}
-              </div>
-            </motion.div>
-          );
-        })}
+            // If this element was extracted, we might want to hide its main bar or just let it be.
+            // For now, let's just let it render but maybe dim it if extracted? 
+            // The generator logic usually keeps it in array, so let's render it normally or empty.
+            const isExtracted = extractedElements?.some(e => e.originalIndex === originalIndex);
+            if (isExtracted) {
+              bgColor = 'bg-gray-700 opacity-20'; // Ghost it in the main array
+            }
+
+            return renderBar(value, id, bgColor, pointersAtThisIndex);
+          })}
+        </AnimatePresence>
+      </div>
+
+      {/* Auxiliary Arrays Container (e.g. Left/Right for Merge Sort) */}
+      <div className="flex justify-center gap-12 min-h-[150px] mt-4">
+         <AnimatePresence>
+           {auxiliaryArrays?.map((aux) => (
+             <div key={aux.id} className="flex flex-col items-center bg-gray-800 p-4 rounded-lg border border-gray-700">
+               <span className="text-gray-400 text-xs mb-4 font-mono">{aux.label}</span>
+               <div className="flex items-end gap-2 h-[100px]">
+                 {aux.values.map((val, idx) => {
+                   if (val === null) {
+                     return <div key={`empty-${idx}`} className="w-12" />; // Spacer
+                   }
+                   // We don't have perfect IDs for aux arrays unless we track duplicates, 
+                   // but for simple rendering, index is usually fine since they are ephemeral
+                   return renderBar(val, `${aux.id}-${idx}-${val}`, 'bg-teal-500', []);
+                 })}
+               </div>
+             </div>
+           ))}
+         </AnimatePresence>
       </div>
     </div>
   );

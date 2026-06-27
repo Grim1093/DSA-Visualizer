@@ -8,6 +8,19 @@ export interface Frame {
   comparing: number[];
   swapping: boolean;
   description: string;
+  // Enhanced Visualization Properties
+  auxiliaryArrays?: { id: string; values: (number | null)[]; label?: string }[];
+  extractedElements?: { id: string; value: number; label: string; originalIndex: number }[];
+  visibleRange?: [number, number];
+  
+  // Graph Visualization Properties
+  graphState?: {
+    nodes: { id: string; label: string; x: number; y: number }[];
+    edges: { source: string; target: string }[];
+  };
+  visitedNodes?: string[];
+  currentNode?: string;
+  dataStructureState?: string[]; // Queue (BFS) or Stack (DFS)
 }
 
 interface VisualizerState {

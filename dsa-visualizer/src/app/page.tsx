@@ -2,6 +2,7 @@
 
 import React from 'react';
 import VisualizerBoard from '@/components/visualizer/VisualizerBoard';
+import GraphVisualizerBoard from '@/components/visualizer/GraphVisualizerBoard';
 import PlaybackControls from '@/components/visualizer/PlaybackControls';
 import TheoryPanel from '@/components/visualizer/TheoryPanel';
 import DataInputPanel from '@/components/visualizer/DataInputPanel';
@@ -11,12 +12,20 @@ import { useVisualizerStore } from '@/store/useVisualizerStore';
 export default function Home() {
   const { selectedAlgorithm } = useVisualizerStore();
 
-  // Dynamic mapping to update the UI based on the central store's active algorithm
-  const algoDetails = {
+  const algoMap = {
     bubble: { name: 'Bubble Sort', time: 'O(n²)', space: 'O(1)' },
     selection: { name: 'Selection Sort', time: 'O(n²)', space: 'O(1)' },
     insertion: { name: 'Insertion Sort', time: 'O(n²)', space: 'O(1)' },
-  }[selectedAlgorithm as keyof typeof algoDetails] || { name: 'Algorithm', time: '-', space: '-' };
+    merge: { name: 'Merge Sort', time: 'O(n log n)', space: 'O(n)' },
+    quick: { name: 'Quick Sort', time: 'O(n log n)', space: 'O(log n)' },
+    linear: { name: 'Linear Search', time: 'O(n)', space: 'O(1)' },
+    binary: { name: 'Binary Search', time: 'O(log n)', space: 'O(1)' },
+    bfs: { name: 'Breadth-First Search', time: 'O(V + E)', space: 'O(V)' },
+    dfs: { name: 'Depth-First Search', time: 'O(V + E)', space: 'O(V)' },
+  };
+  
+  const algoDetails = algoMap[selectedAlgorithm as keyof typeof algoMap] || { name: 'Algorithm', time: '-', space: '-' };
+  const isGraphAlgo = selectedAlgorithm === 'bfs' || selectedAlgorithm === 'dfs';
 
   return (
     <main className="flex min-h-screen flex-col items-center p-4 md:p-12 bg-black text-white font-sans">
@@ -50,7 +59,8 @@ export default function Home() {
           </div>
           
           {/* Visualization Canvas */}
-          <VisualizerBoard />
+          {isGraphAlgo ? <GraphVisualizerBoard /> : <VisualizerBoard />}
+          
           
           {/* Remote Control */}
           <PlaybackControls />
