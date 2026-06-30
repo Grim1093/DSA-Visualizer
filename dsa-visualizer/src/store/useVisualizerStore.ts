@@ -21,24 +21,47 @@ export interface Frame {
   visitedNodes?: string[];
   currentNode?: string;
   dataStructureState?: string[]; // Queue (BFS) or Stack (DFS)
+  // Data Structure Specific State
+  dsArray?: { values: (number | null)[] }; // Basic array/vector
+  dsVector?: { values: (number | null)[]; capacity: number; size: number };
+  dsLinkedList?: { 
+    type: 'singly' | 'doubly' | 'circular';
+    nodes: { id: string; value: number }[]; 
+    head: string | null; 
+    tail: string | null; 
+    pointers?: Record<string, string>;
+    prevPointers?: Record<string, string>;
+  };
+  dsHashMap?: { buckets: { index: number; chain: { key: string; value: string }[] }[] };
 }
+
+export type AppMode = 'algorithm' | 'data-structure';
 
 interface VisualizerState {
   frames: Frame[];
   currentFrameIndex: number;
   isPlaying: boolean;
   playbackSpeed: number; 
-  selectedAlgorithm: string; // New state property
+  selectedAlgorithm: string; 
+  mode: AppMode; // Are we playing a full algorithm, or in an interactive playground?
 
   setFrames: (frames: Frame[]) => void;
+  appendFrames: (newFrames: Frame[]) => void; // For interactive DS operations
   play: () => void;
   pause: () => void;
   stepForward: () => void;
   stepBackward: () => void;
   reset: () => void;
   setPlaybackSpeed: (speed: number) => void;
-  setSelectedAlgorithm: (algo: string) => void; // New action
+  setSelectedAlgorithm: (algo: string, mode?: AppMode) => void;
 }
+
+import { 
+  generateArrayInit, 
+  generateVectorInit, 
+  generateLinkedListInit, 
+  generateHashMapInit 
+} from '@/utils/dsEngine';
 
 export const useVisualizerStore = create<VisualizerState>((set, get) => ({
   frames: [],
@@ -46,10 +69,19 @@ export const useVisualizerStore = create<VisualizerState>((set, get) => ({
   isPlaying: false,
   playbackSpeed: 500, 
   selectedAlgorithm: 'bubble',
+  mode: 'algorithm',
 
   setFrames: (frames) => {
     logger.info('VisualizerStore: Setting new execution frames', { frameCount: frames.length });
     set({ frames, currentFrameIndex: 0, isPlaying: false });
+  },
+
+  appendFrames: (newFrames) => {
+    logger.info('VisualizerStore: Appending new interactive frames', { newFrameCount: newFrames.length });
+    const { frames, currentFrameIndex } = get();
+    const updatedFrames = [...frames.slice(0, currentFrameIndex + 1), ...newFrames];
+    set({ frames: updatedFrames, isPlaying: true });
+    get().play(); // auto-play the new frames
   },
 
   play: () => {
@@ -103,9 +135,25 @@ export const useVisualizerStore = create<VisualizerState>((set, get) => ({
     set({ playbackSpeed: speed });
   },
 
-  setSelectedAlgorithm: (algo) => {
-    logger.info('VisualizerStore: Active algorithm changed, clearing old frames', { newAlgo: algo });
-    // Wiping the frames ensures we don't play a Bubble Sort animation while the UI says "Selection Sort"
-    set({ selectedAlgorithm: algo, frames: [], currentFrameIndex: 0, isPlaying: false });
+  setSelectedAlgorithm: (algo, mode = 'algorithm') => {
+    logger.info('VisualizerStore: Active algorithm/mode changed, clearing old frames', { newAlgo: algo, mode });
+    
+    let initialFrames: Frame[] = [];
+    if (mode === 'data-structure') {
+      if (algo === 'array') initialFrames = generateArrayInit(10); // Default array size 10
+      else if (algo === 'vector') initialFrames = generateVectorInit();
+      else if (algo === 'linked_list') initialFrames = generateLinkedListInit('singly');
+      else if (algo === 'doubly_linked_list') initialFrames = generateLinkedListInit('doubly');
+      else if (algo === 'circular_linked_list') initialFrames = generateLinkedListInit('circular');
+      else if (algo === 'hash_map') initialFrames = generateHashMapInit();
+    }
+    
+    set({ 
+      selectedAlgorithm: algo, 
+      mode, 
+      frames: initialFrames, 
+      currentFrameIndex: 0, 
+      isPlaying: false 
+    });
   }
 }));

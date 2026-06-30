@@ -144,6 +144,98 @@ const theoryData = {
     timeWorst: 'O(V + E) (where V is number of vertices and E is number of edges)',
     space: 'O(V)',
     spaceDetail: 'Requires additional space for the Stack, which can contain at most all vertices in the worst case (e.g. a degenerate tree/linked list).'
+  },
+  array: {
+    title: 'Static Array',
+    concept: 'An Array is a linear data structure consisting of a collection of elements, each identified by at least one array index or key. It is stored in contiguous memory locations, making accessing an element by index very fast. However, its size is fixed upon creation.',
+    working: [
+      'Memory is allocated as a contiguous block.',
+      'To access an element at index i, the memory address is calculated as: Base Address + (i * element size).',
+      'This calculation is instantaneous, giving O(1) read/write time.',
+      'Inserting or deleting an element in the middle requires shifting all subsequent elements, which takes O(n) time.'
+    ],
+    timeBest: 'O(1) (Access/Update)',
+    timeAverage: 'O(n) (Insert/Delete in the middle)',
+    timeWorst: 'O(n) (Insert/Delete at the beginning)',
+    space: 'O(n)',
+    spaceDetail: 'Requires contiguous memory block of fixed size n.'
+  },
+  vector: {
+    title: 'Vector (Dynamic Array)',
+    concept: 'A Vector (or Dynamic Array) is a resizable array data structure. Unlike static arrays, vectors can grow or shrink in size dynamically. Under the hood, it uses a static array and allocates a new, larger static array (usually doubling in size) when the current capacity is reached.',
+    working: [
+      'Maintains a pointer to a dynamically allocated static array, along with its current "Size" and maximum "Capacity".',
+      'When appending an element, if Size < Capacity, it is placed at the Size index and Size is incremented.',
+      'If Size == Capacity, a new array of double the capacity is allocated.',
+      'All existing elements are copied to the new array, which takes O(n) time.',
+      'The new element is then appended.'
+    ],
+    timeBest: 'O(1) (Access / Append without resize)',
+    timeAverage: 'O(1) amortized (Append)',
+    timeWorst: 'O(n) (Append causing resize / Insert in middle)',
+    space: 'O(n)',
+    spaceDetail: 'Requires contiguous memory, but capacity can be up to twice the current number of elements, wasting some space.'
+  },
+  linked_list: {
+    title: 'Singly Linked List',
+    concept: 'A Linked List is a linear collection of data elements whose order is not given by their physical placement in memory. Instead, each element (node) points to the next. It is a data structure consisting of a collection of nodes which together represent a sequence.',
+    working: [
+      'A node contains data and a pointer (or reference) to the next node in the sequence.',
+      'The first node is called the Head. The last node points to null (or is called the Tail).',
+      'To traverse, start at the Head and follow pointers until null is reached.',
+      'To insert/delete, adjust the pointers of adjacent nodes. This can be done in O(1) time if the reference to the adjacent node is already known.'
+    ],
+    timeBest: 'O(1) (Insert/Delete at Head)',
+    timeAverage: 'O(n) (Search / Access by index)',
+    timeWorst: 'O(n) (Insert/Delete at end without Tail pointer)',
+    space: 'O(n)',
+    spaceDetail: 'Each element requires extra space for the pointer(s).'
+  },
+  doubly_linked_list: {
+    title: 'Doubly Linked List',
+    concept: 'A Doubly Linked List is a variation of a linked list where each node contains two pointers instead of one. One pointer points to the next node, and the other points to the previous node in the sequence.',
+    working: [
+      'Each node maintains two references: next and prev.',
+      'The prev pointer of the Head is null, and the next pointer of the Tail is null.',
+      'Traversal can be performed in both directions (forward and backward).',
+      'Insertion/Deletion requires updating two pairs of pointers instead of one.'
+    ],
+    timeBest: 'O(1) (Insert/Delete at known position)',
+    timeAverage: 'O(n) (Search / Access by index)',
+    timeWorst: 'O(n) (Search)',
+    space: 'O(n)',
+    spaceDetail: 'Requires more memory than a Singly Linked List due to the extra prev pointer in each node.'
+  },
+  circular_linked_list: {
+    title: 'Circular Linked List',
+    concept: 'A Circular Linked List is a variation of a linked list where all nodes are connected to form a circle. There is no null at the end; instead, the last node points back to the first node (Head).',
+    working: [
+      'The next pointer of the Tail node points to the Head node.',
+      'Any node can be a starting point. We can traverse the whole list by starting from any node.',
+      'Useful for applications that need to repeatedly go through a list (like a round-robin scheduler).',
+      'Can be implemented as either Singly or Doubly Circular Linked List.'
+    ],
+    timeBest: 'O(1) (Insert at Head/Tail)',
+    timeAverage: 'O(n) (Search)',
+    timeWorst: 'O(n) (Search)',
+    space: 'O(n)',
+    spaceDetail: 'Similar space requirements to a normal linked list.'
+  },
+  hash_map: {
+    title: 'Hash Map (Hash Table)',
+    concept: 'A Hash Map is a data structure that implements an associative array abstract data type, a structure that can map keys to values. A hash table uses a hash function to compute an index, also called a hash code, into an array of buckets or slots, from which the desired value can be found.',
+    working: [
+      'Pass the Key through a Hash Function to generate a numerical Hash Code.',
+      'Use the modulo operator (Hash % Number of Buckets) to determine the bucket index.',
+      'Store the Key-Value pair in that bucket.',
+      'If another key maps to the same bucket (a Collision), store both items using a technique like Chaining (using a Linked List in the bucket).',
+      'To retrieve, hash the key, go to the bucket, and search the chain for the key.'
+    ],
+    timeBest: 'O(1) (Access/Insert/Delete with no collisions)',
+    timeAverage: 'O(1)',
+    timeWorst: 'O(n) (All keys hash to the exact same bucket)',
+    space: 'O(n)',
+    spaceDetail: 'Requires space for the array of buckets and for the stored key-value pairs.'
   }
 };
 

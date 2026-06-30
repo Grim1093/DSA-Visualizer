@@ -6,7 +6,7 @@ import { GraphData } from './graphParser';
  * Simulates a Bubble Sort execution and generates an array of frames
  */
 export const generateBubbleSortFrames = (initialArray: number[]): Frame[] => {
-  logger.info('DummyDataGenerator: Starting Bubble Sort generation', { initialArray });
+  logger.info('AlgorithmEngine: Starting Bubble Sort generation', { initialArray });
   
   const frames: Frame[] = [];
   const arr = [...initialArray];
@@ -70,7 +70,7 @@ export const generateBubbleSortFrames = (initialArray: number[]): Frame[] => {
     }
     
     if (!swapped) {
-        logger.debug('DummyDataGenerator: Bubble Sort array sorted early, breaking loop', { pass: i });
+        logger.debug('AlgorithmEngine: Bubble Sort array sorted early, breaking loop', { pass: i });
         break;
     }
   }
@@ -84,7 +84,7 @@ export const generateBubbleSortFrames = (initialArray: number[]): Frame[] => {
     description: 'Bubble Sort complete! Array is fully sorted.',
   });
 
-  logger.info('DummyDataGenerator: Finished Bubble Sort generation', { totalFrames: frames.length });
+  logger.info('AlgorithmEngine: Finished Bubble Sort generation', { totalFrames: frames.length });
   return frames;
 };
 
@@ -92,7 +92,7 @@ export const generateBubbleSortFrames = (initialArray: number[]): Frame[] => {
  * Simulates a Selection Sort execution and generates an array of frames
  */
 export const generateSelectionSortFrames = (initialArray: number[]): Frame[] => {
-  logger.info('DummyDataGenerator: Starting Selection Sort generation', { initialArray });
+  logger.info('AlgorithmEngine: Starting Selection Sort generation', { initialArray });
   
   const frames: Frame[] = [];
   const arr = [...initialArray];
@@ -185,7 +185,7 @@ export const generateSelectionSortFrames = (initialArray: number[]): Frame[] => 
     description: 'Selection Sort complete! Array is fully sorted.',
   });
 
-  logger.info('DummyDataGenerator: Finished Selection Sort generation', { totalFrames: frames.length });
+  logger.info('AlgorithmEngine: Finished Selection Sort generation', { totalFrames: frames.length });
   return frames;
 };
 
@@ -193,7 +193,7 @@ export const generateSelectionSortFrames = (initialArray: number[]): Frame[] => 
  * Simulates an Insertion Sort execution and generates an array of frames
  */
 export const generateInsertionSortFrames = (initialArray: number[]): Frame[] => {
-  logger.info('DummyDataGenerator: Starting Insertion Sort generation', { initialArray });
+  logger.info('AlgorithmEngine: Starting Insertion Sort generation', { initialArray });
   
   const frames: Frame[] = [];
   const arr = [...initialArray];
@@ -274,7 +274,7 @@ export const generateInsertionSortFrames = (initialArray: number[]): Frame[] => 
     description: 'Insertion Sort complete! Array is fully sorted.',
   });
 
-  logger.info('DummyDataGenerator: Finished Insertion Sort generation', { totalFrames: frames.length });
+  logger.info('AlgorithmEngine: Finished Insertion Sort generation', { totalFrames: frames.length });
   return frames;
 };
 
@@ -285,7 +285,7 @@ export const generateInsertionSortFrames = (initialArray: number[]): Frame[] => 
  * Enhanced: Uses auxiliaryArrays to physically show the left/right splits
  */
 export const generateMergeSortFrames = (initialArray: number[]): Frame[] => {
-  logger.info('DummyDataGenerator: Starting Merge Sort generation', { initialArray });
+  logger.info('AlgorithmEngine: Starting Merge Sort generation', { initialArray });
   
   const frames: Frame[] = [];
   const arr = [...initialArray];
@@ -425,7 +425,7 @@ export const generateMergeSortFrames = (initialArray: number[]): Frame[] => {
     description: 'Merge Sort complete! Array is fully sorted.',
   });
 
-  logger.info('DummyDataGenerator: Finished Merge Sort generation', { totalFrames: frames.length });
+  logger.info('AlgorithmEngine: Finished Merge Sort generation', { totalFrames: frames.length });
   return frames;
 };
 
@@ -434,7 +434,7 @@ export const generateMergeSortFrames = (initialArray: number[]): Frame[] => {
  * Enhanced: Extracts the Pivot element physically above the array.
  */
 export const generateQuickSortFrames = (initialArray: number[]): Frame[] => {
-  logger.info('DummyDataGenerator: Starting Quick Sort generation', { initialArray });
+  logger.info('AlgorithmEngine: Starting Quick Sort generation', { initialArray });
   
   const frames: Frame[] = [];
   const arr = [...initialArray];
@@ -551,7 +551,7 @@ export const generateQuickSortFrames = (initialArray: number[]): Frame[] => {
     description: 'Quick Sort complete! Array is fully sorted.',
   });
 
-  logger.info('DummyDataGenerator: Finished Quick Sort generation', { totalFrames: frames.length });
+  logger.info('AlgorithmEngine: Finished Quick Sort generation', { totalFrames: frames.length });
   return frames;
 };
 
@@ -559,7 +559,7 @@ export const generateQuickSortFrames = (initialArray: number[]): Frame[] => {
  * Simulates Linear Search and generates an array of frames
  */
 export const generateLinearSearchFrames = (initialArray: number[], target: number): Frame[] => {
-  logger.info('DummyDataGenerator: Starting Linear Search generation', { initialArray, target });
+  logger.info('AlgorithmEngine: Starting Linear Search generation', { initialArray, target });
   
   const frames: Frame[] = [];
   const arr = [...initialArray];
@@ -610,7 +610,7 @@ export const generateLinearSearchFrames = (initialArray: number[], target: numbe
     });
   }
 
-  logger.info('DummyDataGenerator: Finished Linear Search generation', { totalFrames: frames.length });
+  logger.info('AlgorithmEngine: Finished Linear Search generation', { totalFrames: frames.length });
   return frames;
 };
 
@@ -619,7 +619,7 @@ export const generateLinearSearchFrames = (initialArray: number[], target: numbe
  * Enhanced: Slices the array down visually using visibleRange
  */
 export const generateBinarySearchFrames = (initialArray: number[], target: number): Frame[] => {
-  logger.info('DummyDataGenerator: Starting Binary Search generation', { initialArray, target });
+  logger.info('AlgorithmEngine: Starting Binary Search generation', { initialArray, target });
   
   const frames: Frame[] = [];
   const arr = [...initialArray];
@@ -703,7 +703,7 @@ export const generateBinarySearchFrames = (initialArray: number[], target: numbe
     });
   }
 
-  logger.info('DummyDataGenerator: Finished Binary Search generation', { totalFrames: frames.length });
+  logger.info('AlgorithmEngine: Finished Binary Search generation', { totalFrames: frames.length });
   return frames;
 };
 
@@ -711,7 +711,7 @@ export const generateBinarySearchFrames = (initialArray: number[], target: numbe
  * Simulates a BFS execution on the provided graph
  */
 export const generateBFSFrames = (graph: GraphData, startNode: string): Frame[] => {
-  logger.info('DummyDataGenerator: Starting BFS generation', { startNode });
+  logger.info('AlgorithmEngine: Starting BFS generation', { startNode });
   const frames: Frame[] = [];
   let frameIndex = 0;
   
@@ -767,7 +767,7 @@ export const generateBFSFrames = (graph: GraphData, startNode: string): Frame[] 
  * Simulates a DFS execution on the provided graph
  */
 export const generateDFSFrames = (graph: GraphData, startNode: string): Frame[] => {
-  logger.info('DummyDataGenerator: Starting DFS generation', { startNode });
+  logger.info('AlgorithmEngine: Starting DFS generation', { startNode });
   const frames: Frame[] = [];
   let frameIndex = 0;
   
