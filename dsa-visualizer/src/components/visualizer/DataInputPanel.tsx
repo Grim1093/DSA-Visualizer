@@ -169,36 +169,34 @@ export default function DataInputPanel() {
   };
 
   return (
-    <div className="bg-gray-900 p-6 rounded-lg shadow-lg border border-gray-700 w-full text-white">
-      <h3 className="text-xl font-bold mb-4 border-b border-gray-800 pb-2">
-        {mode === 'data-structure' ? 'Interactive Playground' : 'Custom Data Configuration'}
-      </h3>
-      
+    <div className="w-full text-white">
       {mode === 'data-structure' ? (
         <DataStructureControls />
       ) : (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div>
-            <label htmlFor="array-input" className="block text-sm font-medium text-gray-400 mb-2">
-              {isGraphAlgo 
-                ? "Enter edge list (e.g. A-B, B-C). Max 10 nodes, 20 edges." 
-                : `Enter comma-separated integers (Max ${selectedAlgorithm === 'merge' ? '20' : '50'} elements)`}
-            </label>
-            <input
-              id="array-input"
-              type="text"
-              value={inputValue}
-              onChange={(e) => {
-                setInputValue(e.target.value);
-                if (error) setError(null);
-              }}
-              placeholder={isGraphAlgo ? "A-B, A-C, B-D" : "e.g. 10, 20, 5, 8, 1"}
-              className="w-full bg-gray-800 border border-gray-600 rounded-md py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono tracking-wide mb-4"
-            />
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="array-input" className="block text-sm font-medium text-gray-400 mb-2 pl-1">
+                {isGraphAlgo 
+                  ? "Enter edge list (e.g. A-B, B-C). Max 10 nodes, 20 edges." 
+                  : `Enter comma-separated integers (Max ${selectedAlgorithm === 'merge' ? '20' : '50'} elements)`}
+              </label>
+              <input
+                id="array-input"
+                type="text"
+                value={inputValue}
+                onChange={(e) => {
+                  setInputValue(e.target.value);
+                  if (error) setError(null);
+                }}
+                placeholder={isGraphAlgo ? "A-B, A-C, B-D" : "e.g. 10, 20, 5, 8, 1"}
+                className="w-full bg-gray-950/50 border border-white/10 hover:border-white/20 rounded-2xl py-3.5 px-5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 font-mono tracking-wide transition-all shadow-inner"
+              />
+            </div>
 
             {isSearchAlgo && (
-              <>
-                <label htmlFor="target-input" className="block text-sm font-medium text-gray-400 mb-2 mt-2">
+              <div>
+                <label htmlFor="target-input" className="block text-sm font-medium text-gray-400 mb-2 pl-1">
                   Target Value to Search
                 </label>
                 <input
@@ -210,9 +208,9 @@ export default function DataInputPanel() {
                     if (error) setError(null);
                   }}
                   placeholder="e.g. 23"
-                  className="w-full bg-gray-800 border border-gray-600 rounded-md py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono tracking-wide"
+                  className="w-full bg-gray-950/50 border border-white/10 hover:border-white/20 rounded-2xl py-3.5 px-5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 font-mono tracking-wide transition-all shadow-inner"
                 />
-              </>
+              </div>
             )}
             {error && (
               <p className="text-red-400 text-sm mt-2 flex items-center gap-1">
@@ -222,18 +220,18 @@ export default function DataInputPanel() {
             )}
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 pt-2">
+          <div className="flex flex-row flex-wrap gap-3 pt-3">
             <button
               type="button"
               onClick={handleGenerateRandom}
-              className="px-5 py-2.5 bg-gray-700 hover:bg-gray-600 text-gray-200 rounded transition-colors text-sm font-medium w-full sm:w-auto flex items-center justify-center gap-2"
+              className="px-5 py-3 bg-white/5 hover:bg-white/10 text-gray-200 rounded-xl transition-all duration-300 text-sm font-semibold flex-1 min-w-[140px] flex items-center justify-center gap-2 border border-white/10 hover:border-white/20 backdrop-blur-sm"
             >
               {isGraphAlgo ? "Randomize Graph" : "Randomize Array"}
             </button>
             
             <button
               type="submit"
-              className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded transition-colors text-sm font-bold w-full sm:w-auto shadow-md"
+              className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl transition-all duration-300 text-sm font-bold flex-1 min-w-[140px] shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_30px_rgba(79,70,229,0.5)] transform hover:-translate-y-0.5"
             >
               Apply & Visualize
             </button>

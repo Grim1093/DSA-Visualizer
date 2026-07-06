@@ -67,14 +67,14 @@ export default function PlaybackControls() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row items-center justify-between bg-gray-900 p-4 rounded-lg shadow-lg gap-4 text-white">
+    <div className="flex flex-row flex-wrap items-center justify-center bg-gray-900 p-4 rounded-lg shadow-lg gap-4 text-white w-full min-w-0">
       {/* Progress Indicator */}
-      <div className="text-sm font-mono bg-gray-800 px-3 py-1 rounded">
+      <div className="text-sm font-mono bg-gray-800 px-3 py-1 rounded whitespace-nowrap shrink-0">
         Step: {totalFrames > 0 ? currentFrameIndex + 1 : 0} / {totalFrames}
       </div>
 
       {/* Main Controls */}
-      <div className="flex items-center gap-2">
+      <div className="flex flex-row flex-wrap items-center justify-center gap-2">
         <button
           onClick={() => {
             logger.debug('PlaybackControls: Reset action dispatched');

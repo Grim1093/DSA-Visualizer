@@ -59,10 +59,10 @@ export default function VisualizerBoard() {
       <motion.div
         layout
         key={id}
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.8 }}
-        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+        initial={{ opacity: 0, scale: 0.5, y: 30 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.5, y: -30 }}
+        transition={{ type: "spring", stiffness: 450, damping: 20, mass: 0.8 }}
         className="flex flex-col items-center justify-end w-12"
         style={{ height: '100%' }}
       >
@@ -91,7 +91,7 @@ export default function VisualizerBoard() {
 
   return (
     <div className="w-full bg-gray-900 p-6 rounded-lg shadow-xl border border-gray-700 flex flex-col">
-      <div className="mb-4 min-h-[3rem] p-4 bg-gray-800 rounded border-l-4 border-blue-500 flex items-center">
+      <div className="mb-4 h-[4rem] p-4 bg-gray-800 rounded border-l-4 border-blue-500 flex items-center overflow-hidden">
         <p className="text-white font-mono text-sm">{description}</p>
       </div>
 
@@ -142,7 +142,7 @@ export default function VisualizerBoard() {
       </div>
 
       {/* Auxiliary Arrays Container (e.g. Left/Right for Merge Sort) */}
-      <div className="flex justify-center gap-12 min-h-[150px] mt-4">
+      <div className="flex flex-wrap justify-center gap-4 min-h-[150px] mt-4 w-full overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
          <AnimatePresence>
            {auxiliaryArrays?.map((aux) => (
              <div key={aux.id} className="flex flex-col items-center bg-gray-800 p-4 rounded-lg border border-gray-700">

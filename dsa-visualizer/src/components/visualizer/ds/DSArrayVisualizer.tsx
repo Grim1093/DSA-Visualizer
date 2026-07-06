@@ -31,10 +31,10 @@ export default function DSArrayVisualizer() {
               <motion.div
                 key={`cell-${idx}`}
                 layout
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0 }}
-                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                initial={{ opacity: 0, scale: 0.3, y: 30 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0, y: -30 }}
+                transition={{ type: "spring", stiffness: 450, damping: 20, mass: 0.8 }}
                 className="flex flex-col items-center"
               >
                 <span className="text-xs text-gray-500 mb-1">{idx}</span>
