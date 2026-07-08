@@ -75,11 +75,11 @@ export default function VisualizerBoard() {
             {value}
           </span>
         </motion.div>
-        <div className="h-6 mt-2 flex flex-wrap justify-center gap-1">
+        <div className="h-8 mt-2 shrink-0 overflow-hidden flex flex-wrap justify-center gap-1 w-full">
           {pointersAtThisIndex.map((pointer) => (
             <span 
               key={pointer} 
-              className="text-[10px] font-mono bg-gray-700 text-white px-1 rounded"
+              className="text-[10px] font-mono bg-gray-700 text-white px-1 rounded h-4 flex items-center"
             >
               {pointer}
             </span>

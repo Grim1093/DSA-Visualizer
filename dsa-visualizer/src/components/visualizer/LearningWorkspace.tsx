@@ -28,8 +28,10 @@ export default function LearningWorkspace({ title, allowedModules }: LearningWor
   const [isExecuting, setIsExecuting] = useState(false);
   const [sandboxOutput, setSandboxOutput] = useState('');
   
-  // New State for the Sliding Switch
-  const [viewMode, setViewMode] = useState<'theory' | 'visualize'>('theory');
+  // Initialize viewMode to 'visualize' if the persisted selectedAlgorithm is 'sandbox'
+  const [viewMode, setViewMode] = useState<'theory' | 'visualize'>(
+    selectedAlgorithm === 'sandbox' ? 'visualize' : 'theory'
+  );
 
   // Helper to determine mode
   const getModeForAlgo = (algo: string): AppMode => {
@@ -112,7 +114,13 @@ export default function LearningWorkspace({ title, allowedModules }: LearningWor
           <div className="relative ml-4 min-w-[200px]">
             <select
               value={selectedAlgorithm}
-              onChange={(e) => setSelectedAlgorithm(e.target.value, getModeForAlgo(e.target.value))}
+              onChange={(e) => {
+                const val = e.target.value;
+                setSelectedAlgorithm(val, getModeForAlgo(val));
+                if (val === 'sandbox') {
+                  setViewMode('visualize');
+                }
+              }}
               className="appearance-none bg-gray-900/80 border border-white/10 hover:border-white/20 text-white text-sm font-medium rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 block w-full px-4 py-2 outline-none transition-all cursor-pointer shadow-inner"
             >
               {allowedModules.map(mod => (
@@ -137,7 +145,8 @@ export default function LearningWorkspace({ title, allowedModules }: LearningWor
           
           <button 
             onClick={() => setViewMode('theory')}
-            className={`relative z-10 w-[166px] py-2 text-sm font-bold rounded-full transition-colors duration-300 text-center ${viewMode === 'theory' ? 'text-white' : 'text-gray-400 hover:text-white'}`}
+            disabled={selectedAlgorithm === 'sandbox'}
+            className={`relative z-10 w-[166px] py-2 text-sm font-bold rounded-full transition-colors duration-300 text-center ${selectedAlgorithm === 'sandbox' ? 'opacity-50 cursor-not-allowed' : ''} ${viewMode === 'theory' ? 'text-white' : 'text-gray-400 hover:text-white'}`}
           >
             Theory Mode
           </button>
@@ -202,7 +211,7 @@ export default function LearningWorkspace({ title, allowedModules }: LearningWor
             {/* Visualization Canvas Container - Deep & Borderless */}
             <div className="w-full bg-[#0a0a0c] rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden min-h-[400px] sm:min-h-[550px] flex flex-col relative shrink-0 ring-1 ring-white/5">
               {selectedAlgorithm === 'sandbox' ? (
-                <CodeEditor onExecute={handleExecuteCode} isExecuting={isExecuting} output={sandboxOutput} />
+                <CodeEditor onExecute={handleExecuteCode} isExecuting={isExecuting} output={sandboxOutput} allowedModules={allowedModules} />
               ) : selectedAlgorithm === 'array' ? <DSArrayVisualizer /> :
                selectedAlgorithm === 'vector' ? <DSVectorVisualizer /> :
                (selectedAlgorithm === 'linked_list' || selectedAlgorithm === 'doubly_linked_list' || selectedAlgorithm === 'circular_linked_list') ? <DSLinkedListVisualizer /> :

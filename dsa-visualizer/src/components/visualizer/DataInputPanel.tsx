@@ -29,6 +29,29 @@ export default function DataInputPanel() {
   const isGraphAlgo = selectedAlgorithm === 'bfs' || selectedAlgorithm === 'dfs';
 
   // ... (keeping handleGenerateRandom and handleSubmit exactly the same) ...
+  const handleGenerateRandomTree = () => {
+    logger.debug('DataInputPanel: Triggered random tree generation');
+    
+    if (isGraphAlgo) {
+      const numNodes = Math.floor(Math.random() * 6) + 4;
+      const labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+      const activeNodes = labels.slice(0, numNodes);
+      
+      const edges = new Set<string>();
+      
+      for (let i = 1; i < numNodes; i++) {
+        // connect to a random existing parent to form a tree
+        const parent = activeNodes[Math.floor(Math.random() * i)];
+        edges.add(`${parent}-${activeNodes[i]}`);
+      }
+      
+      const randomString = Array.from(edges).join(', ');
+      setInputValue(randomString);
+      setError(null);
+      logger.info('DataInputPanel: Random tree successfully generated', { randomString });
+    }
+  };
+
   const handleGenerateRandom = () => {
     logger.debug('DataInputPanel: Triggered random generation', { isGraphAlgo });
     
@@ -221,13 +244,32 @@ export default function DataInputPanel() {
           </div>
 
           <div className="flex flex-row flex-wrap gap-3 pt-3">
-            <button
-              type="button"
-              onClick={handleGenerateRandom}
-              className="px-5 py-3 bg-white/5 hover:bg-white/10 text-gray-200 rounded-xl transition-all duration-300 text-sm font-semibold flex-1 min-w-[140px] flex items-center justify-center gap-2 border border-white/10 hover:border-white/20 backdrop-blur-sm"
-            >
-              {isGraphAlgo ? "Randomize Graph" : "Randomize Array"}
-            </button>
+            {isGraphAlgo ? (
+              <>
+                <button
+                  type="button"
+                  onClick={handleGenerateRandom}
+                  className="px-5 py-3 bg-white/5 hover:bg-white/10 text-gray-200 rounded-xl transition-all duration-300 text-sm font-semibold flex-1 min-w-[140px] flex items-center justify-center gap-2 border border-white/10 hover:border-white/20 backdrop-blur-sm"
+                >
+                  Randomize Graph
+                </button>
+                <button
+                  type="button"
+                  onClick={handleGenerateRandomTree}
+                  className="px-5 py-3 bg-white/5 hover:bg-white/10 text-gray-200 rounded-xl transition-all duration-300 text-sm font-semibold flex-1 min-w-[140px] flex items-center justify-center gap-2 border border-white/10 hover:border-white/20 backdrop-blur-sm"
+                >
+                  Randomize Tree
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={handleGenerateRandom}
+                className="px-5 py-3 bg-white/5 hover:bg-white/10 text-gray-200 rounded-xl transition-all duration-300 text-sm font-semibold flex-1 min-w-[140px] flex items-center justify-center gap-2 border border-white/10 hover:border-white/20 backdrop-blur-sm"
+              >
+                Randomize Array
+              </button>
+            )}
             
             <button
               type="submit"

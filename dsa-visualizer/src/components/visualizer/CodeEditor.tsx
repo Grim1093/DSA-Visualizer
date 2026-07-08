@@ -1,36 +1,48 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
+import { codeTemplates } from '@/utils/codeTemplates';
 
 interface CodeEditorProps {
   onExecute: (code: string, language: string) => void;
   isExecuting: boolean;
   output: string;
+  allowedModules: string[];
 }
 
-export default function CodeEditor({ onExecute, isExecuting, output }: CodeEditorProps) {
+const formatAlgoName = (name: string) => {
+  return name.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+};
+
+export default function CodeEditor({ onExecute, isExecuting, output, allowedModules }: CodeEditorProps) {
   const [language, setLanguage] = useState('python');
-  const [code, setCode] = useState(
-    '# Write your Python code here\nprint("Hello from Python Sandbox!")'
-  );
+  
+  // Exclude 'sandbox' from the selectable modules
+  const algos = allowedModules.filter(m => m !== 'sandbox');
+  const [activeTemplate, setActiveTemplate] = useState<string>(algos[0] || 'linear');
+  
+  const [code, setCode] = useState('');
+
+  // Load template whenever activeTemplate or language changes
+  useEffect(() => {
+    let template = codeTemplates[activeTemplate]?.[language];
+    if (!template) {
+      if (language === 'python') template = '# Write your Python code here\nprint("Hello Sandbox!")';
+      else if (language === 'javascript') template = '// Write JS code here\nconsole.log("Hello Sandbox!");';
+      else template = '#include <iostream>\nusing namespace std;\nint main() { cout << "Hello!" << endl; return 0; }';
+    }
+    setCode(template);
+  }, [activeTemplate, language]);
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const lang = e.target.value;
-    setLanguage(lang);
-    if (lang === 'python') {
-      setCode('# Write your Python code here\nprint("Hello from Python Sandbox!")');
-    } else if (lang === 'javascript') {
-      setCode('// Write your JS code here\nconsole.log("Hello from Node.js Sandbox!");');
-    } else if (lang === 'cpp') {
-      setCode('#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello from C++ Sandbox!" << endl;\n    return 0;\n}');
-    }
+    setLanguage(e.target.value);
   };
 
   return (
     <div className="flex flex-col h-full w-full bg-gray-900 overflow-hidden flex-1">
       {/* Editor Header */}
-      <div className="flex justify-between items-center bg-gray-800 px-4 py-3 border-b border-gray-700">
+      <div className="flex justify-between items-center bg-gray-800 px-4 py-3 border-b border-gray-700 flex-wrap gap-4">
         <div className="flex items-center gap-4">
           <span className="font-bold text-gray-200">Execution Engine</span>
           <select
@@ -43,10 +55,30 @@ export default function CodeEditor({ onExecute, isExecuting, output }: CodeEdito
             <option value="cpp">C++</option>
           </select>
         </div>
+        
+        {/* Localized Template Buttons */}
+        {algos.length > 0 && (
+          <div className="flex items-center gap-2 overflow-x-auto [scrollbar-width:none]">
+            {algos.map(algo => (
+              <button
+                key={algo}
+                onClick={() => setActiveTemplate(algo)}
+                className={`text-xs px-3 py-1.5 rounded-full whitespace-nowrap transition-colors border ${
+                  activeTemplate === algo 
+                    ? 'bg-blue-600/30 text-blue-400 border-blue-500/50' 
+                    : 'bg-gray-800 text-gray-400 border-gray-600 hover:text-white hover:bg-gray-700'
+                }`}
+              >
+                {formatAlgoName(algo)}
+              </button>
+            ))}
+          </div>
+        )}
+
         <button
           onClick={() => onExecute(code, language)}
           disabled={isExecuting}
-          className={`flex items-center gap-2 px-4 py-1.5 rounded font-bold text-sm transition-all shadow-md
+          className={`flex items-center gap-2 px-4 py-1.5 rounded font-bold text-sm transition-all shadow-md ml-auto
             ${isExecuting 
               ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
               : 'bg-green-600 hover:bg-green-500 text-white'
@@ -73,9 +105,9 @@ export default function CodeEditor({ onExecute, isExecuting, output }: CodeEdito
       </div>
 
       {/* Editor Body */}
-      <div className="w-full h-[400px]">
+      <div className="w-full flex-1">
         <Editor
-          height="400px"
+          height="100%"
           width="100%"
           language={language}
           theme="vs-dark"
