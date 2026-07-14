@@ -24,6 +24,15 @@ export default function ChallengeList({ title, description, challenges }: Challe
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white p-8 overflow-y-auto pt-24">
       <div className="max-w-6xl mx-auto">
+        <div className="mb-6">
+          <Link 
+            href="/testing"
+            className="inline-flex items-center text-gray-400 hover:text-white transition-colors"
+          >
+            ← Back to Testing Dashboard
+          </Link>
+        </div>
+        
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

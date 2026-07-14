@@ -84,6 +84,99 @@ int main() {
         cout << "Target " << target << " not found in the array." << endl;
     }
     return 0;
+}`,
+    java: `import java.util.*;
+
+public class Main {
+    public static int linearSearch(int[] arr, int target) {
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == target) return i;
+        }
+        return -1;
+    }
+
+    public static void main(String[] args) {
+        Random rand = new Random();
+        int[] arr = new int[10];
+        for (int i = 0; i < 10; i++) arr[i] = rand.nextInt(100) + 1;
+        
+        int target = rand.nextBoolean() ? arr[rand.nextInt(10)] : rand.nextInt(100) + 1;
+        
+        System.out.println("Array: " + Arrays.toString(arr));
+        System.out.println("Searching for: " + target);
+        
+        int result = linearSearch(arr, target);
+        if (result != -1) {
+            System.out.println("Target " + target + " found at index: " + result);
+        } else {
+            System.out.println("Target " + target + " not found in the array.");
+        }
+    }
+}`,
+    go: `package main
+
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+func linearSearch(arr []int, target int) int {
+	for i, val := range arr {
+		if val == target {
+			return i
+		}
+	}
+	return -1
+}
+
+func main() {
+	rand.Seed(time.Now().UnixNano())
+	arr := make([]int, 10)
+	for i := 0; i < 10; i++ {
+		arr[i] = rand.Intn(100) + 1
+	}
+
+	var target int
+	if rand.Intn(2) == 0 {
+		target = arr[rand.Intn(10)]
+	} else {
+		target = rand.Intn(100) + 1
+	}
+
+	fmt.Println("Array:", arr)
+	fmt.Println("Searching for:", target)
+
+	result := linearSearch(arr, target)
+	if result != -1 {
+		fmt.Printf("Target %d found at index: %d\\n", target, result)
+	} else {
+		fmt.Printf("Target %d not found in the array.\\n", target)
+	}
+}`,
+    kotlin: `import java.util.Random
+
+fun linearSearch(arr: IntArray, target: Int): Int {
+    for (i in arr.indices) {
+        if (arr[i] == target) return i
+    }
+    return -1
+}
+
+fun main() {
+    val rand = Random()
+    val arr = IntArray(10) { rand.nextInt(100) + 1 }
+    val target = if (rand.nextBoolean()) arr[rand.nextInt(10)] else rand.nextInt(100) + 1
+    
+    println("Array: \${arr.joinToString(", ")}")
+    println("Searching for: $target")
+    
+    val result = linearSearch(arr, target)
+    if (result != -1) {
+        println("Target $target found at index: $result")
+    } else {
+        println("Target $target not found in the array.")
+    }
 }`
   },
   binary: {
@@ -200,6 +293,121 @@ int main() {
         cout << "Target " << target << " not found in the array." << endl;
     }
     return 0;
+}`,
+    java: `import java.util.*;
+
+public class Main {
+    public static int binarySearch(int[] arr, int target) {
+        int left = 0, right = arr.length - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (arr[mid] == target) return mid;
+            if (arr[mid] < target) left = mid + 1;
+            else right = mid - 1;
+        }
+        return -1;
+    }
+
+    public static void main(String[] args) {
+        Random rand = new Random();
+        int[] arr = new int[10];
+        for (int i = 0; i < 10; i++) arr[i] = rand.nextInt(100) + 1;
+        Arrays.sort(arr);
+        
+        int target = rand.nextBoolean() ? arr[rand.nextInt(10)] : rand.nextInt(100) + 1;
+        
+        System.out.println("Sorted Array: " + Arrays.toString(arr));
+        System.out.println("Searching for: " + target);
+        
+        int result = binarySearch(arr, target);
+        if (result != -1) {
+            System.out.println("Target " + target + " found at index: " + result);
+        } else {
+            System.out.println("Target " + target + " not found in the array.");
+        }
+    }
+}`,
+    go: `package main
+
+import (
+	"fmt"
+	"math/rand"
+	"sort"
+	"time"
+)
+
+func binarySearch(arr []int, target int) int {
+	left, right := 0, len(arr)-1
+	for left <= right {
+		mid := left + (right-left)/2
+		if arr[mid] == target {
+			return mid
+		}
+		if arr[mid] < target {
+			left = mid + 1
+		} else {
+			right = mid - 1
+		}
+	}
+	return -1
+}
+
+func main() {
+	rand.Seed(time.Now().UnixNano())
+	arr := make([]int, 10)
+	for i := 0; i < 10; i++ {
+		arr[i] = rand.Intn(100) + 1
+	}
+	sort.Ints(arr)
+
+	var target int
+	if rand.Intn(2) == 0 {
+		target = arr[rand.Intn(10)]
+	} else {
+		target = rand.Intn(100) + 1
+	}
+
+	fmt.Println("Sorted Array:", arr)
+	fmt.Println("Searching for:", target)
+
+	result := binarySearch(arr, target)
+	if result != -1 {
+		fmt.Printf("Target %d found at index: %d\\n", target, result)
+	} else {
+		fmt.Printf("Target %d not found in the array.\\n", target)
+	}
+}`,
+    kotlin: `import java.util.Random
+import java.util.Arrays
+
+fun binarySearch(arr: IntArray, target: Int): Int {
+    var left = 0
+    var right = arr.size - 1
+    while (left <= right) {
+        val mid = left + (right - left) / 2
+        if (arr[mid] == target) return mid
+        if (arr[mid] < target) left = mid + 1
+        else right = mid - 1
+    }
+    return -1
+}
+
+fun main() {
+    val rand = Random()
+    val arr = IntArray(10) { rand.nextInt(100) + 1 }
+    arr.sort()
+    
+    val target = if (rand.nextBoolean()) arr[rand.nextInt(10)] else rand.nextInt(100) + 1
+    
+    println("Sorted Array: \${arr.joinToString(", ")}")
+    println("Searching for: $target")
+    
+    val result = binarySearch(arr, target)
+    if (result != -1) {
+        println("Target $target found at index: $result")
+    } else {
+        println("Target $target not found in the array.")
+    }
 }`
   },
   bubble: {
@@ -280,6 +488,85 @@ int main() {
     for(int i : arr) cout << i << " ";
     cout << endl;
     return 0;
+}`,
+    java: `import java.util.*;
+
+public class Main {
+    public static void bubbleSort(int[] arr) {
+        int n = arr.length;
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if (arr[j] > arr[j + 1]) {
+                    int temp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp;
+                }
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Random rand = new Random();
+        int[] arr = new int[10];
+        for (int i = 0; i < 10; i++) arr[i] = rand.nextInt(100) + 1;
+        
+        System.out.println("Original Array: " + Arrays.toString(arr));
+        bubbleSort(arr);
+        System.out.println("Sorted Array:   " + Arrays.toString(arr));
+    }
+}`,
+    go: `package main
+
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+func bubbleSort(arr []int) {
+	n := len(arr)
+	for i := 0; i < n-1; i++ {
+		for j := 0; j < n-i-1; j++ {
+			if arr[j] > arr[j+1] {
+				arr[j], arr[j+1] = arr[j+1], arr[j]
+			}
+		}
+	}
+}
+
+func main() {
+	rand.Seed(time.Now().UnixNano())
+	arr := make([]int, 10)
+	for i := 0; i < 10; i++ {
+		arr[i] = rand.Intn(100) + 1
+	}
+
+	fmt.Println("Original Array:", arr)
+	bubbleSort(arr)
+	fmt.Println("Sorted Array:  ", arr)
+}`,
+    kotlin: `import java.util.Random
+
+fun bubbleSort(arr: IntArray) {
+    val n = arr.size
+    for (i in 0 until n - 1) {
+        for (j in 0 until n - i - 1) {
+            if (arr[j] > arr[j + 1]) {
+                val temp = arr[j]
+                arr[j] = arr[j + 1]
+                arr[j + 1] = temp
+            }
+        }
+    }
+}
+
+fun main() {
+    val rand = Random()
+    val arr = IntArray(10) { rand.nextInt(100) + 1 }
+    
+    println("Original Array: \${arr.joinToString(", ")}")
+    bubbleSort(arr)
+    println("Sorted Array:   \${arr.joinToString(", ")}")
 }`
   },
   selection: {
@@ -359,6 +646,87 @@ int main() {
     for(int i : arr) cout << i << " ";
     cout << endl;
     return 0;
+}`,
+    java: `import java.util.*;
+
+public class Main {
+    public static void selectionSort(int[] arr) {
+        int n = arr.length;
+        for (int i = 0; i < n - 1; i++) {
+            int minIdx = i;
+            for (int j = i + 1; j < n; j++) {
+                if (arr[j] < arr[minIdx]) minIdx = j;
+            }
+            int temp = arr[minIdx];
+            arr[minIdx] = arr[i];
+            arr[i] = temp;
+        }
+    }
+
+    public static void main(String[] args) {
+        Random rand = new Random();
+        int[] arr = new int[10];
+        for (int i = 0; i < 10; i++) arr[i] = rand.nextInt(100) + 1;
+        
+        System.out.println("Original Array: " + Arrays.toString(arr));
+        selectionSort(arr);
+        System.out.println("Sorted Array:   " + Arrays.toString(arr));
+    }
+}`,
+    go: `package main
+
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+func selectionSort(arr []int) {
+	n := len(arr)
+	for i := 0; i < n-1; i++ {
+		minIdx := i
+		for j := i + 1; j < n; j++ {
+			if arr[j] < arr[minIdx] {
+				minIdx = j
+			}
+		}
+		arr[i], arr[minIdx] = arr[minIdx], arr[i]
+	}
+}
+
+func main() {
+	rand.Seed(time.Now().UnixNano())
+	arr := make([]int, 10)
+	for i := 0; i < 10; i++ {
+		arr[i] = rand.Intn(100) + 1
+	}
+
+	fmt.Println("Original Array:", arr)
+	selectionSort(arr)
+	fmt.Println("Sorted Array:  ", arr)
+}`,
+    kotlin: `import java.util.Random
+
+fun selectionSort(arr: IntArray) {
+    val n = arr.size
+    for (i in 0 until n - 1) {
+        var minIdx = i
+        for (j in i + 1 until n) {
+            if (arr[j] < arr[minIdx]) minIdx = j
+        }
+        val temp = arr[minIdx]
+        arr[minIdx] = arr[i]
+        arr[i] = temp
+    }
+}
+
+fun main() {
+    val rand = Random()
+    val arr = IntArray(10) { rand.nextInt(100) + 1 }
+    
+    println("Original Array: \${arr.joinToString(", ")}")
+    selectionSort(arr)
+    println("Sorted Array:   \${arr.joinToString(", ")}")
 }`
   },
   insertion: {
@@ -443,6 +811,87 @@ int main() {
     for(int i : arr) cout << i << " ";
     cout << endl;
     return 0;
+}`,
+    java: `import java.util.*;
+
+public class Main {
+    public static void insertionSort(int[] arr) {
+        int n = arr.length;
+        for (int i = 1; i < n; i++) {
+            int key = arr[i];
+            int j = i - 1;
+            while (j >= 0 && arr[j] > key) {
+                arr[j + 1] = arr[j];
+                j = j - 1;
+            }
+            arr[j + 1] = key;
+        }
+    }
+
+    public static void main(String[] args) {
+        Random rand = new Random();
+        int[] arr = new int[10];
+        for (int i = 0; i < 10; i++) arr[i] = rand.nextInt(100) + 1;
+        
+        System.out.println("Original Array: " + Arrays.toString(arr));
+        insertionSort(arr);
+        System.out.println("Sorted Array:   " + Arrays.toString(arr));
+    }
+}`,
+    go: `package main
+
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+func insertionSort(arr []int) {
+	n := len(arr)
+	for i := 1; i < n; i++ {
+		key := arr[i]
+		j := i - 1
+		for j >= 0 && arr[j] > key {
+			arr[j+1] = arr[j]
+			j = j - 1
+		}
+		arr[j+1] = key
+	}
+}
+
+func main() {
+	rand.Seed(time.Now().UnixNano())
+	arr := make([]int, 10)
+	for i := 0; i < 10; i++ {
+		arr[i] = rand.Intn(100) + 1
+	}
+
+	fmt.Println("Original Array:", arr)
+	insertionSort(arr)
+	fmt.Println("Sorted Array:  ", arr)
+}`,
+    kotlin: `import java.util.Random
+
+fun insertionSort(arr: IntArray) {
+    val n = arr.size
+    for (i in 1 until n) {
+        val key = arr[i]
+        var j = i - 1
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j]
+            j -= 1
+        }
+        arr[j + 1] = key
+    }
+}
+
+fun main() {
+    val rand = Random()
+    val arr = IntArray(10) { rand.nextInt(100) + 1 }
+    
+    println("Original Array: \${arr.joinToString(", ")}")
+    insertionSort(arr)
+    println("Sorted Array:   \${arr.joinToString(", ")}")
 }`
   },
   merge: {
@@ -583,6 +1032,170 @@ int main() {
     for(int i : arr) cout << i << " ";
     cout << endl;
     return 0;
+}`,
+    java: `import java.util.*;
+
+public class Main {
+    public static void merge(int[] arr, int l, int m, int r) {
+        int n1 = m - l + 1;
+        int n2 = r - m;
+        int[] L = new int[n1];
+        int[] R = new int[n2];
+        
+        for (int i = 0; i < n1; ++i) L[i] = arr[l + i];
+        for (int j = 0; j < n2; ++j) R[j] = arr[m + 1 + j];
+        
+        int i = 0, j = 0, k = l;
+        while (i < n1 && j < n2) {
+            if (L[i] <= R[j]) {
+                arr[k] = L[i];
+                i++;
+            } else {
+                arr[k] = R[j];
+                j++;
+            }
+            k++;
+        }
+        while (i < n1) arr[k++] = L[i++];
+        while (j < n2) arr[k++] = R[j++];
+    }
+
+    public static void mergeSort(int[] arr, int l, int r) {
+        if (l < r) {
+            int m = l + (r - l) / 2;
+            mergeSort(arr, l, m);
+            mergeSort(arr, m + 1, r);
+            merge(arr, l, m, r);
+        }
+    }
+
+    public static void main(String[] args) {
+        Random rand = new Random();
+        int[] arr = new int[10];
+        for (int i = 0; i < 10; i++) arr[i] = rand.nextInt(100) + 1;
+        
+        System.out.println("Original Array: " + Arrays.toString(arr));
+        mergeSort(arr, 0, arr.length - 1);
+        System.out.println("Sorted Array:   " + Arrays.toString(arr));
+    }
+}`,
+    go: `package main
+
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+func merge(arr []int, l int, m int, r int) {
+	n1 := m - l + 1
+	n2 := r - m
+	L := make([]int, n1)
+	R := make([]int, n2)
+
+	for i := 0; i < n1; i++ {
+		L[i] = arr[l+i]
+	}
+	for j := 0; j < n2; j++ {
+		R[j] = arr[m+1+j]
+	}
+
+	i, j, k := 0, 0, l
+	for i < n1 && j < n2 {
+		if L[i] <= R[j] {
+			arr[k] = L[i]
+			i++
+		} else {
+			arr[k] = R[j]
+			j++
+		}
+		k++
+	}
+
+	for i < n1 {
+		arr[k] = L[i]
+		i++
+		k++
+	}
+	for j < n2 {
+		arr[k] = R[j]
+		j++
+		k++
+	}
+}
+
+func mergeSort(arr []int, l int, r int) {
+	if l < r {
+		m := l + (r-l)/2
+		mergeSort(arr, l, m)
+		mergeSort(arr, m+1, r)
+		merge(arr, l, m, r)
+	}
+}
+
+func main() {
+	rand.Seed(time.Now().UnixNano())
+	arr := make([]int, 10)
+	for i := 0; i < 10; i++ {
+		arr[i] = rand.Intn(100) + 1
+	}
+
+	fmt.Println("Original Array:", arr)
+	mergeSort(arr, 0, len(arr)-1)
+	fmt.Println("Sorted Array:  ", arr)
+}`,
+    kotlin: `import java.util.Random
+
+fun merge(arr: IntArray, l: Int, m: Int, r: Int) {
+    val n1 = m - l + 1
+    val n2 = r - m
+    val L = IntArray(n1)
+    val R = IntArray(n2)
+    
+    for (i in 0 until n1) L[i] = arr[l + i]
+    for (j in 0 until n2) R[j] = arr[m + 1 + j]
+    
+    var i = 0
+    var j = 0
+    var k = l
+    while (i < n1 && j < n2) {
+        if (L[i] <= R[j]) {
+            arr[k] = L[i]
+            i++
+        } else {
+            arr[k] = R[j]
+            j++
+        }
+        k++
+    }
+    while (i < n1) {
+        arr[k] = L[i]
+        i++
+        k++
+    }
+    while (j < n2) {
+        arr[k] = R[j]
+        j++
+        k++
+    }
+}
+
+fun mergeSort(arr: IntArray, l: Int, r: Int) {
+    if (l < r) {
+        val m = l + (r - l) / 2
+        mergeSort(arr, l, m)
+        mergeSort(arr, m + 1, r)
+        merge(arr, l, m, r)
+    }
+}
+
+fun main() {
+    val rand = Random()
+    val arr = IntArray(10) { rand.nextInt(100) + 1 }
+    
+    println("Original Array: \${arr.joinToString(", ")}")
+    mergeSort(arr, 0, arr.size - 1)
+    println("Sorted Array:   \${arr.joinToString(", ")}")
 }`
   },
   quick: {
@@ -683,6 +1296,119 @@ int main() {
     for(int i : arr) cout << i << " ";
     cout << endl;
     return 0;
+}`,
+    java: `import java.util.*;
+
+public class Main {
+    public static int partition(int[] arr, int low, int high) {
+        int pivot = arr[high];
+        int i = (low - 1);
+        for (int j = low; j <= high - 1; j++) {
+            if (arr[j] < pivot) {
+                i++;
+                int temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+        }
+        int temp = arr[i + 1];
+        arr[i + 1] = arr[high];
+        arr[high] = temp;
+        return (i + 1);
+    }
+
+    public static void quickSort(int[] arr, int low, int high) {
+        if (low < high) {
+            int pi = partition(arr, low, high);
+            quickSort(arr, low, pi - 1);
+            quickSort(arr, pi + 1, high);
+        }
+    }
+
+    public static void main(String[] args) {
+        Random rand = new Random();
+        int[] arr = new int[10];
+        for (int i = 0; i < 10; i++) arr[i] = rand.nextInt(100) + 1;
+        
+        System.out.println("Original Array: " + Arrays.toString(arr));
+        quickSort(arr, 0, arr.length - 1);
+        System.out.println("Sorted Array:   " + Arrays.toString(arr));
+    }
+}`,
+    go: `package main
+
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+func partition(arr []int, low, high int) int {
+	pivot := arr[high]
+	i := low - 1
+	for j := low; j <= high-1; j++ {
+		if arr[j] < pivot {
+			i++
+			arr[i], arr[j] = arr[j], arr[i]
+		}
+	}
+	arr[i+1], arr[high] = arr[high], arr[i+1]
+	return i + 1
+}
+
+func quickSort(arr []int, low, high int) {
+	if low < high {
+		pi := partition(arr, low, high)
+		quickSort(arr, low, pi-1)
+		quickSort(arr, pi+1, high)
+	}
+}
+
+func main() {
+	rand.Seed(time.Now().UnixNano())
+	arr := make([]int, 10)
+	for i := 0; i < 10; i++ {
+		arr[i] = rand.Intn(100) + 1
+	}
+
+	fmt.Println("Original Array:", arr)
+	quickSort(arr, 0, len(arr)-1)
+	fmt.Println("Sorted Array:  ", arr)
+}`,
+    kotlin: `import java.util.Random
+
+fun partition(arr: IntArray, low: Int, high: Int): Int {
+    val pivot = arr[high]
+    var i = (low - 1)
+    for (j in low until high) {
+        if (arr[j] < pivot) {
+            i++
+            val temp = arr[i]
+            arr[i] = arr[j]
+            arr[j] = temp
+        }
+    }
+    val temp = arr[i + 1]
+    arr[i + 1] = arr[high]
+    arr[high] = temp
+    return (i + 1)
+}
+
+fun quickSort(arr: IntArray, low: Int, high: Int) {
+    if (low < high) {
+        val pi = partition(arr, low, high)
+        quickSort(arr, low, pi - 1)
+        quickSort(arr, pi + 1, high)
+    }
+}
+
+fun main() {
+    val rand = Random()
+    val arr = IntArray(10) { rand.nextInt(100) + 1 }
+    
+    println("Original Array: \${arr.joinToString(", ")}")
+    quickSort(arr, 0, arr.size - 1)
+    println("Sorted Array:   \${arr.joinToString(", ")}")
 }`
   },
   bfs: {
@@ -1184,6 +1910,530 @@ int main() {
     cout << "Linked List structure:" << endl;
     ll.display();
     return 0;
+}`
+  },
+  dijkstra: {
+    python: `import heapq
+
+def dijkstra(graph, start):
+    distances = {node: float('infinity') for node in graph}
+    distances[start] = 0
+    pq = [(0, start)]
+    
+    while pq:
+        current_distance, current_node = heapq.heappop(pq)
+        
+        if current_distance > distances[current_node]:
+            continue
+            
+        for neighbor, weight in graph[current_node].items():
+            distance = current_distance + weight
+            if distance < distances[neighbor]:
+                distances[neighbor] = distance
+                heapq.heappush(pq, (distance, neighbor))
+                
+    return distances
+
+graph = {
+    'A': {'B': 4, 'C': 2},
+    'B': {'A': 4, 'C': 5, 'D': 10},
+    'C': {'A': 2, 'B': 5, 'D': 3},
+    'D': {'B': 10, 'C': 3}
+}
+print("Shortest distances from A:", dijkstra(graph, 'A'))`,
+    javascript: `function dijkstra(graph, start) {
+    const distances = {};
+    const visited = new Set();
+    const pq = [];
+    
+    for (const node in graph) distances[node] = Infinity;
+    distances[start] = 0;
+    pq.push({ node: start, dist: 0 });
+    
+    while (pq.length > 0) {
+        pq.sort((a, b) => a.dist - b.dist);
+        const { node: u, dist } = pq.shift();
+        
+        if (visited.has(u)) continue;
+        visited.add(u);
+        
+        for (const neighbor in graph[u]) {
+            const weight = graph[u][neighbor];
+            if (dist + weight < distances[neighbor]) {
+                distances[neighbor] = dist + weight;
+                pq.push({ node: neighbor, dist: distances[neighbor] });
+            }
+        }
+    }
+    return distances;
+}
+
+const graph = {
+    'A': {'B': 4, 'C': 2},
+    'B': {'A': 4, 'C': 5, 'D': 10},
+    'C': {'A': 2, 'B': 5, 'D': 3},
+    'D': {'B': 10, 'C': 3}
+};
+console.log("Shortest distances from A:", dijkstra(graph, 'A'));`,
+    cpp: `#include <iostream>
+#include <vector>
+#include <queue>
+#include <unordered_map>
+using namespace std;
+
+void dijkstra(unordered_map<char, vector<pair<char, int>>>& graph, char start) {
+    unordered_map<char, int> distances;
+    for (auto& pair : graph) distances[pair.first] = 1e9;
+    distances[start] = 0;
+    
+    priority_queue<pair<int, char>, vector<pair<int, char>>, greater<pair<int, char>>> pq;
+    pq.push({0, start});
+    
+    while (!pq.empty()) {
+        int dist = pq.top().first;
+        char u = pq.top().second;
+        pq.pop();
+        
+        if (dist > distances[u]) continue;
+        
+        for (auto& neighbor : graph[u]) {
+            char v = neighbor.first;
+            int weight = neighbor.second;
+            if (distances[u] + weight < distances[v]) {
+                distances[v] = distances[u] + weight;
+                pq.push({distances[v], v});
+            }
+        }
+    }
+    
+    cout << "Shortest distances from " << start << ":" << endl;
+    for (auto& pair : distances) {
+        cout << pair.first << " : " << pair.second << endl;
+    }
+}
+
+int main() {
+    unordered_map<char, vector<pair<char, int>>> graph;
+    graph['A'] = {{'B', 4}, {'C', 2}};
+    graph['B'] = {{'A', 4}, {'C', 5}, {'D', 10}};
+    graph['C'] = {{'A', 2}, {'B', 5}, {'D', 3}};
+    graph['D'] = {{'B', 10}, {'C', 3}};
+    dijkstra(graph, 'A');
+    return 0;
+}`,
+    java: `import java.util.*;
+
+public class Main {
+    public static void dijkstra(Map<Character, Map<Character, Integer>> graph, char start) {
+        Map<Character, Integer> distances = new HashMap<>();
+        for (char node : graph.keySet()) distances.put(node, Integer.MAX_VALUE);
+        distances.put(start, 0);
+        
+        PriorityQueue<char[]> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a[1]));
+        pq.offer(new char[]{start, 0});
+        
+        while (!pq.isEmpty()) {
+            char[] current = pq.poll();
+            char u = current[0];
+            int dist = current[1];
+            
+            if (dist > distances.get(u)) continue;
+            
+            for (Map.Entry<Character, Integer> neighbor : graph.get(u).entrySet()) {
+                char v = neighbor.getKey();
+                int weight = neighbor.getValue();
+                if (distances.get(u) + weight < distances.get(v)) {
+                    distances.put(v, distances.get(u) + weight);
+                    pq.offer(new char[]{v, distances.get(v)});
+                }
+            }
+        }
+        
+        System.out.println("Shortest distances from " + start + ": " + distances);
+    }
+    
+    public static void main(String[] args) {
+        Map<Character, Map<Character, Integer>> graph = new HashMap<>();
+        graph.put('A', Map.of('B', 4, 'C', 2));
+        graph.put('B', Map.of('A', 4, 'C', 5, 'D', 10));
+        graph.put('C', Map.of('A', 2, 'B', 5, 'D', 3));
+        graph.put('D', Map.of('B', 10, 'C', 3));
+        dijkstra(graph, 'A');
+    }
+}`,
+    go: `package main
+
+import (
+	"fmt"
+	"math"
+)
+
+func dijkstra(graph map[string]map[string]int, start string) {
+	distances := make(map[string]int)
+	for node := range graph {
+		distances[node] = math.MaxInt32
+	}
+	distances[start] = 0
+	visited := make(map[string]bool)
+
+	for i := 0; i < len(graph); i++ {
+		minDist := math.MaxInt32
+		var u string
+		for node, dist := range distances {
+			if !visited[node] && dist < minDist {
+				minDist = dist
+				u = node
+			}
+		}
+
+		if u == "" {
+			break
+		}
+		visited[u] = true
+
+		for v, weight := range graph[u] {
+			if distances[u]+weight < distances[v] {
+				distances[v] = distances[u] + weight
+			}
+		}
+	}
+
+	fmt.Println("Shortest distances from", start, ":", distances)
+}
+
+func main() {
+	graph := map[string]map[string]int{
+		"A": {"B": 4, "C": 2},
+		"B": {"A": 4, "C": 5, "D": 10},
+		"C": {"A": 2, "B": 5, "D": 3},
+		"D": {"B": 10, "C": 3},
+	}
+	dijkstra(graph, "A")
+}`,
+    kotlin: `import java.util.PriorityQueue
+
+fun dijkstra(graph: Map<Char, Map<Char, Int>>, start: Char) {
+    val distances = mutableMapOf<Char, Int>()
+    for (node in graph.keys) distances[node] = Int.MAX_VALUE
+    distances[start] = 0
+    
+    val pq = PriorityQueue<Pair<Char, Int>>(compareBy { it.second })
+    pq.add(Pair(start, 0))
+    
+    while (pq.isNotEmpty()) {
+        val (u, dist) = pq.poll()
+        if (dist > distances[u]!!) continue
+        
+        for ((v, weight) in graph[u]!!) {
+            if (distances[u]!! + weight < distances[v]!!) {
+                distances[v] = distances[u]!! + weight
+                pq.add(Pair(v, distances[v]!!))
+            }
+        }
+    }
+    
+    println("Shortest distances from $start: $distances")
+}
+
+fun main() {
+    val graph = mapOf(
+        'A' to mapOf('B' to 4, 'C' to 2),
+        'B' to mapOf('A' to 4, 'C' to 5, 'D' to 10),
+        'C' to mapOf('A' to 2, 'B' to 5, 'D' to 3),
+        'D' to mapOf('B' to 10, 'C' to 3)
+    )
+    dijkstra(graph, 'A')
+}`
+  },
+  dp: {
+    python: `def fib(n, memo={}):
+    if n in memo: return memo[n]
+    if n <= 1: return n
+    memo[n] = fib(n-1, memo) + fib(n-2, memo)
+    return memo[n]
+
+print("Fibonacci(10) =", fib(10))`,
+    javascript: `function fib(n, memo = {}) {
+    if (n in memo) return memo[n];
+    if (n <= 1) return n;
+    memo[n] = fib(n - 1, memo) + fib(n - 2, memo);
+    return memo[n];
+}
+console.log("Fibonacci(10) =", fib(10));`,
+    cpp: `#include <iostream>
+#include <unordered_map>
+using namespace std;
+
+unordered_map<int, int> memo;
+int fib(int n) {
+    if (memo.count(n)) return memo[n];
+    if (n <= 1) return n;
+    return memo[n] = fib(n - 1) + fib(n - 2);
+}
+
+int main() {
+    cout << "Fibonacci(10) = " << fib(10) << endl;
+    return 0;
+}`,
+    java: `import java.util.*;
+
+public class Main {
+    static Map<Integer, Integer> memo = new HashMap<>();
+    public static int fib(int n) {
+        if (memo.containsKey(n)) return memo.get(n);
+        if (n <= 1) return n;
+        int res = fib(n - 1) + fib(n - 2);
+        memo.put(n, res);
+        return res;
+    }
+    public static void main(String[] args) {
+        System.out.println("Fibonacci(10) = " + fib(10));
+    }
+}`,
+    go: `package main
+import "fmt"
+
+var memo = make(map[int]int)
+func fib(n int) int {
+	if val, ok := memo[n]; ok {
+		return val
+	}
+	if n <= 1 {
+		return n
+	}
+	memo[n] = fib(n-1) + fib(n-2)
+	return memo[n]
+}
+func main() {
+	fmt.Println("Fibonacci(10) =", fib(10))
+}`,
+    kotlin: `fun fib(n: Int, memo: MutableMap<Int, Int> = mutableMapOf()): Int {
+    if (memo.containsKey(n)) return memo[n]!!
+    if (n <= 1) return n
+    val res = fib(n - 1, memo) + fib(n - 2, memo)
+    memo[n] = res
+    return res
+}
+fun main() {
+    println("Fibonacci(10) = \${fib(10)}")
+}`
+  },
+  heap: {
+    python: `import heapq
+
+class MaxHeap:
+    def __init__(self):
+        self.heap = []
+    def push(self, val):
+        heapq.heappush(self.heap, -val)
+    def pop(self):
+        return -heapq.heappop(self.heap) if self.heap else None
+
+h = MaxHeap()
+for v in [3, 1, 4, 1, 5, 9]: h.push(v)
+print("Popped from Max Heap:", h.pop())
+print("Popped from Max Heap:", h.pop())`,
+    javascript: `class MaxHeap {
+    constructor() { this.heap = []; }
+    push(val) {
+        this.heap.push(val);
+        this.heap.sort((a, b) => b - a); // naive
+    }
+    pop() { return this.heap.shift(); }
+}
+const h = new MaxHeap();
+[3, 1, 4, 1, 5, 9].forEach(v => h.push(v));
+console.log("Popped from Max Heap:", h.pop());
+console.log("Popped from Max Heap:", h.pop());`,
+    cpp: `#include <iostream>
+#include <queue>
+using namespace std;
+
+int main() {
+    priority_queue<int> h;
+    vector<int> vals = {3, 1, 4, 1, 5, 9};
+    for(int v : vals) h.push(v);
+    
+    cout << "Popped from Max Heap: " << h.top() << endl; h.pop();
+    cout << "Popped from Max Heap: " << h.top() << endl; h.pop();
+    return 0;
+}`,
+    java: `import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        PriorityQueue<Integer> h = new PriorityQueue<>(Collections.reverseOrder());
+        int[] vals = {3, 1, 4, 1, 5, 9};
+        for (int v : vals) h.offer(v);
+        
+        System.out.println("Popped from Max Heap: " + h.poll());
+        System.out.println("Popped from Max Heap: " + h.poll());
+    }
+}`,
+    go: `package main
+import (
+	"container/heap"
+	"fmt"
+)
+
+type MaxHeap []int
+func (h MaxHeap) Len() int           { return len(h) }
+func (h MaxHeap) Less(i, j int) bool { return h[i] > h[j] }
+func (h MaxHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
+func (h *MaxHeap) Push(x interface{}) { *h = append(*h, x.(int)) }
+func (h *MaxHeap) Pop() interface{} {
+	old := *h
+	n := len(old)
+	x := old[n-1]
+	*h = old[0 : n-1]
+	return x
+}
+
+func main() {
+	h := &MaxHeap{}
+	heap.Init(h)
+	for _, v := range []int{3, 1, 4, 1, 5, 9} {
+		heap.Push(h, v)
+	}
+	fmt.Println("Popped from Max Heap:", heap.Pop(h))
+	fmt.Println("Popped from Max Heap:", heap.Pop(h))
+}`,
+    kotlin: `import java.util.PriorityQueue
+
+fun main() {
+    val h = PriorityQueue<Int>(compareByDescending { it })
+    val vals = listOf(3, 1, 4, 1, 5, 9)
+    for (v in vals) h.add(v)
+    
+    println("Popped from Max Heap: \${h.poll()}")
+    println("Popped from Max Heap: \${h.poll()}")
+}`
+  },
+  stack: {
+    python: `stack = []
+stack.append(1)
+stack.append(2)
+stack.append(3)
+print("Stack:", stack)
+print("Popped:", stack.pop())
+print("Stack after pop:", stack)`,
+    javascript: `const stack = [];
+stack.push(1);
+stack.push(2);
+stack.push(3);
+console.log("Stack:", stack);
+console.log("Popped:", stack.pop());
+console.log("Stack after pop:", stack);`,
+    cpp: `#include <iostream>
+#include <stack>
+using namespace std;
+
+int main() {
+    stack<int> s;
+    s.push(1); s.push(2); s.push(3);
+    cout << "Top: " << s.top() << endl;
+    int popped = s.top(); s.pop();
+    cout << "Popped: " << popped << endl;
+    return 0;
+}`,
+    java: `import java.util.Stack;
+
+public class Main {
+    public static void main(String[] args) {
+        Stack<Integer> s = new Stack<>();
+        s.push(1); s.push(2); s.push(3);
+        System.out.println("Stack: " + s);
+        System.out.println("Popped: " + s.pop());
+        System.out.println("Stack after pop: " + s);
+    }
+}`,
+    go: `package main
+import "fmt"
+
+func main() {
+	var stack []int
+	stack = append(stack, 1)
+	stack = append(stack, 2)
+	stack = append(stack, 3)
+	fmt.Println("Stack:", stack)
+	
+	popped := stack[len(stack)-1]
+	stack = stack[:len(stack)-1]
+	fmt.Println("Popped:", popped)
+	fmt.Println("Stack after pop:", stack)
+}`,
+    kotlin: `fun main() {
+    val stack = ArrayDeque<Int>()
+    stack.addLast(1)
+    stack.addLast(2)
+    stack.addLast(3)
+    println("Stack: $stack")
+    println("Popped: \${stack.removeLast()}")
+    println("Stack after pop: $stack")
+}`
+  },
+  queue: {
+    python: `from collections import deque
+queue = deque()
+queue.append(1)
+queue.append(2)
+queue.append(3)
+print("Queue:", list(queue))
+print("Dequeued:", queue.popleft())
+print("Queue after dequeue:", list(queue))`,
+    javascript: `const queue = [];
+queue.push(1);
+queue.push(2);
+queue.push(3);
+console.log("Queue:", queue);
+console.log("Dequeued:", queue.shift());
+console.log("Queue after dequeue:", queue);`,
+    cpp: `#include <iostream>
+#include <queue>
+using namespace std;
+
+int main() {
+    queue<int> q;
+    q.push(1); q.push(2); q.push(3);
+    cout << "Front: " << q.front() << endl;
+    int dq = q.front(); q.pop();
+    cout << "Dequeued: " << dq << endl;
+    return 0;
+}`,
+    java: `import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Queue<Integer> q = new LinkedList<>();
+        q.offer(1); q.offer(2); q.offer(3);
+        System.out.println("Queue: " + q);
+        System.out.println("Dequeued: " + q.poll());
+        System.out.println("Queue after dequeue: " + q);
+    }
+}`,
+    go: `package main
+import "fmt"
+
+func main() {
+	var queue []int
+	queue = append(queue, 1)
+	queue = append(queue, 2)
+	queue = append(queue, 3)
+	fmt.Println("Queue:", queue)
+	
+	dq := queue[0]
+	queue = queue[1:]
+	fmt.Println("Dequeued:", dq)
+	fmt.Println("Queue after dequeue:", queue)
+}`,
+    kotlin: `fun main() {
+    val queue = ArrayDeque<Int>()
+    queue.addLast(1)
+    queue.addLast(2)
+    queue.addLast(3)
+    println("Queue: $queue")
+    println("Dequeued: \${queue.removeFirst()}")
+    println("Queue after dequeue: $queue")
 }`
   }
 };

@@ -11,7 +11,9 @@ import {
   generateLinearSearchFrames,
   generateBinarySearchFrames,
   generateBFSFrames,
-  generateDFSFrames
+  generateDFSFrames,
+  generateDPFrames,
+  generateDijkstraFrames
 } from '@/utils/algorithmEngine';
 import { parseGraphInput } from '@/utils/graphParser';
 import { logger } from '@/utils/logger';
@@ -26,7 +28,8 @@ export default function DataInputPanel() {
   const [error, setError] = useState<string | null>(null);
 
   const isSearchAlgo = selectedAlgorithm === 'linear' || selectedAlgorithm === 'binary';
-  const isGraphAlgo = selectedAlgorithm === 'bfs' || selectedAlgorithm === 'dfs';
+  const isGraphAlgo = selectedAlgorithm === 'bfs' || selectedAlgorithm === 'dfs' || selectedAlgorithm === 'dijkstra';
+  const isDPAlgo = selectedAlgorithm === 'dp';
 
   // ... (keeping handleGenerateRandom and handleSubmit exactly the same) ...
   const handleGenerateRandomTree = () => {
@@ -117,6 +120,7 @@ export default function DataInputPanel() {
       const startNode = firstMatch ? firstMatch[1].toUpperCase() : parsed.nodes[0].id;
 
       if (selectedAlgorithm === 'bfs') newFrames = generateBFSFrames(parsed, startNode);
+      else if (selectedAlgorithm === 'dijkstra') newFrames = generateDijkstraFrames(parsed, startNode);
       else newFrames = generateDFSFrames(parsed, startNode);
       
       setFrames(newFrames);
@@ -181,6 +185,9 @@ export default function DataInputPanel() {
       case 'binary':
         newFrames = generateBinarySearchFrames(numericArray, numericTarget);
         break;
+      case 'dp':
+        newFrames = generateDPFrames(numericArray[0]); // DP takes a single number N
+        break;
       case 'bubble':
       default:
         newFrames = generateBubbleSortFrames(numericArray);
@@ -202,6 +209,8 @@ export default function DataInputPanel() {
               <label htmlFor="array-input" className="block text-sm font-medium text-gray-400 mb-2 pl-1">
                 {isGraphAlgo 
                   ? "Enter edge list (e.g. A-B, B-C). Max 10 nodes, 20 edges." 
+                  : isDPAlgo
+                  ? "Enter a number N (Max 20) for Fibonacci DP"
                   : `Enter comma-separated integers (Max ${selectedAlgorithm === 'merge' ? '20' : '50'} elements)`}
               </label>
               <input
@@ -212,7 +221,7 @@ export default function DataInputPanel() {
                   setInputValue(e.target.value);
                   if (error) setError(null);
                 }}
-                placeholder={isGraphAlgo ? "A-B, A-C, B-D" : "e.g. 10, 20, 5, 8, 1"}
+                placeholder={isGraphAlgo ? "A-B, A-C, B-D" : isDPAlgo ? "e.g. 5" : "e.g. 10, 20, 5, 8, 1"}
                 className="w-full bg-gray-950/50 border border-white/10 hover:border-white/20 rounded-2xl py-3.5 px-5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 font-mono tracking-wide transition-all shadow-inner"
               />
             </div>
@@ -267,7 +276,7 @@ export default function DataInputPanel() {
                 onClick={handleGenerateRandom}
                 className="px-5 py-3 bg-white/5 hover:bg-white/10 text-gray-200 rounded-xl transition-all duration-300 text-sm font-semibold flex-1 min-w-[140px] flex items-center justify-center gap-2 border border-white/10 hover:border-white/20 backdrop-blur-sm"
               >
-                Randomize Array
+                {isDPAlgo ? "Randomize N" : "Randomize Array"}
               </button>
             )}
             

@@ -823,3 +823,181 @@ export const generateDFSFrames = (graph: GraphData, startNode: string): Frame[] 
   addFrame(undefined, 'DFS Complete! All reachable nodes have been visited.');
   return frames;
 };
+
+/**
+ * Simulates Dynamic Programming (Fibonacci) and generates frames
+ * Shows a 1D array being filled up
+ */
+export const generateDPFrames = (n: number): Frame[] => {
+  logger.info('AlgorithmEngine: Starting DP (Fibonacci) generation', { n });
+  
+  const frames: Frame[] = [];
+  let frameIndex = 0;
+  
+  if (n <= 0) n = 1;
+  if (n > 20) n = 20; // limit size for visualization
+  
+  const dp = Array(n + 1).fill(null);
+  
+  frames.push({
+    frameIndex: frameIndex++,
+    dsArray: { values: [...dp] },
+    activePointers: {},
+    comparing: [],
+    swapping: false,
+    description: `Initialized DP table of size ${n + 1} to compute Fibonacci(${n}).`,
+  });
+
+  dp[0] = 0;
+  frames.push({
+    frameIndex: frameIndex++,
+    dsArray: { values: [...dp] },
+    activePointers: { target: 0 },
+    comparing: [],
+    swapping: false,
+    description: `Base case: dp[0] = 0.`,
+  });
+
+  if (n >= 1) {
+    dp[1] = 1;
+    frames.push({
+      frameIndex: frameIndex++,
+      dsArray: { values: [...dp] },
+      activePointers: { target: 1 },
+      comparing: [],
+      swapping: false,
+      description: `Base case: dp[1] = 1.`,
+    });
+  }
+
+  for (let i = 2; i <= n; i++) {
+    frames.push({
+      frameIndex: frameIndex++,
+      dsArray: { values: [...dp] },
+      activePointers: { target: i },
+      comparing: [i - 1, i - 2],
+      swapping: false,
+      description: `Computing dp[${i}]. Looking up dp[${i-1}] (${dp[i-1]}) and dp[${i-2}] (${dp[i-2]}).`,
+    });
+
+    dp[i] = dp[i - 1] + dp[i - 2];
+
+    frames.push({
+      frameIndex: frameIndex++,
+      dsArray: { values: [...dp] },
+      activePointers: { target: i },
+      comparing: [],
+      swapping: true,
+      description: `dp[${i}] = ${dp[i-1]} + ${dp[i-2]} = ${dp[i]}.`,
+    });
+  }
+
+  frames.push({
+    frameIndex: frameIndex++,
+    dsArray: { values: [...dp] },
+    activePointers: {},
+    comparing: [],
+    swapping: false,
+    description: `DP Complete! Fibonacci(${n}) is ${dp[n]}.`,
+  });
+
+  return frames;
+};
+
+/**
+ * Simulates Dijkstra's Algorithm execution on a graph
+ * For simplicity, we assume unit edge weights unless specified otherwise
+ */
+export const generateDijkstraFrames = (graph: GraphData, startNode: string): Frame[] => {
+  logger.info('AlgorithmEngine: Starting Dijkstra generation', { startNode });
+  const frames: Frame[] = [];
+  let frameIndex = 0;
+  
+  const visited: string[] = [];
+  const distances: Record<string, number> = {};
+  const pq: {node: string, dist: number}[] = [];
+  
+  graph.nodes.forEach(n => {
+    distances[n.id] = Infinity;
+  });
+  
+  const addFrame = (currentNode: string | undefined, activeEdge: string | undefined, desc: string) => {
+    // encode distances into node labels for visualization
+    const displayNodes = graph.nodes.map(n => ({
+      ...n,
+      label: `${n.label}\n(${distances[n.id] === Infinity ? '∞' : distances[n.id]})`
+    }));
+    
+    // highlight active edge if provided
+    const displayEdges = graph.edges.map(e => {
+      const edgeStr1 = `${e.source}-${e.target}`;
+      const edgeStr2 = `${e.target}-${e.source}`;
+      return {
+        ...e,
+        isTraversed: activeEdge === edgeStr1 || activeEdge === edgeStr2 || 
+                     (visited.includes(e.source) && visited.includes(e.target))
+      };
+    });
+
+    frames.push({
+      frameIndex: frameIndex++,
+      arrayState: [],
+      activePointers: {},
+      comparing: [],
+      swapping: false,
+      graphState: {
+        nodes: displayNodes,
+        edges: displayEdges
+      },
+      visitedNodes: [...visited],
+      currentNode: currentNode,
+      dataStructureState: pq.map(item => `${item.node}(${item.dist})`),
+      description: desc
+    });
+  };
+
+  addFrame(undefined, undefined, `Initial State. Starting Dijkstra from node ${startNode}. Distances set to Infinity.`);
+
+  distances[startNode] = 0;
+  pq.push({node: startNode, dist: 0});
+  addFrame(startNode, undefined, `Distance to start node ${startNode} is 0. Push to Priority Queue.`);
+
+  while (pq.length > 0) {
+    pq.sort((a, b) => a.dist - b.dist);
+    const current = pq.shift()!;
+    
+    if (visited.includes(current.node)) {
+      addFrame(current.node, undefined, `Node ${current.node} already visited. Skipping.`);
+      continue;
+    }
+
+    addFrame(current.node, undefined, `Pop node ${current.node} with distance ${current.dist} from Priority Queue.`);
+    
+    const neighbors = graph.adjList[current.node] || [];
+    
+    for (const neighbor of neighbors) {
+      if (visited.includes(neighbor)) continue;
+      
+      const weight = 1; // Assuming unit weights for visualization
+      const newDist = distances[current.node] + weight;
+      const activeEdge = `${current.node}-${neighbor}`;
+      
+      addFrame(current.node, activeEdge, `Checking neighbor ${neighbor} via edge ${current.node}-${neighbor}.`);
+      
+      if (newDist < distances[neighbor]) {
+        const oldDist = distances[neighbor];
+        distances[neighbor] = newDist;
+        pq.push({node: neighbor, dist: newDist});
+        addFrame(current.node, activeEdge, `New distance ${newDist} is less than old distance ${oldDist === Infinity ? '∞' : oldDist}. Update distance and push to Priority Queue.`);
+      } else {
+        addFrame(current.node, activeEdge, `Current distance ${distances[neighbor]} is better or equal. No update.`);
+      }
+    }
+    
+    visited.push(current.node);
+    addFrame(current.node, undefined, `Finished processing node ${current.node}. Marked as visited.`);
+  }
+
+  addFrame(undefined, undefined, "Dijkstra's Algorithm Complete! Shortest paths from start node found.");
+  return frames;
+};

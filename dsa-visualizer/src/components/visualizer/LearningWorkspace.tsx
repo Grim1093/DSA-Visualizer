@@ -7,6 +7,8 @@ import DSArrayVisualizer from '@/components/visualizer/ds/DSArrayVisualizer';
 import DSVectorVisualizer from '@/components/visualizer/ds/DSVectorVisualizer';
 import DSLinkedListVisualizer from '@/components/visualizer/ds/DSLinkedListVisualizer';
 import DSHashMapVisualizer from '@/components/visualizer/ds/DSHashMapVisualizer';
+import DSStackVisualizer from '@/components/visualizer/ds/DSStackVisualizer';
+import DSQueueVisualizer from '@/components/visualizer/ds/DSQueueVisualizer';
 import PlaybackControls from '@/components/visualizer/PlaybackControls';
 import TheoryPanel from '@/components/visualizer/TheoryPanel';
 import ComparisonPanel from '@/components/visualizer/ComparisonPanel';
@@ -35,7 +37,7 @@ export default function LearningWorkspace({ title, allowedModules }: LearningWor
 
   // Helper to determine mode
   const getModeForAlgo = (algo: string): AppMode => {
-    const dsList = ['array', 'vector', 'linked_list', 'doubly_linked_list', 'circular_linked_list', 'hash_map'];
+    const dsList = ['array', 'vector', 'linked_list', 'doubly_linked_list', 'circular_linked_list', 'hash_map', 'stack', 'queue', 'heap'];
     return dsList.includes(algo) ? 'data-structure' : 'algorithm';
   };
 
@@ -85,10 +87,15 @@ export default function LearningWorkspace({ title, allowedModules }: LearningWor
     binary: { name: 'Binary Search', time: 'O(log n)', space: 'O(1)' },
     bfs: { name: 'Breadth-First Search', time: 'O(V + E)', space: 'O(V)' },
     dfs: { name: 'Depth-First Search', time: 'O(V + E)', space: 'O(V)' },
+    dijkstra: { name: "Dijkstra's Algorithm", time: 'O((V+E) log V)', space: 'O(V)' },
+    dp: { name: 'Dynamic Programming', time: 'O(n)', space: 'O(n)' },
+    stack: { name: 'Stack', time: 'O(1)', space: 'O(n)' },
+    queue: { name: 'Queue', time: 'O(1)', space: 'O(n)' },
+    heap: { name: 'Heap (Priority Queue)', time: 'O(log n)', space: 'O(n)' },
   };
   
   const algoDetails = algoMap[selectedAlgorithm as keyof typeof algoMap] || { name: 'Algorithm', time: '-', space: '-' };
-  const isGraphAlgo = selectedAlgorithm === 'bfs' || selectedAlgorithm === 'dfs';
+  const isGraphAlgo = selectedAlgorithm === 'bfs' || selectedAlgorithm === 'dfs' || selectedAlgorithm === 'dijkstra' || selectedAlgorithm === 'heap';
 
   return (
     <main className="flex min-h-screen flex-col bg-black text-white font-sans relative overflow-hidden">
@@ -212,10 +219,12 @@ export default function LearningWorkspace({ title, allowedModules }: LearningWor
             <div className="w-full bg-[#0a0a0c] rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden min-h-[400px] sm:min-h-[550px] flex flex-col relative shrink-0 ring-1 ring-white/5">
               {selectedAlgorithm === 'sandbox' ? (
                 <CodeEditor onExecute={handleExecuteCode} isExecuting={isExecuting} output={sandboxOutput} allowedModules={allowedModules} />
-              ) : selectedAlgorithm === 'array' ? <DSArrayVisualizer /> :
+              ) : (selectedAlgorithm === 'array' || selectedAlgorithm === 'dp') ? <DSArrayVisualizer /> :
                selectedAlgorithm === 'vector' ? <DSVectorVisualizer /> :
                (selectedAlgorithm === 'linked_list' || selectedAlgorithm === 'doubly_linked_list' || selectedAlgorithm === 'circular_linked_list') ? <DSLinkedListVisualizer /> :
                selectedAlgorithm === 'hash_map' ? <DSHashMapVisualizer /> :
+               selectedAlgorithm === 'stack' ? <DSStackVisualizer /> :
+               selectedAlgorithm === 'queue' ? <DSQueueVisualizer /> :
                isGraphAlgo ? <GraphVisualizerBoard /> : <VisualizerBoard />}
             </div>
             

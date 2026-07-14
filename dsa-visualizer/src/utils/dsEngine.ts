@@ -314,3 +314,264 @@ export const generateHashMapSet = (currentState: Frame, key: string, value: stri
 
   return frames;
 };
+
+// --- STACK ---
+
+export const generateStackInit = (): Frame[] => {
+  return [{
+    frameIndex: Date.now(),
+    arrayState: [],
+    activePointers: {},
+    comparing: [],
+    swapping: false,
+    description: `Initialized an empty Stack (LIFO).`,
+    dsStack: { values: [] }
+  }];
+};
+
+export const generateStackPush = (currentState: Frame, value: number): Frame[] => {
+  if (!currentState.dsStack) return [];
+  const values = [...currentState.dsStack.values];
+  values.push(value);
+  return [{
+    ...currentState,
+    activePointers: { target: values.length - 1 },
+    dsStack: { values },
+    description: `Pushed ${value} onto the Stack.`
+  }];
+};
+
+export const generateStackPop = (currentState: Frame): Frame[] => {
+  if (!currentState.dsStack || currentState.dsStack.values.length === 0) {
+    return [{ ...currentState, description: 'Error: Cannot pop from an empty Stack.' }];
+  }
+  const values = [...currentState.dsStack.values];
+  const popped = values.pop();
+  return [{
+    ...currentState,
+    activePointers: {},
+    dsStack: { values },
+    description: `Popped ${popped} from the Stack.`
+  }];
+};
+
+// --- QUEUE ---
+
+export const generateQueueInit = (): Frame[] => {
+  return [{
+    frameIndex: Date.now(),
+    arrayState: [],
+    activePointers: {},
+    comparing: [],
+    swapping: false,
+    description: `Initialized an empty Queue (FIFO).`,
+    dsQueue: { values: [] }
+  }];
+};
+
+export const generateQueueEnqueue = (currentState: Frame, value: number): Frame[] => {
+  if (!currentState.dsQueue) return [];
+  const values = [...currentState.dsQueue.values];
+  values.push(value);
+  return [{
+    ...currentState,
+    activePointers: { target: values.length - 1 },
+    dsQueue: { values },
+    description: `Enqueued ${value} into the Queue.`
+  }];
+};
+
+export const generateQueueDequeue = (currentState: Frame): Frame[] => {
+  if (!currentState.dsQueue || currentState.dsQueue.values.length === 0) {
+    return [{ ...currentState, description: 'Error: Cannot dequeue from an empty Queue.' }];
+  }
+  const values = [...currentState.dsQueue.values];
+  const dequeued = values.shift();
+  return [{
+    ...currentState,
+    activePointers: {},
+    dsQueue: { values },
+    description: `Dequeued ${dequeued} from the Queue.`
+  }];
+};
+
+// --- HEAP ---
+
+export const generateHeapInit = (): Frame[] => {
+  return [{
+    frameIndex: Date.now(),
+    arrayState: [],
+    activePointers: {},
+    comparing: [],
+    swapping: false,
+    description: `Initialized an empty Min-Heap.`,
+    dsHeap: { values: [] },
+    graphState: { nodes: [], edges: [] }
+  }];
+};
+
+const getHeapGraphState = (values: number[]) => {
+  const nodes = values.map((val, idx) => {
+    // simple tree layout
+    const level = Math.floor(Math.log2(idx + 1));
+    const maxNodesInLevel = Math.pow(2, level);
+    const indexInLevel = idx - (maxNodesInLevel - 1);
+    const xSpacing = 600 / (maxNodesInLevel + 1);
+    
+    return {
+      id: `node-${idx}`,
+      label: val.toString(),
+      x: xSpacing * (indexInLevel + 1),
+      y: 50 + level * 80
+    };
+  });
+
+  const edges = [];
+  for (let i = 1; i < values.length; i++) {
+    const parentIdx = Math.floor((i - 1) / 2);
+    edges.push({
+      source: `node-${parentIdx}`,
+      target: `node-${i}`
+    });
+  }
+
+  return { nodes, edges };
+};
+
+export const generateHeapInsert = (currentState: Frame, value: number): Frame[] => {
+  if (!currentState.dsHeap) return [];
+  const values = [...currentState.dsHeap.values];
+  const frames: Frame[] = [];
+  
+  values.push(value);
+  let idx = values.length - 1;
+  
+  frames.push({
+    ...currentState,
+    activePointers: { target: idx },
+    dsHeap: { values: [...values] },
+    graphState: getHeapGraphState([...values]),
+    currentNode: `node-${idx}`,
+    description: `Inserted ${value} at the end of the Heap.`
+  });
+
+  while (idx > 0) {
+    const parentIdx = Math.floor((idx - 1) / 2);
+    frames.push({
+      ...currentState,
+      activePointers: { target: idx, parent: parentIdx },
+      dsHeap: { values: [...values] },
+      graphState: getHeapGraphState([...values]),
+      currentNode: `node-${idx}`,
+      description: `Comparing ${values[idx]} with parent ${values[parentIdx]}.`
+    });
+
+    if (values[idx] < values[parentIdx]) {
+      // swap
+      const temp = values[idx];
+      values[idx] = values[parentIdx];
+      values[parentIdx] = temp;
+      
+      idx = parentIdx;
+      
+      frames.push({
+        ...currentState,
+        activePointers: { target: idx },
+        dsHeap: { values: [...values] },
+        graphState: getHeapGraphState([...values]),
+        currentNode: `node-${idx}`,
+        description: `Bubbled up ${temp}.`
+      });
+    } else {
+      break;
+    }
+  }
+
+  frames.push({
+    ...frames[frames.length - 1],
+    description: `Heap insertion complete.`
+  });
+
+  return frames;
+};
+
+export const generateHeapExtract = (currentState: Frame): Frame[] => {
+  if (!currentState.dsHeap || currentState.dsHeap.values.length === 0) {
+    return [{ ...currentState, description: 'Error: Cannot extract from an empty Heap.' }];
+  }
+  
+  const values = [...currentState.dsHeap.values];
+  const frames: Frame[] = [];
+  
+  if (values.length === 1) {
+    const extracted = values.pop();
+    return [{
+      ...currentState,
+      dsHeap: { values: [] },
+      graphState: getHeapGraphState([]),
+      description: `Extracted ${extracted}. Heap is now empty.`
+    }];
+  }
+
+  const extracted = values[0];
+  const last = values.pop()!;
+  values[0] = last;
+
+  frames.push({
+    ...currentState,
+    activePointers: { target: 0 },
+    dsHeap: { values: [...values] },
+    graphState: getHeapGraphState([...values]),
+    currentNode: `node-0`,
+    description: `Extracted ${extracted}. Moved last element ${last} to root.`
+  });
+
+  let idx = 0;
+  while (true) {
+    let leftIdx = 2 * idx + 1;
+    let rightIdx = 2 * idx + 2;
+    let smallest = idx;
+
+    if (leftIdx < values.length && values[leftIdx] < values[smallest]) {
+      smallest = leftIdx;
+    }
+    if (rightIdx < values.length && values[rightIdx] < values[smallest]) {
+      smallest = rightIdx;
+    }
+
+    if (smallest !== idx) {
+      frames.push({
+        ...currentState,
+        activePointers: { target: idx, child: smallest },
+        dsHeap: { values: [...values] },
+        graphState: getHeapGraphState([...values]),
+        currentNode: `node-${smallest}`,
+        description: `Comparing with children. Smallest is ${values[smallest]}. Swapping.`
+      });
+
+      const temp = values[idx];
+      values[idx] = values[smallest];
+      values[smallest] = temp;
+      
+      idx = smallest;
+      
+      frames.push({
+        ...currentState,
+        activePointers: { target: idx },
+        dsHeap: { values: [...values] },
+        graphState: getHeapGraphState([...values]),
+        currentNode: `node-${idx}`,
+        description: `Bubbled down.`
+      });
+    } else {
+      break;
+    }
+  }
+  
+  frames.push({
+    ...frames[frames.length - 1],
+    description: `Heap extraction complete.`
+  });
+
+  return frames;
+};

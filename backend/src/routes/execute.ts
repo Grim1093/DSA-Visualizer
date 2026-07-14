@@ -17,7 +17,7 @@ if (!fs.existsSync(TEMP_DIR)) {
 
 interface ExecuteRequest {
   code: string;
-  language: 'python' | 'javascript' | 'cpp';
+  language: 'python' | 'javascript' | 'cpp' | 'java' | 'go' | 'kotlin';
 }
 
 router.post('/', async (req, res) => {
@@ -28,6 +28,10 @@ router.post('/', async (req, res) => {
   }
 
   const fileId = uuidv4();
+  // Create an isolated directory for this execution to prevent concurrency issues
+  const runDir = path.join(TEMP_DIR, fileId);
+  fs.mkdirSync(runDir, { recursive: true });
+
   let fileName = '';
   let dockerImage = '';
   let runCommand = '';
@@ -35,58 +39,66 @@ router.post('/', async (req, res) => {
   // Setup based on language
   switch (language) {
     case 'python':
-      fileName = `${fileId}.py`;
+      fileName = `main.py`;
       dockerImage = 'python:3.9-slim';
       runCommand = `python /app/${fileName}`;
       break;
     case 'javascript':
-      fileName = `${fileId}.js`;
+      fileName = `main.js`;
       dockerImage = 'node:18-alpine';
       runCommand = `node /app/${fileName}`;
       break;
     case 'cpp':
-      fileName = `${fileId}.cpp`;
+      fileName = `main.cpp`;
       dockerImage = 'gcc:latest';
-      // Compile and run for C++
       runCommand = `g++ /app/${fileName} -o /app/out && /app/out`;
       break;
+    case 'java':
+      fileName = `Main.java`;
+      dockerImage = 'eclipse-temurin:17-jdk';
+      runCommand = `javac /app/${fileName} && java -cp /app Main`;
+      break;
+    case 'go':
+      fileName = `main.go`;
+      dockerImage = 'golang:latest';
+      runCommand = `cd /app && go run ${fileName}`;
+      break;
+    case 'kotlin':
+      fileName = `main.kt`;
+      dockerImage = 'zenika/kotlin:latest';
+      runCommand = `kotlinc /app/${fileName} -d /app/main.jar && java -cp /app/main.jar:/usr/lib/kotlinc/lib/kotlin-stdlib.jar MainKt`;
+      break;
     default:
+      fs.rmSync(runDir, { recursive: true, force: true });
       return res.status(400).json({ error: 'Unsupported language.' });
   }
 
-  const filePath = path.join(TEMP_DIR, fileName);
+  const filePath = path.join(runDir, fileName);
 
   try {
-    // 1. Write the code to a temporary file
+    // 1. Write the code to the temporary file
     fs.writeFileSync(filePath, code);
 
     // 2. Build the Docker run command
-    // --rm: Remove container after it exits
-    // -v: Mount the temp directory to /app in the container
-    // --network none: Disable network access for security
-    // --memory: Limit memory
-    const dockerCmd = `docker run --rm -v "${TEMP_DIR}:/app" --network none --memory 256m ${dockerImage} sh -c "${runCommand}"`;
+    // We put "timeout 20" inside the container so infinite loops die quickly, 
+    // but the node timeout is longer to allow docker to pull the image if it's not downloaded yet.
+    // Memory bumped to 512m because the Kotlin compiler is a heavy JVM process.
+    const dockerCmd = `docker run --rm -v "${runDir}:/app" --network none --memory 512m ${dockerImage} timeout 20 sh -c "${runCommand}"`;
 
-    // 3. Execute the command (timeout after 10 seconds to prevent infinite loops)
-    const { stdout, stderr } = await execPromise(dockerCmd, { timeout: 10000 });
+    // 3. Execute the command
+    const { stdout, stderr } = await execPromise(dockerCmd, { timeout: 120000 });
 
     res.json({ output: stdout, error: stderr });
   } catch (error: any) {
-    // Check if it was a timeout
-    if (error.killed) {
+    if (error.killed || error.code === 124) { // 124 is the exit code for 'timeout' command in linux
       res.json({ output: '', error: 'Execution Timed Out (Limit: 10s)' });
     } else {
       res.json({ output: error.stdout || '', error: error.stderr || error.message });
     }
   } finally {
-    // 4. Cleanup the temporary file
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-    }
-    // Also cleanup C++ out file if it exists
-    if (language === 'cpp') {
-      const outPath = path.join(TEMP_DIR, 'out');
-      if (fs.existsSync(outPath)) fs.unlinkSync(outPath);
+    // 4. Cleanup the temporary directory entirely
+    if (fs.existsSync(runDir)) {
+      fs.rmSync(runDir, { recursive: true, force: true });
     }
   }
 });

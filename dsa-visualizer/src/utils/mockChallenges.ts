@@ -22,6 +22,9 @@ export interface Challenge {
     python: string;
     javascript: string;
     cpp: string;
+    java?: string;
+    go?: string;
+    kotlin?: string;
   };
   testCases: TestCase[];
 }
@@ -35,16 +38,8 @@ export const mockChallenges: Challenge[] = [
     description: 'Given an array of integers nums which is sorted in ascending order, and an integer target, write a function to search target in nums. If target exists, then return its index. Otherwise, return -1.\n\nYou must write an algorithm with O(log n) runtime complexity.',
     functionName: 'search',
     examples: [
-      {
-        input: 'nums = [-1,0,3,5,9,12], target = 9',
-        output: '4',
-        explanation: '9 exists in nums and its index is 4'
-      },
-      {
-        input: 'nums = [-1,0,3,5,9,12], target = 2',
-        output: '-1',
-        explanation: '2 does not exist in nums so return -1'
-      }
+      { input: 'nums = [-1,0,3,5,9,12], target = 9', output: '4', explanation: '9 exists in nums and its index is 4' },
+      { input: 'nums = [-1,0,3,5,9,12], target = 2', output: '-1', explanation: '2 does not exist in nums so return -1' }
     ],
     constraints: [
       '1 <= nums.length <= 10^4',
@@ -53,21 +48,12 @@ export const mockChallenges: Challenge[] = [
       'nums is sorted in ascending order.'
     ],
     starterCode: {
-      python: `def search(nums, target):
-    pass`,
-      javascript: `function search(nums, target) {
-
-}`,
-      cpp: `#include <vector>
-#include <iostream>
-using namespace std;
-
-class Solution {
-public:
-    int search(vector<int>& nums, int target) {
-        
-    }
-};`
+      python: `def search(nums, target):\n    pass`,
+      javascript: `function search(nums, target) {\n\n}`,
+      cpp: `#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int search(vector<int>& nums, int target) {\n        \n    }\n};`,
+      java: `class Solution {\n    public int search(int[] nums, int target) {\n        \n    }\n}`,
+      go: `func search(nums []int, target int) int {\n    \n}`,
+      kotlin: `class Solution {\n    fun search(nums: IntArray, target: Int): Int {\n        \n    }\n}`
     },
     testCases: [
       { input: [[-1,0,3,5,9,12], 9], expected: 4 },
@@ -77,106 +63,138 @@ public:
     ]
   },
   {
-    id: 'merge-sort',
-    title: 'Sort an Array',
-    category: 'algorithms',
-    difficulty: 'Medium',
-    description: 'Given an array of integers nums, sort the array in ascending order and return it.\n\nYou must solve the problem without using any built-in functions in O(n log(n)) time complexity and with the smallest space complexity possible.',
-    functionName: 'sortArray',
+    id: 'valid-parentheses',
+    title: 'Valid Parentheses',
+    category: 'data-structures',
+    difficulty: 'Easy',
+    description: 'Given a string s containing just the characters "(", ")", "{", "}", "[" and "]", determine if the input string is valid.\n\nAn input string is valid if: Open brackets must be closed by the same type of brackets, and Open brackets must be closed in the correct order.',
+    functionName: 'isValid',
     examples: [
-      {
-        input: 'nums = [5,2,3,1]',
-        output: '[1,2,3,5]'
-      }
+      { input: 's = "()"', output: 'true' },
+      { input: 's = "()[]{}"', output: 'true' },
+      { input: 's = "(]"', output: 'false' }
     ],
-    constraints: [
-      '1 <= nums.length <= 5 * 10^4',
-      '-5 * 10^4 <= nums[i] <= 5 * 10^4'
-    ],
+    constraints: ['1 <= s.length <= 10^4', 's consists of parentheses only "()[]{}"'],
     starterCode: {
-      python: `def sortArray(nums):
-    pass`,
-      javascript: `function sortArray(nums) {
-
-}`,
-      cpp: `#include <vector>
-#include <iostream>
-using namespace std;
-
-class Solution {
-public:
-    vector<int> sortArray(vector<int>& nums) {
-        
-    }
-};`
+      python: `def isValid(s):\n    pass`,
+      javascript: `function isValid(s) {\n\n}`,
+      cpp: `using namespace std;\n#include <string>\n\nclass Solution {\npublic:\n    bool isValid(string s) {\n        \n    }\n};`,
+      java: `class Solution {\n    public boolean isValid(String s) {\n        \n    }\n}`,
+      go: `func isValid(s string) bool {\n    \n}`,
+      kotlin: `class Solution {\n    fun isValid(s: String): Boolean {\n        \n    }\n}`
     },
     testCases: [
-      { input: [[5,2,3,1]], expected: [1,2,3,5] },
-      { input: [[5,1,1,2,0,0]], expected: [0,0,1,1,2,5] },
-      { input: [[-1,2,-8,-10]], expected: [-10,-8,-1,2] }
+      { input: ["()"], expected: true },
+      { input: ["()[]{}"], expected: true },
+      { input: ["(]"], expected: false },
+      { input: ["([)]"], expected: false },
+      { input: ["{[]}"], expected: true }
     ]
   },
   {
-    id: 'reverse-linked-list',
-    title: 'Reverse Linked List',
+    id: 'kth-largest-element',
+    title: 'Kth Largest Element in an Array (Heap)',
     category: 'data-structures',
-    difficulty: 'Easy',
-    description: 'Given the head of a singly linked list, reverse the list, and return the reversed list.',
-    functionName: 'reverseList',
+    difficulty: 'Medium',
+    description: 'Given an integer array nums and an integer k, return the kth largest element in the array.\n\nNote that it is the kth largest element in the sorted order, not the kth distinct element.\n\nYou must solve it in O(n) time complexity.',
+    functionName: 'findKthLargest',
     examples: [
-      {
-        input: 'head = [1,2,3,4,5]',
-        output: '[5,4,3,2,1]'
-      }
+      { input: 'nums = [3,2,1,5,6,4], k = 2', output: '5' },
+      { input: 'nums = [3,2,3,1,2,4,5,5,6], k = 4', output: '4' }
     ],
-    constraints: [
-      'The number of nodes in the list is the range [0, 5000].',
-      '-5000 <= Node.val <= 5000'
-    ],
+    constraints: ['1 <= k <= nums.length <= 10^5', '-10^4 <= nums[i] <= 10^4'],
     starterCode: {
-      python: `# Definition for singly-linked list.
-# class ListNode:
-#     def __init__(self, val=0, next=None):
-#         self.val = val
-#         self.next = next
-def reverseList(head):
-    pass`,
-      javascript: `/**
- * Definition for singly-linked list.
- * function ListNode(val, next) {
- *     this.val = (val===undefined ? 0 : val)
- *     this.next = (next===undefined ? null : next)
- * }
- */
-function reverseList(head) {
-
-}`,
-      cpp: `#include <iostream>
-using namespace std;
-
-/**
- * Definition for singly-linked list.
- * struct ListNode {
- *     int val;
- *     ListNode *next;
- *     ListNode() : val(0), next(nullptr) {}
- *     ListNode(int x) : val(x), next(nullptr) {}
- *     ListNode(int x, ListNode *next) : val(x), next(next) {}
- * };
- */
-class Solution {
-public:
-    ListNode* reverseList(ListNode* head) {
-        
-    }
-};`
+      python: `def findKthLargest(nums, k):\n    pass`,
+      javascript: `function findKthLargest(nums, k) {\n\n}`,
+      cpp: `#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int findKthLargest(vector<int>& nums, int k) {\n        \n    }\n};`,
+      java: `class Solution {\n    public int findKthLargest(int[] nums, int k) {\n        \n    }\n}`,
+      go: `func findKthLargest(nums []int, k int) int {\n    \n}`,
+      kotlin: `class Solution {\n    fun findKthLargest(nums: IntArray, k: Int): Int {\n        \n    }\n}`
     },
     testCases: [
-      // For a complex object like a linked list, we'll need special handling in the wrapper,
-      // but we represent the input/output as arrays here for simplicity.
-      { input: [[1,2,3,4,5]], expected: [5,4,3,2,1] },
-      { input: [[1,2]], expected: [2,1] },
-      { input: [[]], expected: [] }
+      { input: [[3,2,1,5,6,4], 2], expected: 5 },
+      { input: [[3,2,3,1,2,4,5,5,6], 4], expected: 4 },
+      { input: [[1], 1], expected: 1 }
+    ]
+  },
+  {
+    id: 'climbing-stairs',
+    title: 'Climbing Stairs (Dynamic Programming)',
+    category: 'algorithms',
+    difficulty: 'Easy',
+    description: 'You are climbing a staircase. It takes n steps to reach the top.\n\nEach time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?',
+    functionName: 'climbStairs',
+    examples: [
+      { input: 'n = 2', output: '2', explanation: '1. 1 step + 1 step\n2. 2 steps' },
+      { input: 'n = 3', output: '3', explanation: '1. 1 step + 1 step + 1 step\n2. 1 step + 2 steps\n3. 2 steps + 1 step' }
+    ],
+    constraints: ['1 <= n <= 45'],
+    starterCode: {
+      python: `def climbStairs(n):\n    pass`,
+      javascript: `function climbStairs(n) {\n\n}`,
+      cpp: `class Solution {\npublic:\n    int climbStairs(int n) {\n        \n    }\n};`,
+      java: `class Solution {\n    public int climbStairs(int n) {\n        \n    }\n}`,
+      go: `func climbStairs(n int) int {\n    \n}`,
+      kotlin: `class Solution {\n    fun climbStairs(n: Int): Int {\n        \n    }\n}`
+    },
+    testCases: [
+      { input: [2], expected: 2 },
+      { input: [3], expected: 3 },
+      { input: [4], expected: 5 },
+      { input: [5], expected: 8 }
+    ]
+  },
+  {
+    id: 'coin-change',
+    title: 'Coin Change (Dynamic Programming)',
+    category: 'algorithms',
+    difficulty: 'Medium',
+    description: 'You are given an integer array coins representing coins of different denominations and an integer amount representing a total amount of money.\n\nReturn the fewest number of coins that you need to make up that amount. If that amount of money cannot be made up by any combination of the coins, return -1.\n\nYou may assume that you have an infinite number of each kind of coin.',
+    functionName: 'coinChange',
+    examples: [
+      { input: 'coins = [1,2,5], amount = 11', output: '3', explanation: '11 = 5 + 5 + 1' },
+      { input: 'coins = [2], amount = 3', output: '-1' }
+    ],
+    constraints: ['1 <= coins.length <= 12', '1 <= coins[i] <= 2^31 - 1', '0 <= amount <= 10^4'],
+    starterCode: {
+      python: `def coinChange(coins, amount):\n    pass`,
+      javascript: `function coinChange(coins, amount) {\n\n}`,
+      cpp: `#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int coinChange(vector<int>& coins, int amount) {\n        \n    }\n};`,
+      java: `class Solution {\n    public int coinChange(int[] coins, int amount) {\n        \n    }\n}`,
+      go: `func coinChange(coins []int, amount int) int {\n    \n}`,
+      kotlin: `class Solution {\n    fun coinChange(coins: IntArray, amount: Int): Int {\n        \n    }\n}`
+    },
+    testCases: [
+      { input: [[1,2,5], 11], expected: 3 },
+      { input: [[2], 3], expected: -1 },
+      { input: [[1], 0], expected: 0 },
+      { input: [[186,419,83,408], 6249], expected: 20 }
+    ]
+  },
+  {
+    id: 'network-delay-time',
+    title: 'Network Delay Time (Dijkstra)',
+    category: 'algorithms',
+    difficulty: 'Medium',
+    description: 'You are given a network of n nodes, labeled from 1 to n. You are also given times, a list of travel times as directed edges times[i] = (ui, vi, wi), where ui is the source node, vi is the target node, and wi is the time it takes for a signal to travel from source to target.\n\nWe will send a signal from a given node k. Return the minimum time it takes for all the n nodes to receive the signal. If it is impossible for all the n nodes to receive the signal, return -1.',
+    functionName: 'networkDelayTime',
+    examples: [
+      { input: 'times = [[2,1,1],[2,3,1],[3,4,1]], n = 4, k = 2', output: '2' },
+      { input: 'times = [[1,2,1]], n = 2, k = 1', output: '1' }
+    ],
+    constraints: ['1 <= k <= n <= 100', '1 <= times.length <= 6000', 'times[i].length == 3', '0 <= wi <= 100'],
+    starterCode: {
+      python: `def networkDelayTime(times, n, k):\n    pass`,
+      javascript: `function networkDelayTime(times, n, k) {\n\n}`,
+      cpp: `#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int networkDelayTime(vector<vector<int>>& times, int n, int k) {\n        \n    }\n};`,
+      java: `class Solution {\n    public int networkDelayTime(int[][] times, int n, int k) {\n        \n    }\n}`,
+      go: `func networkDelayTime(times [][]int, n int, k int) int {\n    \n}`,
+      kotlin: `class Solution {\n    fun networkDelayTime(times: Array<IntArray>, n: Int, k: Int): Int {\n        \n    }\n}`
+    },
+    testCases: [
+      { input: [[[2,1,1],[2,3,1],[3,4,1]], 4, 2], expected: 2 },
+      { input: [[[1,2,1]], 2, 1], expected: 1 },
+      { input: [[[1,2,1]], 2, 2], expected: -1 }
     ]
   }
 ];

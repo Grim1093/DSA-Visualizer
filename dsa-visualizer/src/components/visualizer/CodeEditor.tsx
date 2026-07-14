@@ -30,6 +30,9 @@ export default function CodeEditor({ onExecute, isExecuting, output, allowedModu
     if (!template) {
       if (language === 'python') template = '# Write your Python code here\nprint("Hello Sandbox!")';
       else if (language === 'javascript') template = '// Write JS code here\nconsole.log("Hello Sandbox!");';
+      else if (language === 'java') template = 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello Sandbox!");\n    }\n}';
+      else if (language === 'go') template = 'package main\n\nimport "fmt"\n\nfunc main() {\n    fmt.Println("Hello Sandbox!")\n}';
+      else if (language === 'kotlin') template = 'fun main() {\n    println("Hello Sandbox!")\n}';
       else template = '#include <iostream>\nusing namespace std;\nint main() { cout << "Hello!" << endl; return 0; }';
     }
     setCode(template);
@@ -53,6 +56,9 @@ export default function CodeEditor({ onExecute, isExecuting, output, allowedModu
             <option value="python">Python</option>
             <option value="javascript">JavaScript</option>
             <option value="cpp">C++</option>
+            <option value="java">Java</option>
+            <option value="go">Go</option>
+            <option value="kotlin">Kotlin</option>
           </select>
         </div>
         

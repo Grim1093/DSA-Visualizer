@@ -7,7 +7,7 @@ export default function ComplexDataStructuresPage() {
   return (
     <LearningWorkspace 
       title="Complex Data Structures" 
-      allowedModules={['sandbox']}
+      allowedModules={['heap', 'sandbox']}
     />
   );
 }

@@ -33,6 +33,9 @@ export interface Frame {
     prevPointers?: Record<string, string>;
   };
   dsHashMap?: { buckets: { index: number; chain: { key: string; value: string }[] }[] };
+  dsStack?: { values: number[] };
+  dsQueue?: { values: number[] };
+  dsHeap?: { values: number[] };
 }
 
 export type AppMode = 'algorithm' | 'data-structure';
@@ -60,7 +63,10 @@ import {
   generateArrayInit, 
   generateVectorInit, 
   generateLinkedListInit, 
-  generateHashMapInit 
+  generateHashMapInit,
+  generateStackInit,
+  generateQueueInit,
+  generateHeapInit
 } from '@/utils/dsEngine';
 
 export const useVisualizerStore = create<VisualizerState>((set, get) => ({
@@ -146,6 +152,9 @@ export const useVisualizerStore = create<VisualizerState>((set, get) => ({
       else if (algo === 'doubly_linked_list') initialFrames = generateLinkedListInit('doubly');
       else if (algo === 'circular_linked_list') initialFrames = generateLinkedListInit('circular');
       else if (algo === 'hash_map') initialFrames = generateHashMapInit();
+      else if (algo === 'stack') initialFrames = generateStackInit();
+      else if (algo === 'queue') initialFrames = generateQueueInit();
+      else if (algo === 'heap') initialFrames = generateHeapInit();
     }
     
     set({ 

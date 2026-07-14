@@ -236,6 +236,81 @@ const theoryData = {
     timeWorst: 'O(n) (All keys hash to the exact same bucket)',
     space: 'O(n)',
     spaceDetail: 'Requires space for the array of buckets and for the stored key-value pairs.'
+  },
+  stack: {
+    title: 'Stack',
+    concept: 'A Stack is a linear data structure that follows the Last-In-First-Out (LIFO) principle. Elements can be inserted and deleted only from one side of the list, called the Top.',
+    working: [
+      'Push: Add an element to the top of the stack.',
+      'Pop: Remove and return the top element of the stack.',
+      'Peek: Return the top element without removing it.',
+      'IsEmpty: Check if the stack is empty.'
+    ],
+    timeBest: 'O(1)',
+    timeAverage: 'O(1)',
+    timeWorst: 'O(1)',
+    space: 'O(n)',
+    spaceDetail: 'Requires space proportional to the number of elements in the stack.'
+  },
+  queue: {
+    title: 'Queue',
+    concept: 'A Queue is a linear data structure that follows the First-In-First-Out (FIFO) principle. Elements are inserted at the rear (enqueue) and removed from the front (dequeue).',
+    working: [
+      'Enqueue: Add an element to the rear of the queue.',
+      'Dequeue: Remove and return the front element of the queue.',
+      'Front: Return the front element without removing it.',
+      'IsEmpty: Check if the queue is empty.'
+    ],
+    timeBest: 'O(1)',
+    timeAverage: 'O(1)',
+    timeWorst: 'O(1)',
+    space: 'O(n)',
+    spaceDetail: 'Requires space proportional to the number of elements in the queue.'
+  },
+  heap: {
+    title: 'Heap (Priority Queue)',
+    concept: 'A Heap is a specialized tree-based data structure that satisfies the heap property. In a max heap, for any given node C, if P is a parent node of C, then the key of P is greater than or equal to the key of C. In a min heap, the key of P is less than or equal to the key of C.',
+    working: [
+      'Insert: Add a new element to the end of the heap, then "bubble up" to restore the heap property.',
+      'Extract Max/Min: Remove the root element, move the last element to the root, and "bubble down" to restore the heap property.',
+      'Peek: Return the root element without removing it.'
+    ],
+    timeBest: 'O(1) (Peek)',
+    timeAverage: 'O(log n) (Insert/Extract)',
+    timeWorst: 'O(log n)',
+    space: 'O(n)',
+    spaceDetail: 'Typically implemented using an array, requiring space proportional to the number of elements.'
+  },
+  dp: {
+    title: 'Dynamic Programming',
+    concept: 'Dynamic Programming (DP) is a method for solving a complex problem by breaking it down into a collection of simpler subproblems, solving each of those subproblems just once, and storing their solutions using a memory-based data structure (array, map, etc.).',
+    working: [
+      'Identify overlapping subproblems and optimal substructure.',
+      'Define the state and the recurrence relation (state transition equation).',
+      'Choose a memoization (top-down) or tabulation (bottom-up) approach.',
+      'Compute the solution to the original problem using the stored subproblem solutions.'
+    ],
+    timeBest: 'Depends on the problem (usually O(n) or O(n^2))',
+    timeAverage: 'Depends on the problem',
+    timeWorst: 'Depends on the problem',
+    space: 'Depends on the problem (usually O(n) or O(n^2))',
+    spaceDetail: 'Requires additional space to store the solutions of subproblems (memo or DP table).'
+  },
+  dijkstra: {
+    title: "Dijkstra's Algorithm",
+    concept: "Dijkstra's Algorithm is an algorithm for finding the shortest paths between nodes in a graph, which may represent, for example, road networks. It was conceived by computer scientist Edsger W. Dijkstra in 1956 and published three years later.",
+    working: [
+      'Mark all nodes unvisited. Create a set of all the unvisited nodes called the unvisited set.',
+      'Assign to every node a tentative distance value: set it to zero for our initial node and to infinity for all other nodes.',
+      'For the current node, consider all of its unvisited neighbors and calculate their tentative distances through the current node.',
+      'When we are done considering all of the unvisited neighbors of the current node, mark the current node as visited and remove it from the unvisited set.',
+      'If the destination node has been marked visited or if the smallest tentative distance among the nodes in the unvisited set is infinity, then stop. The algorithm has finished.'
+    ],
+    timeBest: 'O((V + E) log V)',
+    timeAverage: 'O((V + E) log V)',
+    timeWorst: 'O((V + E) log V) (using a Min-Priority Queue)',
+    space: 'O(V)',
+    spaceDetail: 'Requires space for the distances array, visited set, and Priority Queue.'
   }
 };
 

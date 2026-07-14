@@ -1,7 +1,7 @@
 import { TestCase } from './mockChallenges';
 
 export const generateTestWrapper = (
-  language: 'python' | 'javascript' | 'cpp',
+  language: 'python' | 'javascript' | 'cpp' | 'java' | 'go' | 'kotlin',
   userCode: string,
   functionName: string,
   testCases: TestCase[]
@@ -15,6 +15,12 @@ export const generateTestWrapper = (
       return generateJavaScriptWrapper(userCode, functionName, testCases);
     case 'cpp':
       return generateCppWrapper(userCode, functionName, testCases);
+    case 'java':
+      return generateJavaWrapper(userCode, functionName, testCases);
+    case 'go':
+      return generateGoWrapper(userCode, functionName, testCases);
+    case 'kotlin':
+      return generateKotlinWrapper(userCode, functionName, testCases);
     default:
       return userCode;
   }
@@ -49,7 +55,33 @@ def run_tests():
             expected = tc['expected']
             
             # Call function with unpacked arguments
-            result = func(*inputs)
+            # --- Linked List Deserialization (if needed) ---
+            if '${functionName}' == 'reverseList':
+                # Convert array to linked list
+                class ListNode:
+                    def __init__(self, val=0, next=None):
+                        self.val = val
+                        self.next = next
+                def build_ll(arr):
+                    if not arr: return None
+                    head = ListNode(arr[0])
+                    curr = head
+                    for val in arr[1:]:
+                        curr.next = ListNode(val)
+                        curr = curr.next
+                    return head
+                def serialize_ll(head):
+                    arr = []
+                    while head:
+                        arr.append(head.val)
+                        head = head.next
+                    return arr
+                
+                inputs = [build_ll(arg) if isinstance(arg, list) else arg for arg in inputs]
+                result_raw = func(*inputs)
+                result = serialize_ll(result_raw)
+            else:
+                result = func(*inputs)
             
             if json.dumps(result) == json.dumps(expected):
                 passed += 1
@@ -88,7 +120,39 @@ function runTests() {
                 process.exit(1);
             }
             
-            const result = ${functionName}(...tc.input);
+            let result;
+            if ('${functionName}' === 'reverseList') {
+                class ListNode {
+                    constructor(val, next) {
+                        this.val = (val===undefined ? 0 : val)
+                        this.next = (next===undefined ? null : next)
+                    }
+                }
+                function build_ll(arr) {
+                    if (!arr || arr.length === 0) return null;
+                    let head = new ListNode(arr[0]);
+                    let curr = head;
+                    for (let j = 1; j < arr.length; j++) {
+                        curr.next = new ListNode(arr[j]);
+                        curr = curr.next;
+                    }
+                    return head;
+                }
+                function serialize_ll(head) {
+                    let arr = [];
+                    while (head) {
+                        arr.push(head.val);
+                        head = head.next;
+                    }
+                    return arr;
+                }
+                
+                let processedInputs = tc.input.map(arg => Array.isArray(arg) ? build_ll(arg) : arg);
+                let result_raw = ${functionName}(...processedInputs);
+                result = serialize_ll(result_raw);
+            } else {
+                result = ${functionName}(...tc.input);
+            }
             
             if (JSON.stringify(result) === JSON.stringify(tc.expected)) {
                 passed++;
@@ -135,7 +199,7 @@ const generateCppWrapper = (userCode: string, functionName: string, testCases: T
             cout << "Test ${idx+1}: FAIL. Expected " << expected << ", got " << result << endl;
         }
     }`;
-    }).join('\\n');
+    }).join('\n');
   } else if (functionName === 'sortArray') {
     cppTests = testCases.map((tc, idx) => {
       const arr = JSON.stringify(tc.input[0]).replace('[', '{').replace(']', '}');
@@ -152,14 +216,56 @@ const generateCppWrapper = (userCode: string, functionName: string, testCases: T
             cout << "Test ${idx+1}: FAIL." << endl;
         }
     }`;
-    }).join('\\n');
+    }).join('\n');
+  } else if (functionName === 'reverseList') {
+    cppTests = testCases.map((tc, idx) => {
+      const arr = JSON.stringify(tc.input[0]).replace('[', '{').replace(']', '}');
+      const expected = JSON.stringify(tc.expected).replace('[', '{').replace(']', '}');
+      return `
+    {
+        vector<int> nums = ${arr};
+        vector<int> expected = ${expected};
+        
+        // Build linked list
+        ListNode* head = nullptr;
+        ListNode* curr = nullptr;
+        for (int val : nums) {
+            if (!head) {
+                head = new ListNode(val);
+                curr = head;
+            } else {
+                curr->next = new ListNode(val);
+                curr = curr->next;
+            }
+        }
+        
+        ListNode* res_node = sol.${functionName}(head);
+        
+        // Serialize linked list back to vector
+        vector<int> result;
+        while (res_node) {
+            result.push_back(res_node->val);
+            res_node = res_node->next;
+        }
+        
+        if (result == expected) {
+            passed++;
+            cout << "Test ${idx+1}: PASS" << endl;
+        } else {
+            cout << "Test ${idx+1}: FAIL." << endl;
+        }
+    }`;
+    }).join('\n');
   } else {
-    // Fallback for others (like reverseList which requires building nodes)
-    // We will just output a generic message for now
+    // Fallback for others
     return `${userCode}\\nint main() { std::cout << "C++ test wrapper for this problem is not fully implemented yet." << std::endl; return 0; }`;
   }
 
   return `
+#include <vector>
+#include <iostream>
+using namespace std;
+
 ${userCode}
 
 // --- INJECTED TEST WRAPPER ---
@@ -174,6 +280,148 @@ ${cppTests}
 
     cout << "\\nResult: " << passed << "/" << total << " passed." << endl;
     return 0;
+}
+`;
+};
+
+const generateJavaWrapper = (userCode: string, functionName: string, testCases: TestCase[]) => {
+  let javaTests = '';
+  
+  if (functionName === 'search') {
+    javaTests = testCases.map((tc, idx) => {
+      const arr = JSON.stringify(tc.input[0]).replace(/\[/g, '{').replace(/\]/g, '}');
+      const target = tc.input[1];
+      return `
+      {
+          int[] nums = ${arr};
+          int target = ${target};
+          int expected = ${tc.expected};
+          int result = sol.${functionName}(nums, target);
+          if (result == expected) {
+              passed++;
+              System.out.println("Test ${idx+1}: PASS");
+          } else {
+              System.out.println("Test ${idx+1}: FAIL. Expected " + expected + ", got " + result);
+          }
+      }`;
+    }).join('\n');
+  } else if (functionName === 'sortArray') {
+    javaTests = testCases.map((tc, idx) => {
+      const arr = JSON.stringify(tc.input[0]).replace(/\[/g, '{').replace(/\]/g, '}');
+      const expected = JSON.stringify(tc.expected).replace(/\[/g, '{').replace(/\]/g, '}');
+      return `
+      {
+          int[] nums = ${arr};
+          int[] expected = ${expected};
+          int[] result = sol.${functionName}(nums);
+          if (Arrays.equals(result, expected)) {
+              passed++;
+              System.out.println("Test ${idx+1}: PASS");
+          } else {
+              System.out.println("Test ${idx+1}: FAIL.");
+          }
+      }`;
+    }).join('\n');
+  } else {
+    return `${userCode}\npublic class Main { public static void main(String[] args) { System.out.println("Java wrapper for this problem is not implemented yet."); } }`;
+  }
+
+  return `
+import java.util.*;
+
+${userCode}
+
+public class Main {
+    public static void main(String[] args) {
+        Solution sol = new Solution();
+        int passed = 0;
+        int total = ${testCases.length};
+        System.out.println("--- Test Results ---");
+        ${javaTests}
+        System.out.println("\\nResult: " + passed + "/" + total + " passed.");
+    }
+}
+`;
+};
+
+const generateGoWrapper = (userCode: string, functionName: string, testCases: TestCase[]) => {
+  // Go uses main package
+  let goTests = '';
+  
+  if (functionName === 'search') {
+    goTests = testCases.map((tc, idx) => {
+      const arr = JSON.stringify(tc.input[0]).replace(/\[/g, '{').replace(/\]/g, '}');
+      return `
+      {
+          nums := []int${arr}
+          target := ${tc.input[1]}
+          expected := ${tc.expected}
+          result := ${functionName}(nums, target)
+          if result == expected {
+              passed++
+              fmt.Println("Test ${idx+1}: PASS")
+          } else {
+              fmt.Printf("Test ${idx+1}: FAIL. Expected %d, got %d\\n", expected, result)
+          }
+      }`;
+    }).join('\n');
+  } else {
+    return `package main\nimport "fmt"\n${userCode}\nfunc main() { fmt.Println("Go wrapper for this problem is not implemented yet.") }`;
+  }
+
+  return `
+package main
+import (
+    "fmt"
+    "reflect"
+)
+
+${userCode}
+
+func main() {
+    passed := 0
+    total := ${testCases.length}
+    fmt.Println("--- Test Results ---")
+    ${goTests}
+    fmt.Printf("\\nResult: %d/%d passed.\\n", passed, total)
+}
+`;
+};
+
+const generateKotlinWrapper = (userCode: string, functionName: string, testCases: TestCase[]) => {
+  let kotlinTests = '';
+  
+  if (functionName === 'search') {
+    kotlinTests = testCases.map((tc, idx) => {
+      const arr = JSON.stringify(tc.input[0]).replace(/\[/g, 'intArrayOf(').replace(/\]/g, ')');
+      return `
+      {
+          val nums = ${arr}
+          val target = ${tc.input[1]}
+          val expected = ${tc.expected}
+          val result = sol.${functionName}(nums, target)
+          if (result == expected) {
+              passed++
+              println("Test ${idx+1}: PASS")
+          } else {
+              println("Test ${idx+1}: FAIL. Expected $expected, got $result")
+          }
+      }()`;
+    }).join('\n');
+  } else {
+    return `${userCode}\nfun main() { println("Kotlin wrapper for this problem is not implemented yet.") }`;
+  }
+
+  return `
+${userCode}
+
+fun main() {
+    val sol = Solution()
+    var passed = 0
+    val total = ${testCases.length}
+    println("--- Test Results ---")
+    ${kotlinTests}
+    println("\\nResult: $passed/$total passed.")
 }
 `;
 };

@@ -8,7 +8,13 @@ import {
   generateVectorPush, 
   generateVectorPop,
   generateLinkedListAppend,
-  generateHashMapSet
+  generateHashMapSet,
+  generateStackPush,
+  generateStackPop,
+  generateQueueEnqueue,
+  generateQueueDequeue,
+  generateHeapInsert,
+  generateHeapExtract
 } from '@/utils/dsEngine';
 
 export default function DataStructureControls() {
@@ -63,6 +69,45 @@ export default function DataStructureControls() {
     appendFrames(generateHashMapSet(currentState, val1, val2));
     setVal1('');
     setVal2('');
+  };
+
+  const handleStackPush = () => {
+    if (!currentState) return;
+    const value = parseInt(val1);
+    if (isNaN(value)) return;
+    appendFrames(generateStackPush(currentState, value));
+    setVal1('');
+  };
+
+  const handleStackPop = () => {
+    if (!currentState) return;
+    appendFrames(generateStackPop(currentState));
+  };
+
+  const handleQueueEnqueue = () => {
+    if (!currentState) return;
+    const value = parseInt(val1);
+    if (isNaN(value)) return;
+    appendFrames(generateQueueEnqueue(currentState, value));
+    setVal1('');
+  };
+
+  const handleQueueDequeue = () => {
+    if (!currentState) return;
+    appendFrames(generateQueueDequeue(currentState));
+  };
+
+  const handleHeapInsert = () => {
+    if (!currentState) return;
+    const value = parseInt(val1);
+    if (isNaN(value)) return;
+    appendFrames(generateHeapInsert(currentState, value));
+    setVal1('');
+  };
+
+  const handleHeapExtract = () => {
+    if (!currentState) return;
+    appendFrames(generateHeapExtract(currentState));
   };
 
   const handleFillRandomArray = () => {
@@ -174,6 +219,75 @@ export default function DataStructureControls() {
         <div className="flex flex-row flex-wrap gap-2">
           <button onClick={handleHashMapSet} className={`${btnClasses} bg-indigo-600/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/30`}>
             Set Key/Value
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (selectedAlgorithm === 'stack') {
+    return (
+      <div className="flex flex-col gap-4 pt-3">
+        <div className="flex flex-row gap-3">
+          <input 
+            placeholder="Value to Push" 
+            value={val1} 
+            onChange={e => setVal1(e.target.value)} 
+            className={inputClasses}
+          />
+        </div>
+        <div className="flex flex-row flex-wrap gap-2">
+          <button onClick={handleStackPush} className={`${btnClasses} bg-purple-600/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/30`}>
+            Push
+          </button>
+          <button onClick={handleStackPop} className={`${btnClasses} bg-pink-600/20 hover:bg-pink-500/30 text-pink-300 border border-pink-500/30`}>
+            Pop
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (selectedAlgorithm === 'queue') {
+    return (
+      <div className="flex flex-col gap-4 pt-3">
+        <div className="flex flex-row gap-3">
+          <input 
+            placeholder="Value to Enqueue" 
+            value={val1} 
+            onChange={e => setVal1(e.target.value)} 
+            className={inputClasses}
+          />
+        </div>
+        <div className="flex flex-row flex-wrap gap-2">
+          <button onClick={handleQueueEnqueue} className={`${btnClasses} bg-cyan-600/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/30`}>
+            Enqueue
+          </button>
+          <button onClick={handleQueueDequeue} className={`${btnClasses} bg-orange-600/20 hover:bg-orange-500/30 text-orange-300 border border-orange-500/30`}>
+            Dequeue
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (selectedAlgorithm === 'heap') {
+    return (
+      <div className="flex flex-col gap-4 pt-3">
+        <div className="flex flex-row gap-3">
+          <input 
+            placeholder="Value to Insert" 
+            value={val1} 
+            onChange={e => setVal1(e.target.value)} 
+            className={inputClasses}
+          />
+        </div>
+        <div className="flex flex-row flex-wrap gap-2">
+          <button onClick={handleHeapInsert} className={`${btnClasses} bg-amber-600/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30`}>
+            Insert
+          </button>
+          <button onClick={handleHeapExtract} className={`${btnClasses} bg-teal-600/20 hover:bg-teal-500/30 text-teal-300 border border-teal-500/30`}>
+            Extract Min
           </button>
         </div>
       </div>

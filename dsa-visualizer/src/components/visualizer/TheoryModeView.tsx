@@ -237,12 +237,83 @@ const pseudocodeMap: Record<string, React.ReactNode> = {
       <p className="pl-4"> {'}'}</p>
       <p>{'}'}</p>
     </>
+  ),
+  stack: (
+    <>
+      <p><span className="text-pink-400">class</span> <span className="text-blue-300">Stack</span> {'{'}</p>
+      <p className="pl-4 mt-2"> <span className="text-emerald-400">push</span>(item) {'{'}</p>
+      <p className="pl-8"> <span className="text-blue-300">this</span>.items.push(item);</p>
+      <p className="pl-4"> {'}'}</p>
+      <p className="pl-4 mt-2"> <span className="text-emerald-400">pop</span>() {'{'}</p>
+      <p className="pl-8"> <span className="text-pink-400">return</span> <span className="text-blue-300">this</span>.items.pop();</p>
+      <p className="pl-4"> {'}'}</p>
+      <p>{'}'}</p>
+    </>
+  ),
+  queue: (
+    <>
+      <p><span className="text-pink-400">class</span> <span className="text-blue-300">Queue</span> {'{'}</p>
+      <p className="pl-4 mt-2"> <span className="text-emerald-400">enqueue</span>(item) {'{'}</p>
+      <p className="pl-8"> <span className="text-blue-300">this</span>.items.push(item);</p>
+      <p className="pl-4"> {'}'}</p>
+      <p className="pl-4 mt-2"> <span className="text-emerald-400">dequeue</span>() {'{'}</p>
+      <p className="pl-8"> <span className="text-pink-400">return</span> <span className="text-blue-300">this</span>.items.shift();</p>
+      <p className="pl-4"> {'}'}</p>
+      <p>{'}'}</p>
+    </>
+  ),
+  heap: (
+    <>
+      <p><span className="text-pink-400">class</span> <span className="text-blue-300">MinHeap</span> {'{'}</p>
+      <p className="pl-4 mt-2"> <span className="text-emerald-400">insert</span>(item) {'{'}</p>
+      <p className="pl-8"> <span className="text-blue-300">this</span>.heap.push(item);</p>
+      <p className="pl-8"> <span className="text-blue-300">this</span>.bubbleUp();</p>
+      <p className="pl-4"> {'}'}</p>
+      <p className="pl-4 mt-2"> <span className="text-emerald-400">extractMin</span>() {'{'}</p>
+      <p className="pl-8"> <span className="text-pink-400">let</span> min = <span className="text-blue-300">this</span>.heap[0];</p>
+      <p className="pl-8"> <span className="text-blue-300">this</span>.heap[0] = <span className="text-blue-300">this</span>.heap.pop();</p>
+      <p className="pl-8"> <span className="text-blue-300">this</span>.bubbleDown();</p>
+      <p className="pl-8"> <span className="text-pink-400">return</span> min;</p>
+      <p className="pl-4"> {'}'}</p>
+      <p>{'}'}</p>
+    </>
+  ),
+  dp: (
+    <>
+      <p><span className="text-pink-400">function</span> <span className="text-blue-300">FibonacciDP</span>(n, memo = {'{}'}) {'{'}</p>
+      <p className="pl-4"> <span className="text-pink-400">if</span> (n <span className="text-pink-400">in</span> memo) <span className="text-pink-400">return</span> memo[n];</p>
+      <p className="pl-4"> <span className="text-pink-400">if</span> (n &lt;= 2) <span className="text-pink-400">return</span> 1;</p>
+      <p className="pl-4"> memo[n] = FibonacciDP(n - 1, memo) + FibonacciDP(n - 2, memo);</p>
+      <p className="pl-4"> <span className="text-pink-400">return</span> memo[n];</p>
+      <p>{'}'}</p>
+    </>
+  ),
+  dijkstra: (
+    <>
+      <p><span className="text-pink-400">function</span> <span className="text-blue-300">Dijkstra</span>(graph, start) {'{'}</p>
+      <p className="pl-4"> <span className="text-pink-400">let</span> distances = {'{}'};</p>
+      <p className="pl-4"> <span className="text-pink-400">let</span> pq = <span className="text-pink-400">new</span> PriorityQueue();</p>
+      <p className="pl-4"> distances[start] = 0;</p>
+      <p className="pl-4"> pq.enqueue(start, 0);</p>
+      <p className="pl-4"> <span className="text-pink-400">while</span> (!pq.isEmpty()) {'{'}</p>
+      <p className="pl-8"> <span className="text-pink-400">let</span> node = pq.dequeue();</p>
+      <p className="pl-8"> <span className="text-pink-400">for</span> (neighbor <span className="text-pink-400">in</span> graph[node]) {'{'}</p>
+      <p className="pl-12"> <span className="text-pink-400">let</span> distance = distances[node] + graph[node][neighbor];</p>
+      <p className="pl-12"> <span className="text-pink-400">if</span> (distance &lt; distances[neighbor]) {'{'}</p>
+      <p className="pl-16"> distances[neighbor] = distance;</p>
+      <p className="pl-16"> pq.enqueue(neighbor, distance);</p>
+      <p className="pl-12"> {'}'}</p>
+      <p className="pl-8"> {'}'}</p>
+      <p className="pl-4"> {'}'}</p>
+      <p className="pl-4"> <span className="text-pink-400">return</span> distances;</p>
+      <p>{'}'}</p>
+    </>
   )
 };
 
 export default function TheoryModeView() {
   const { selectedAlgorithm, setFrames, isPlaying, play, pause, stepForward, currentFrameIndex, frames, playbackSpeed, mode } = useVisualizerStore();
-  const isGraphAlgo = selectedAlgorithm === 'bfs' || selectedAlgorithm === 'dfs';
+  const isGraphAlgo = selectedAlgorithm === 'bfs' || selectedAlgorithm === 'dfs' || selectedAlgorithm === 'dijkstra' || selectedAlgorithm === 'heap';
   const isDataStructure = mode === 'data-structure';
 
   // Standalone playback loop for Theory Mode (since PlaybackControls is unmounted)
@@ -275,24 +346,36 @@ export default function TheoryModeView() {
           dummyFrames = dsEngine.generateLinkedListInit(selectedAlgorithm.includes('circular') ? 'circular' : selectedAlgorithm.includes('doubly') ? 'doubly' : 'singly');
         } else if (selectedAlgorithm === 'hash_map') {
           dummyFrames = dsEngine.generateHashMapInit();
-        } else if (selectedAlgorithm === 'bfs' || selectedAlgorithm === 'dfs') {
+        } else if (selectedAlgorithm === 'bfs' || selectedAlgorithm === 'dfs' || selectedAlgorithm === 'dijkstra') {
+          // Dummy graph for demo
           const dummyGraph = {
             nodes: [
-              { id: 'A', label: 'A', x: 50, y: 50 },
-              { id: 'B', label: 'B', x: 150, y: 50 },
-              { id: 'C', label: 'C', x: 100, y: 150 }
+              { id: 'A', label: 'A', x: 300, y: 100 },
+              { id: 'B', label: 'B', x: 200, y: 200 },
+              { id: 'C', label: 'C', x: 400, y: 200 },
+              { id: 'D', label: 'D', x: 150, y: 300 },
             ],
             edges: [
               { source: 'A', target: 'B' },
-              { source: 'A', target: 'C' }
+              { source: 'A', target: 'C' },
+              { source: 'B', target: 'D' },
             ],
-            adjList: { 'A': ['B', 'C'], 'B': ['A'], 'C': ['A'] }
+            adjList: {
+              'A': ['B', 'C'],
+              'B': ['A', 'D'],
+              'C': ['A'],
+              'D': ['B']
+            }
           };
           if (selectedAlgorithm === 'bfs') {
             dummyFrames = algoEngine.generateBFSFrames(dummyGraph, 'A');
+          } else if (selectedAlgorithm === 'dijkstra') {
+            dummyFrames = algoEngine.generateDijkstraFrames(dummyGraph, 'A');
           } else {
             dummyFrames = algoEngine.generateDFSFrames(dummyGraph, 'A');
           }
+        } else if (selectedAlgorithm === 'dp') {
+          dummyFrames = algoEngine.generateDPFrames(6); // Fibonacci(6) for demo
         } else if (selectedAlgorithm === 'bubble') {
           dummyFrames = algoEngine.generateBubbleSortFrames([...dummyArr]);
         } else if (selectedAlgorithm === 'selection') {
@@ -383,7 +466,7 @@ export default function TheoryModeView() {
             ) : (
               <div className="w-full flex-1 min-h-[400px] relative flex flex-col [&::-webkit-scrollbar]:hidden [scrollbar-width:none] overflow-y-auto overflow-x-hidden rounded-2xl">
                 {/* Render the appropriate visualizer without the heavy controls */}
-                {selectedAlgorithm === 'array' ? <DSArrayVisualizer /> :
+                {selectedAlgorithm === 'array' || selectedAlgorithm === 'dp' ? <DSArrayVisualizer /> :
                  selectedAlgorithm === 'vector' ? <DSVectorVisualizer /> :
                  (selectedAlgorithm === 'linked_list' || selectedAlgorithm === 'doubly_linked_list' || selectedAlgorithm === 'circular_linked_list') ? <DSLinkedListVisualizer /> :
                  selectedAlgorithm === 'hash_map' ? <DSHashMapVisualizer /> :

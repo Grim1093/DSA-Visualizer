@@ -7,7 +7,7 @@ export default function ComplexAlgorithmsPage() {
   return (
     <LearningWorkspace 
       title="Complex Algorithms" 
-      allowedModules={['bfs', 'dfs', 'sandbox']}
+      allowedModules={['bfs', 'dfs', 'dijkstra', 'dp', 'sandbox']}
     />
   );
 }

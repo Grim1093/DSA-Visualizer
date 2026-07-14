@@ -9,7 +9,7 @@ export default function AlgorithmSelector() {
 
   const handleSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newAlgo = e.target.value;
-    const isDataStructure = ['array', 'vector', 'linked_list', 'doubly_linked_list', 'circular_linked_list', 'hash_map'].includes(newAlgo);
+    const isDataStructure = ['array', 'vector', 'linked_list', 'doubly_linked_list', 'circular_linked_list', 'hash_map', 'stack', 'queue', 'heap'].includes(newAlgo);
     const mode = isDataStructure ? 'data-structure' : 'algorithm';
     
     logger.info('AlgorithmSelector: User triggered change via dropdown', { 
@@ -43,6 +43,9 @@ export default function AlgorithmSelector() {
               <option value="doubly_linked_list" className="text-white bg-gray-800">Doubly Linked List</option>
               <option value="circular_linked_list" className="text-white bg-gray-800">Circular Linked List</option>
               <option value="hash_map" className="text-white bg-gray-800">Hash Map</option>
+              <option value="stack" className="text-white bg-gray-800">Stack</option>
+              <option value="queue" className="text-white bg-gray-800">Queue</option>
+              <option value="heap" className="text-white bg-gray-800">Heap (Priority Queue)</option>
             </optgroup>
 
             <optgroup label="Sorting Algorithms" className="bg-gray-900 text-gray-300 font-semibold mt-2">
@@ -61,9 +64,11 @@ export default function AlgorithmSelector() {
             <optgroup label="Graph Traversal" className="bg-gray-900 text-purple-400 font-semibold">
               <option value="bfs" className="text-white bg-gray-800">Breadth-First Search (BFS)</option>
               <option value="dfs" className="text-white bg-gray-800">Depth-First Search (DFS)</option>
+              <option value="dijkstra" className="text-white bg-gray-800">Dijkstra's Algorithm</option>
             </optgroup>
 
-            <optgroup label="Advanced Modules" className="bg-gray-900 text-yellow-400 font-semibold">
+            <optgroup label="Advanced Algorithms" className="bg-gray-900 text-yellow-400 font-semibold">
+              <option value="dp" className="text-white bg-gray-800">Dynamic Programming</option>
               <option value="sandbox" className="text-white bg-gray-800">Code Execution Sandbox</option>
             </optgroup>
           </select>
