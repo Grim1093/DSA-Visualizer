@@ -325,6 +325,13 @@ export default function TheoryModeView() {
           stepForward();
         } else {
           pause();
+          if (frames.length > 0) {
+            fetch('/api/progress', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ moduleId: selectedAlgorithm, points: 10 })
+            }).catch(console.error);
+          }
         }
       }, playbackSpeed);
     }

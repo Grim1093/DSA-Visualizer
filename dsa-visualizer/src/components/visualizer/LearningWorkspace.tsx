@@ -63,6 +63,14 @@ export default function LearningWorkspace({ title, allowedModules }: LearningWor
         setSandboxOutput(`Error:\n${data.error}`);
       } else {
         setSandboxOutput(data.output || 'No output.');
+        // Mark sandbox execution as completed for this algorithm
+        if (selectedAlgorithm !== 'sandbox') {
+          fetch('/api/progress', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ moduleId: selectedAlgorithm, points: 50 })
+          }).catch(console.error);
+        }
       }
     } catch (err: any) {
       setSandboxOutput(`Failed to connect to Execution Engine.\nMake sure backend is running.\n${err.message}`);

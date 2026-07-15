@@ -5,9 +5,11 @@ import path from 'path';
 
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  ...(process.env.NODE_ENV === 'production' && {
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  }),
 });
 
 export const query = async (text: string, params?: any[]) => {
