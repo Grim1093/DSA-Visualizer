@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { Challenge } from '@/utils/mockChallenges';
-
 import { generateTestWrapper } from '@/utils/testWrapperGenerator';
+import DropdownSelector from '@/components/visualizer/AlgorithmSelector';
 
 interface TestEditorPanelProps {
   challenge: Challenge;
@@ -71,18 +71,18 @@ export default function TestEditorPanel({ challenge }: TestEditorPanelProps) {
       {/* Header */}
       <div className="flex justify-between items-center bg-[#1a1a1a] px-4 py-3 border-b border-gray-800">
         <div className="flex items-center gap-4">
-          <select
+          <DropdownSelector
             value={language}
-            onChange={(e) => setLanguage(e.target.value as 'python' | 'javascript' | 'cpp' | 'java' | 'go' | 'kotlin')}
-            className="bg-[#2a2a2a] text-gray-200 border border-gray-700 rounded px-3 py-1 text-sm focus:outline-none focus:border-blue-500"
-          >
-            <option value="python">Python</option>
-            <option value="javascript">JavaScript</option>
-            <option value="cpp">C++</option>
-            <option value="java">Java</option>
-            <option value="go">Go</option>
-            <option value="kotlin">Kotlin</option>
-          </select>
+            onChange={(val) => setLanguage(val as any)}
+            options={[
+              { value: 'python', label: 'Python' },
+              { value: 'javascript', label: 'JavaScript' },
+              { value: 'cpp', label: 'C++' },
+              { value: 'java', label: 'Java' },
+              { value: 'go', label: 'Go' },
+              { value: 'kotlin', label: 'Kotlin' }
+            ]}
+          />
         </div>
         <div className="flex items-center gap-3">
           <button 

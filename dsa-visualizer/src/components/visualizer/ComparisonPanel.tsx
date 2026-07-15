@@ -67,16 +67,17 @@ export default function ComparisonPanel() {
   const categoryData = comparisons[categoryKey];
 
   return (
-    <div className="bg-gray-900 p-6 rounded-lg shadow-lg border border-gray-700 text-gray-300 overflow-x-auto">
-      <h2 className="text-2xl font-bold text-white mb-6 border-b border-gray-800 pb-2">
+    <div className="card-mono p-6 sm:p-8 flex flex-col overflow-x-auto">
+      <h2 className="text-[10px] uppercase tracking-[0.2em] text-white/40 mono font-bold mb-6 flex items-center gap-3">
+        <div className="w-1.5 h-1.5 rounded-full bg-amber-500/50" />
         {categoryData.title}
       </h2>
       <div className="min-w-[700px]">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-gray-800 border-b border-gray-700">
+            <tr className="bg-white/[0.02] border-y border-white/10">
               {categoryData.headers.map((header, idx) => (
-                <th key={idx} className="p-3 font-semibold text-gray-200">
+                <th key={idx} className="p-4 text-[10px] uppercase tracking-widest text-white/40 mono font-semibold">
                   {header}
                 </th>
               ))}
@@ -88,50 +89,49 @@ export default function ComparisonPanel() {
               return (
                 <tr 
                   key={row.id} 
-                  className={`border-b border-gray-800 transition-colors duration-200 
-                    ${isActive ? 'bg-blue-900/30 border-l-4 border-l-blue-500' : 'hover:bg-gray-800/50 border-l-4 border-l-transparent'}`
+                  className={`border-b border-white/5 transition-colors duration-200 
+                    ${isActive ? 'bg-white/[0.04] border-l-2 border-l-blue-500' : 'hover:bg-white/[0.01] border-l-2 border-l-transparent'}`
                   }
                 >
-                  <td className={`p-3 font-medium ${isActive ? 'text-blue-300' : 'text-white'}`}>
+                  <td className={`p-4 text-xs font-semibold mono tracking-wide ${isActive ? 'text-white' : 'text-white/60'}`}>
                     {row.name}
                   </td>
                   
-                  {/* Dynamic rendering based on category */}
                   {categoryKey === 'sorting' && (
                     <>
-                      <td className="p-3 font-mono text-sm">{row.best}</td>
-                      <td className="p-3 font-mono text-sm text-yellow-400">{row.avg}</td>
-                      <td className="p-3 font-mono text-sm text-red-400">{row.worst}</td>
-                      <td className="p-3 font-mono text-sm">{row.space}</td>
-                      <td className="p-3 text-sm text-gray-400">{row.useCase}</td>
+                      <td className="p-4 font-mono text-[11px] text-white/60">{row.best}</td>
+                      <td className="p-4 font-mono text-[11px] text-amber-400/80">{row.avg}</td>
+                      <td className="p-4 font-mono text-[11px] text-rose-400/80">{row.worst}</td>
+                      <td className="p-4 font-mono text-[11px] text-white/60">{row.space}</td>
+                      <td className="p-4 text-xs text-white/40 font-sans leading-relaxed">{row.useCase}</td>
                     </>
                   )}
                   
                   {categoryKey === 'searching' && (
                     <>
-                      <td className="p-3 font-mono text-sm">{row.best}</td>
-                      <td className="p-3 font-mono text-sm text-yellow-400">{row.avg}</td>
-                      <td className="p-3 font-mono text-sm text-red-400">{row.worst}</td>
-                      <td className="p-3 font-mono text-sm">{row.space}</td>
-                      <td className="p-3 text-sm text-gray-400">{row.useCase}</td>
+                      <td className="p-4 font-mono text-[11px] text-white/60">{row.best}</td>
+                      <td className="p-4 font-mono text-[11px] text-amber-400/80">{row.avg}</td>
+                      <td className="p-4 font-mono text-[11px] text-rose-400/80">{row.worst}</td>
+                      <td className="p-4 font-mono text-[11px] text-white/60">{row.space}</td>
+                      <td className="p-4 text-xs text-white/40 font-sans leading-relaxed">{row.useCase}</td>
                     </>
                   )}
                   
                   {categoryKey === 'graphs' && (
                     <>
-                      <td className="p-3 font-mono text-sm text-yellow-400">{row.time}</td>
-                      <td className="p-3 font-mono text-sm">{row.space}</td>
-                      <td className="p-3 font-mono text-sm text-blue-300">{row.ds}</td>
-                      <td className="p-3 text-sm text-gray-400">{row.useCase}</td>
+                      <td className="p-4 font-mono text-[11px] text-amber-400/80">{row.time}</td>
+                      <td className="p-4 font-mono text-[11px] text-white/60">{row.space}</td>
+                      <td className="p-4 font-mono text-[11px] text-blue-400/80">{row.ds}</td>
+                      <td className="p-4 text-xs text-white/40 font-sans leading-relaxed">{row.useCase}</td>
                     </>
                   )}
 
                   {categoryKey === 'datastructures' && (
                     <>
-                      <td className="p-3 font-mono text-sm text-yellow-400">{row.time}</td>
-                      <td className="p-3 font-mono text-sm text-yellow-400">{row.spaceTime}</td>
-                      <td className="p-3 font-mono text-sm">{row.space}</td>
-                      <td className="p-3 text-sm text-gray-400">{row.useCase}</td>
+                      <td className="p-4 font-mono text-[11px] text-amber-400/80">{row.time}</td>
+                      <td className="p-4 font-mono text-[11px] text-amber-400/80">{row.spaceTime}</td>
+                      <td className="p-4 font-mono text-[11px] text-white/60">{row.space}</td>
+                      <td className="p-4 text-xs text-white/40 font-sans leading-relaxed">{row.useCase}</td>
                     </>
                   )}
                 </tr>
@@ -141,7 +141,7 @@ export default function ComparisonPanel() {
         </table>
       </div>
       {categoryKey === 'datastructures' && (
-         <p className="text-xs text-gray-500 mt-4 italic">* Amortized or average case time complexity.</p>
+         <p className="text-[10px] text-white/30 mt-4 mono">* Amortized or average case time complexity.</p>
       )}
     </div>
   );

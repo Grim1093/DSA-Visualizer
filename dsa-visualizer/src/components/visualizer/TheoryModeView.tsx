@@ -420,59 +420,57 @@ export default function TheoryModeView() {
   );
 
   return (
-    <div className="flex flex-col lg:flex-row flex-1 p-4 sm:p-6 gap-8 w-full max-w-[1920px] mx-auto overflow-hidden lg:h-[calc(100vh-120px)] custom-scrollbar">
+    <div className="flex flex-col lg:flex-row flex-1 p-4 sm:p-6 gap-6 w-full max-w-[1920px] mx-auto overflow-hidden lg:h-[calc(100vh-120px)] custom-scrollbar">
       
       {/* Left Content Area (Theory, Written Algo, Pseudocode) */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar pr-4 pb-20 space-y-8">
-        <div className="bg-gray-900/40 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
-          <TheoryPanel />
-        </div>
+      <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 pb-20 space-y-6">
+        <TheoryPanel />
         
-        <div className="bg-gray-900/40 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
-          <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-            <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+        <div className="card-mono p-6 sm:p-8 flex flex-col">
+          <h3 className="text-[10px] uppercase tracking-[0.2em] text-white/40 mono font-bold mb-6 flex items-center gap-3">
+            <div className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
             Pseudocode & Algorithm Steps
           </h3>
-          <div className="bg-[#0a0a0c] p-6 rounded-2xl border border-white/5 font-mono text-sm text-gray-300 leading-relaxed shadow-inner overflow-x-auto">
+          <div className="bg-white/[0.02] p-6 rounded-xl border border-white/5 font-mono text-xs text-white/70 leading-loose shadow-inner overflow-x-auto">
             {pseudocodeMap[selectedAlgorithm] || defaultPseudocode}
           </div>
         </div>
 
-        <div className="bg-gray-900/40 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
-          <ComparisonPanel />
-        </div>
+        <ComparisonPanel />
       </div>
 
       {/* Right Content Area (Mini-Visualizer Widget) */}
-      <div className="w-full lg:w-[500px] xl:w-[600px] shrink-0 flex flex-col gap-6">
-        <div className="bg-gray-900/40 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl flex flex-col">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-blue-400/80 pl-1">Animation Preview</h3>
+      <div className="w-full lg:w-[450px] xl:w-[550px] shrink-0 flex flex-col gap-6">
+        <div className="card-mono p-6 flex flex-col">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-[10px] uppercase tracking-[0.2em] text-white/40 mono font-bold flex items-center gap-3">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/50" />
+              Animation Preview
+            </h3>
             {!isDataStructure && (
               <button
                 onClick={handlePlayAnimation}
-                className="flex items-center gap-2 px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-lg transition-colors shadow-lg shadow-blue-500/20"
+                className="btn-primary px-4 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-2"
               >
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 Play Demo
               </button>
             )}
           </div>
           
-          <div className="w-full flex-1 relative flex flex-col rounded-2xl">
+          <div className="w-full flex-1 relative flex flex-col rounded-2xl overflow-hidden">
             {isDataStructure ? (
-              <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#0a0a0c] rounded-2xl ring-1 ring-white/5 shadow-inner">
-                <svg className="w-12 h-12 text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-white/[0.02] border border-white/5 shadow-inner min-h-[300px]">
+                <svg className="w-8 h-8 text-white/20 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                 </svg>
-                <h4 className="text-lg font-bold text-gray-300 mb-2">No Demo Available</h4>
-                <p className="text-sm text-gray-500">
-                  Data structures require interactive operations. Please switch to the <strong className="text-blue-400">Interactive Sandbox</strong> above to test {selectedAlgorithm.replace(/_/g, ' ')}.
+                <h4 className="text-sm font-semibold text-white/60 mb-2">No Demo Available</h4>
+                <p className="text-xs text-white/40 leading-relaxed">
+                  Data structures require interactive operations. Please switch to the <strong className="text-white">Interactive Sandbox</strong> above to test {selectedAlgorithm.replace(/_/g, ' ')}.
                 </p>
               </div>
             ) : (
-              <div className="w-full flex-1 min-h-[400px] relative flex flex-col [&::-webkit-scrollbar]:hidden [scrollbar-width:none] overflow-y-auto overflow-x-hidden rounded-2xl">
-                {/* Render the appropriate visualizer without the heavy controls */}
+              <div className="w-full flex-1 min-h-[400px] relative flex flex-col [&::-webkit-scrollbar]:hidden [scrollbar-width:none] overflow-y-auto overflow-x-hidden bg-[#0a0a0a] rounded-2xl border border-white/5">
                 {selectedAlgorithm === 'array' || selectedAlgorithm === 'dp' ? <DSArrayVisualizer /> :
                  selectedAlgorithm === 'vector' ? <DSVectorVisualizer /> :
                  (selectedAlgorithm === 'linked_list' || selectedAlgorithm === 'doubly_linked_list' || selectedAlgorithm === 'circular_linked_list') ? <DSLinkedListVisualizer /> :
@@ -482,10 +480,10 @@ export default function TheoryModeView() {
             )}
           </div>
           
-          <div className="mt-6 p-4 bg-blue-900/20 border border-blue-500/20 rounded-xl flex items-start gap-3">
-            <svg className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            <p className="text-sm text-blue-200/80 leading-relaxed">
-              This mini-visualizer demonstrates the fundamental operation. Switch to <strong>Interactive Sandbox</strong> above to control playback speed and use custom data.
+          <div className="mt-4 p-4 bg-white/[0.02] border border-white/5 rounded-xl flex items-start gap-3">
+            <svg className="w-4 h-4 text-white/30 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <p className="text-xs text-white/40 leading-relaxed">
+              This mini-visualizer demonstrates the fundamental operation. Switch to <strong className="text-white/60">Interactive Sandbox</strong> to control playback speed and use custom data.
             </p>
           </div>
         </div>

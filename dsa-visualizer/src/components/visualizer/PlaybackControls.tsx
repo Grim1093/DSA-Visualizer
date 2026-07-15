@@ -15,125 +15,114 @@ export default function PlaybackControls() {
     playbackSpeed,
     setPlaybackSpeed,
     frames,
-    currentFrameIndex
+    currentFrameIndex,
+    selectedAlgorithm
   } = useVisualizerStore();
 
   const totalFrames = frames.length;
   const isFinished = totalFrames > 0 && currentFrameIndex === totalFrames - 1;
 
-  // Effect Engine: Manages automatic progression ticks when "Play" state is active
   useEffect(() => {
     let intervalId: NodeJS.Timeout | null = null;
-
     if (isPlaying && !isFinished) {
-      logger.info('PlaybackControls Loop: Spawning interval ticker', { playbackSpeed, currentFrameIndex });
-      
       intervalId = setInterval(() => {
-        // Re-evaluating terminal state before advancing pointer index
         if (currentFrameIndex >= frames.length - 1) {
-          logger.info('PlaybackControls Loop: Termination condition reached inside ticker. Pausing state.');
           pause();
         } else {
           stepForward();
         }
       }, playbackSpeed);
     } else if (isPlaying && isFinished) {
-      logger.warn('PlaybackControls Loop: Prevented ticker start because timeline is already at termination index.');
       pause();
     }
-
-    // Cleanup hook invocation to clear active interval handles on state changes or unmounts
     return () => {
-      if (intervalId) {
-        logger.debug('PlaybackControls Loop: Clearing active interval ticker reference.');
-        clearInterval(intervalId);
-      }
+      if (intervalId) clearInterval(intervalId);
     };
   }, [isPlaying, playbackSpeed, currentFrameIndex, frames.length, stepForward, pause, isFinished]);
 
-  const handlePlayPause = () => {
-    logger.debug('PlaybackControls: Play/Pause toggled manually', { isCurrentlyPlaying: isPlaying });
-    if (isPlaying) {
-      pause();
-    } else {
-      play();
+  // Track progress when visualization finishes
+  useEffect(() => {
+    if (isFinished && totalFrames > 1 && selectedAlgorithm !== 'sandbox') {
+      fetch('/api/progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ moduleId: selectedAlgorithm, points: 20 })
+      }).catch(console.error);
     }
+  }, [isFinished, totalFrames, selectedAlgorithm]);
+
+  const handlePlayPause = () => {
+    if (isPlaying) pause();
+    else play();
   };
 
-  const handleSpeedChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newSpeed = Number(e.target.value);
-    logger.debug('PlaybackControls: Speed changed via dropdown menu selector', { newSpeed });
-    setPlaybackSpeed(newSpeed);
+  // Maps UI slider [0-100] to actual speed delay [1000ms - 50ms]
+  const handleSpeedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = Number(e.target.value); // 0 to 100
+    const delay = Math.max(50, 1050 - (val * 10)); 
+    setPlaybackSpeed(delay);
   };
+
+  // Convert current speed delay to slider value
+  const sliderValue = Math.max(0, Math.min(100, (1050 - playbackSpeed) / 10));
 
   return (
-    <div className="flex flex-row flex-wrap items-center justify-center bg-gray-900 p-4 rounded-lg shadow-lg gap-4 text-white w-full min-w-0">
-      {/* Progress Indicator */}
-      <div className="text-sm font-mono bg-gray-800 px-3 py-1 rounded whitespace-nowrap shrink-0">
+    <div className="card-mono p-3 flex flex-wrap items-center gap-4 w-full">
+      <div className="text-xs font-mono text-white/50 bg-white/5 px-2 py-1 rounded">
         Step: {totalFrames > 0 ? currentFrameIndex + 1 : 0} / {totalFrames}
       </div>
 
-      {/* Main Controls */}
-      <div className="flex flex-row flex-wrap items-center justify-center gap-2">
+      <div className="flex-1 flex justify-center sm:justify-start gap-2">
         <button
-          onClick={() => {
-            logger.debug('PlaybackControls: Reset action dispatched');
-            reset();
-          }}
-          className="px-4 py-2 bg-red-600 hover:bg-red-500 rounded transition-colors disabled:opacity-50"
+          onClick={reset}
+          className="btn-ghost px-3 py-1.5 rounded-lg text-sm flex items-center gap-1.5 disabled:opacity-30"
           disabled={totalFrames === 0}
         >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
           Reset
         </button>
 
         <button
-          onClick={() => {
-            logger.debug('PlaybackControls: Step Backward action dispatched');
-            stepBackward();
-          }}
-          className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded transition-colors disabled:opacity-50"
+          onClick={stepBackward}
+          className="btn-ghost px-3 py-1.5 rounded-lg text-sm flex items-center gap-1.5 disabled:opacity-30"
           disabled={currentFrameIndex === 0 || totalFrames === 0}
         >
-          &larr; Prev
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/></svg>
+          Prev
         </button>
 
         <button
           onClick={handlePlayPause}
-          className={`px-6 py-2 rounded font-bold transition-colors disabled:opacity-50 ${
-            isPlaying ? 'bg-amber-500 hover:bg-amber-400' : 'bg-green-600 hover:bg-green-500'
-          }`}
+          className="btn-primary px-4 py-1.5 rounded-lg text-sm font-medium flex items-center gap-1.5 disabled:opacity-30"
           disabled={totalFrames === 0}
         >
-          {isPlaying ? 'Pause' : 'Play'}
+          {isPlaying ? (
+            <><svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg>Pause</>
+          ) : (
+            <><svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Play</>
+          )}
         </button>
 
         <button
-          onClick={() => {
-            logger.debug('PlaybackControls: Step Forward action dispatched');
-            stepForward();
-          }}
-          className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded transition-colors disabled:opacity-50"
+          onClick={stepForward}
+          className="btn-ghost px-3 py-1.5 rounded-lg text-sm flex items-center gap-1.5 disabled:opacity-30"
           disabled={isFinished || totalFrames === 0}
         >
-          Next &rarr;
+          Next
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/></svg>
         </button>
       </div>
 
-      {/* Speed Configuration */}
-      <div className="flex items-center gap-2">
-        <label htmlFor="speed-select" className="text-sm">Speed:</label>
-        <select
-          id="speed-select"
-          value={playbackSpeed}
-          onChange={handleSpeedChange}
-          className="bg-gray-800 border border-gray-700 text-white rounded px-2 py-1 outline-none focus:border-blue-500"
-        >
-          <option value={1000}>0.5x (Slow)</option>
-          <option value={500}>1.0x (Normal)</option>
-          <option value={250}>2.0x (Fast)</option>
-          <option value={100}>5.0x (Very Fast)</option>
-        </select>
-      </div>
+      <label className="flex items-center gap-3 text-xs mono text-white/60 min-w-[150px]">
+        <span className="w-12">SPEED</span>
+        <input 
+          type="range" 
+          min={0} max={100} 
+          value={sliderValue} 
+          onChange={handleSpeedChange} 
+          className="flex-1" 
+        />
+      </label>
     </div>
   );
 }

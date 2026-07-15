@@ -326,39 +326,48 @@ export default function TheoryPanel() {
   }, [selectedAlgorithm]);
 
   return (
-    <div className="bg-gray-900 p-6 rounded-lg shadow-lg border border-gray-700 text-gray-300">
+    <div className="card-mono p-6 sm:p-8 flex flex-col">
       
       {/* Concept Section */}
-      <h2 className="text-2xl font-bold text-white mb-4">Concept: {data.title}</h2>
-      <p className="mb-6 leading-relaxed">
+      <h2 className="text-[10px] uppercase tracking-[0.2em] text-white/40 mono font-bold mb-4 flex items-center gap-3">
+        <div className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
+        Concept: {data.title}
+      </h2>
+      <p className="mb-8 text-sm text-white/70 leading-relaxed font-sans">
         {data.concept}
       </p>
 
       {/* Working Section */}
-      <h2 className="text-2xl font-bold text-white mb-4">Working</h2>
-      <ol className="list-decimal list-inside space-y-2 mb-6 text-gray-400">
+      <h2 className="text-[10px] uppercase tracking-[0.2em] text-white/40 mono font-bold mb-4 flex items-center gap-3">
+        <div className="w-1.5 h-1.5 rounded-full bg-purple-500/50" />
+        Working
+      </h2>
+      <ol className="list-decimal list-outside ml-4 space-y-3 mb-8 text-sm text-white/70 font-sans leading-relaxed">
         {data.working.map((step, index) => (
-          <li key={index}>{step}</li>
+          <li key={index} className="pl-2">{step}</li>
         ))}
       </ol>
 
       {/* Complexity Analysis Section */}
-      <h2 className="text-2xl font-bold text-white mb-4">Complexity Analysis</h2>
+      <h2 className="text-[10px] uppercase tracking-[0.2em] text-white/40 mono font-bold mb-4 flex items-center gap-3">
+        <div className="w-1.5 h-1.5 rounded-full bg-rose-500/50" />
+        Complexity Analysis
+      </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-gray-800 p-4 rounded border border-gray-700">
-          <h3 className="text-lg font-semibold text-white mb-2">Time Complexity</h3>
-          <ul className="space-y-2 font-mono text-sm">
-            <li><span className="text-green-400 font-bold">Best Case:</span> {data.timeBest}</li>
-            <li><span className="text-yellow-400 font-bold">Average Case:</span> {data.timeAverage}</li>
-            <li><span className="text-red-400 font-bold">Worst Case:</span> {data.timeWorst}</li>
+        <div className="bg-white/[0.02] p-5 rounded-xl border border-white/5 flex flex-col">
+          <h3 className="text-xs font-semibold text-white/80 mb-4 mono uppercase tracking-wider">Time Complexity</h3>
+          <ul className="space-y-3 font-mono text-[11px] text-white/60">
+            <li className="flex flex-col gap-1"><span className="text-emerald-400/80 font-bold uppercase tracking-widest">Best Case</span> {data.timeBest}</li>
+            <li className="flex flex-col gap-1"><span className="text-amber-400/80 font-bold uppercase tracking-widest">Average Case</span> {data.timeAverage}</li>
+            <li className="flex flex-col gap-1"><span className="text-rose-400/80 font-bold uppercase tracking-widest">Worst Case</span> {data.timeWorst}</li>
           </ul>
         </div>
-        <div className="bg-gray-800 p-4 rounded border border-gray-700">
-          <h3 className="text-lg font-semibold text-white mb-2">Space Complexity</h3>
-          <ul className="space-y-2 font-mono text-sm">
-            <li><span className="text-blue-400 font-bold">Auxiliary:</span> {data.space}</li>
+        <div className="bg-white/[0.02] p-5 rounded-xl border border-white/5 flex flex-col">
+          <h3 className="text-xs font-semibold text-white/80 mb-4 mono uppercase tracking-wider">Space Complexity</h3>
+          <ul className="space-y-3 font-mono text-[11px] text-white/60">
+            <li className="flex flex-col gap-1"><span className="text-blue-400/80 font-bold uppercase tracking-widest">Auxiliary Space</span> {data.space}</li>
           </ul>
-          <p className="text-xs mt-3 text-gray-500 leading-tight">
+          <p className="text-[10px] mt-4 text-white/40 leading-relaxed mono">
             {data.spaceDetail}
           </p>
         </div>

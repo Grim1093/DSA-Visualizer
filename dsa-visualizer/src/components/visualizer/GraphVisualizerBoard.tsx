@@ -1,55 +1,51 @@
 "use client";
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useVisualizerStore } from '@/store/useVisualizerStore';
-import { logger } from '@/utils/logger';
 
 export default function GraphVisualizerBoard() {
   const { frames, currentFrameIndex } = useVisualizerStore();
 
-  useEffect(() => {
-    if (frames.length > 0) {
-      logger.debug('GraphVisualizerBoard: Rendering frame', { 
-        frameIndex: currentFrameIndex,
-      });
-    }
-  }, [currentFrameIndex, frames]);
-
   if (frames.length === 0) {
     return (
-      <div className="w-full h-96 flex flex-col items-center justify-center bg-gray-900 rounded-lg shadow-inner border border-gray-700 text-gray-400">
-        <svg className="w-12 h-12 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="w-full flex-1 flex flex-col items-center justify-center text-white/30">
+        <svg className="w-10 h-10 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="10" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} />
         </svg>
-        <p className="font-mono text-sm">Waiting for graph execution data...</p>
+        <p className="font-mono text-xs uppercase tracking-[0.2em]">Waiting for graph data...</p>
       </div>
     );
   }
 
   const currentFrame = frames[currentFrameIndex];
   const { 
-    graphState, visitedNodes = [], currentNode, dataStructureState = [], description, selectedAlgorithm 
-  } = currentFrame as any; // Cast temporarily since we're pulling from same store
+    graphState, visitedNodes = [], currentNode, dataStructureState = [], description 
+  } = currentFrame as any;
 
-  if (!graphState) return null; // Fallback
+  if (!graphState) return null;
 
   const { nodes, edges } = graphState;
-
-  // We map coordinates roughly to a 600x400 SVG box for responsive scaling
   const viewBox = "0 0 600 400";
 
   return (
-    <div className="w-full bg-gray-900 p-6 rounded-lg shadow-xl border border-gray-700 flex flex-col">
-      {/* Description Panel */}
-      <div className="mb-4 min-h-[3rem] p-4 bg-gray-800 rounded border-l-4 border-purple-500 flex items-center">
-        <p className="text-white font-mono text-sm">{description}</p>
+    <div className="w-full flex-1 flex flex-col relative overflow-hidden">
+      {/* Description Overlay */}
+      <div className="absolute top-6 left-1/2 -translate-x-1/2 z-10 w-3/4 max-w-lg">
+        <motion.div 
+          key={description}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white/10 backdrop-blur-md border border-white/20 text-white font-mono text-xs text-center py-2 px-4 rounded-full shadow-lg"
+        >
+          {description}
+        </motion.div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-6">
+      <div className="flex-1 flex flex-col md:flex-row h-full">
         {/* Graph Canvas */}
-        <div className="flex-1 bg-gray-800 rounded-lg border border-gray-700 overflow-hidden relative min-h-[400px]">
-          <svg viewBox={viewBox} className="w-full h-full drop-shadow-md">
+        <div className="flex-1 relative min-h-[300px]">
+          <svg viewBox={viewBox} className="w-full h-full absolute inset-0">
             {/* Draw Edges */}
             {edges.map((edge: any, i: number) => {
               const sourceNode = nodes.find((n: any) => n.id === edge.source);
@@ -57,7 +53,6 @@ export default function GraphVisualizerBoard() {
               
               if (!sourceNode || !targetNode) return null;
 
-              // Check if edge connects two visited nodes (or one visited, one current)
               const isTraversed = (visitedNodes.includes(edge.source) || currentNode === edge.source) &&
                                   (visitedNodes.includes(edge.target) || currentNode === edge.target);
 
@@ -68,11 +63,11 @@ export default function GraphVisualizerBoard() {
                   y1={sourceNode.y}
                   x2={targetNode.x}
                   y2={targetNode.y}
-                  stroke={isTraversed ? '#a855f7' : '#4b5563'} // Purple-500 or Gray-600
-                  strokeWidth={isTraversed ? 4 : 2}
+                  stroke={isTraversed ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.15)'}
+                  strokeWidth={isTraversed ? 3 : 1.5}
                   initial={{ pathLength: 0 }}
                   animate={{ pathLength: 1 }}
-                  transition={{ duration: 0.5 }}
+                  transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 />
               );
             })}
@@ -83,18 +78,22 @@ export default function GraphVisualizerBoard() {
               const isCurrent = currentNode === node.id;
               const isInDS = dataStructureState.includes(node.id);
 
-              let fillColor = '#374151'; // default gray-700
-              let strokeColor = '#4b5563'; // default gray-600
+              let fillColor = 'rgba(255,255,255,0.05)';
+              let strokeColor = 'rgba(255,255,255,0.2)';
+              let textColor = 'rgba(255,255,255,0.6)';
 
               if (isVisited) {
-                fillColor = '#22c55e'; // green-500
-                strokeColor = '#16a34a';
+                fillColor = 'rgba(52, 211, 153, 0.2)'; // Emerald
+                strokeColor = 'rgba(52, 211, 153, 0.8)';
+                textColor = '#fff';
               } else if (isCurrent) {
-                fillColor = '#eab308'; // yellow-500
-                strokeColor = '#ca8a04';
+                fillColor = 'rgba(251, 191, 36, 0.2)'; // Amber
+                strokeColor = 'rgba(251, 191, 36, 0.8)';
+                textColor = '#fff';
               } else if (isInDS) {
-                fillColor = '#3b82f6'; // blue-500 (in queue/stack)
-                strokeColor = '#2563eb';
+                fillColor = 'rgba(96, 165, 250, 0.2)'; // Blue
+                strokeColor = 'rgba(96, 165, 250, 0.8)';
+                textColor = '#fff';
               }
 
               return (
@@ -102,13 +101,14 @@ export default function GraphVisualizerBoard() {
                   <motion.circle
                     cx={node.x}
                     cy={node.y}
-                    r={20}
+                    r={18}
                     fill={fillColor}
                     stroke={strokeColor}
-                    strokeWidth={3}
+                    strokeWidth={2}
                     animate={{ 
-                      scale: isCurrent ? 1.2 : 1,
-                      fill: fillColor
+                      scale: isCurrent ? 1.25 : 1,
+                      fill: fillColor,
+                      stroke: strokeColor
                     }}
                     transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                   />
@@ -117,9 +117,9 @@ export default function GraphVisualizerBoard() {
                     y={node.y}
                     textAnchor="middle"
                     alignmentBaseline="middle"
-                    fill="white"
-                    fontSize="14"
-                    fontWeight="bold"
+                    fill={textColor}
+                    fontSize="12"
+                    fontWeight="500"
                     fontFamily="monospace"
                   >
                     {node.label}
@@ -131,23 +131,23 @@ export default function GraphVisualizerBoard() {
         </div>
 
         {/* Data Structure Panel (Queue/Stack) */}
-        <div className="w-full md:w-48 bg-gray-800 rounded-lg border border-gray-700 p-4 flex flex-col">
-          <h4 className="text-gray-300 font-bold mb-4 border-b border-gray-700 pb-2 text-center uppercase tracking-wider text-sm">
-            {/* The store currently doesn't pass down selectedAlgorithm into Frame, but we can infer it or just label it based on data */}
-            {dataStructureState.length > 0 ? "Queue / Stack" : "Data Structure"}
+        <div className="w-full md:w-48 border-t md:border-t-0 md:border-l border-white/10 p-6 flex flex-col bg-white/[0.02]">
+          <h4 className="text-[10px] text-white/40 mb-4 pb-2 text-center uppercase tracking-[0.2em] mono border-b border-white/10">
+            {dataStructureState.length > 0 ? "Queue / Stack" : "Buffer"}
           </h4>
           
-          <div className="flex-1 flex flex-col justify-end gap-2 overflow-hidden px-1">
-            <AnimatePresence>
+          <div className="flex-1 flex flex-col justify-end gap-2 overflow-hidden px-2 pb-4">
+            <AnimatePresence mode="popLayout">
               {dataStructureState.map((nodeId: string, idx: number) => {
                 const nodeData = nodes.find((n: any) => n.id === nodeId);
                 return (
                   <motion.div
+                    layout
                     key={`${nodeId}-${idx}`}
-                    initial={{ opacity: 0, y: -20, scale: 0.9 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
-                    className="bg-blue-600 text-white font-bold py-2 rounded text-center shadow-md border border-blue-500 font-mono"
+                    initial={{ opacity: 0, scale: 0.8, x: 20 }}
+                    animate={{ opacity: 1, scale: 1, x: 0 }}
+                    exit={{ opacity: 0, scale: 0.8, x: -20, transition: { duration: 0.2 } }}
+                    className="bg-white/10 text-white py-2 rounded-lg text-center border border-white/20 font-mono text-sm shadow-lg backdrop-blur-md"
                   >
                     {nodeData ? nodeData.label : nodeId}
                   </motion.div>
@@ -155,11 +155,11 @@ export default function GraphVisualizerBoard() {
               })}
             </AnimatePresence>
             {dataStructureState.length === 0 && (
-              <div className="text-gray-500 text-center italic text-sm py-4">Empty</div>
+              <div className="text-white/20 text-center text-xs font-mono py-4 uppercase tracking-widest">Empty</div>
             )}
           </div>
-          <div className="mt-2 text-center text-xs text-gray-500 font-mono">
-            Front/Top
+          <div className="text-center text-[9px] text-white/30 font-mono uppercase tracking-[0.2em]">
+            Front / Top
           </div>
         </div>
       </div>

@@ -1,79 +1,88 @@
 "use client";
 
-import React from 'react';
-import { useVisualizerStore } from '@/store/useVisualizerStore';
-import { logger } from '@/utils/logger';
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-export default function AlgorithmSelector() {
-  const { selectedAlgorithm, setSelectedAlgorithm } = useVisualizerStore();
+interface AlgorithmSelectorProps {
+  options: { value: string; label: string }[];
+  value: string;
+  onChange: (value: string) => void;
+}
 
-  const handleSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newAlgo = e.target.value;
-    const isDataStructure = ['array', 'vector', 'linked_list', 'doubly_linked_list', 'circular_linked_list', 'hash_map', 'stack', 'queue', 'heap'].includes(newAlgo);
-    const mode = isDataStructure ? 'data-structure' : 'algorithm';
-    
-    logger.info('AlgorithmSelector: User triggered change via dropdown', { 
-      previous: selectedAlgorithm, 
-      current: newAlgo,
-      mode
-    });
-    setSelectedAlgorithm(newAlgo, mode);
-  };
+export default function AlgorithmSelector({ options, value, onChange }: AlgorithmSelectorProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const selectedLabel = options.find(opt => opt.value === value)?.label || value;
+
+  // Close when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
-    <div className="bg-gray-900 p-6 rounded-lg shadow-lg border border-gray-700 w-full text-white">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h3 className="text-xl font-bold">Select Algorithm or Data Structure</h3>
-          <p className="text-sm text-gray-400 mt-1">
-            Choose what you want to visualize and study.
-          </p>
-        </div>
-        
-        <div className="w-full sm:w-auto">
-          <select
-            value={selectedAlgorithm}
-            onChange={handleSelection}
-            className="w-full sm:w-64 bg-gray-800 border border-gray-600 rounded-md py-2.5 px-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium shadow-inner cursor-pointer"
+    <div className="relative min-w-[240px] w-full sm:w-auto z-50" ref={containerRef}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between bg-white/[0.04] border border-white/10 hover:border-white/20 hover:bg-white/[0.06] text-white text-sm rounded-lg px-4 py-2 transition-all shadow-inner focus:outline-none focus:ring-1 focus:ring-white/30"
+      >
+        <span className="mono tracking-tight font-medium">{selectedLabel}</span>
+        <motion.svg
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          className="w-4 h-4 text-white/50"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+        </motion.svg>
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 4, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            className="absolute top-full left-0 w-full bg-[#0a0a0c]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.8)] overflow-hidden z-50 origin-top"
           >
-            <optgroup label="Data Structures (Interactive)" className="bg-gray-900 text-blue-400 font-semibold">
-              <option value="array" className="text-white bg-gray-800">Static Array</option>
-              <option value="vector" className="text-white bg-gray-800">Vector (Dynamic Array)</option>
-              <option value="linked_list" className="text-white bg-gray-800">Singly Linked List</option>
-              <option value="doubly_linked_list" className="text-white bg-gray-800">Doubly Linked List</option>
-              <option value="circular_linked_list" className="text-white bg-gray-800">Circular Linked List</option>
-              <option value="hash_map" className="text-white bg-gray-800">Hash Map</option>
-              <option value="stack" className="text-white bg-gray-800">Stack</option>
-              <option value="queue" className="text-white bg-gray-800">Queue</option>
-              <option value="heap" className="text-white bg-gray-800">Heap (Priority Queue)</option>
-            </optgroup>
-
-            <optgroup label="Sorting Algorithms" className="bg-gray-900 text-gray-300 font-semibold mt-2">
-              <option value="bubble" className="text-white bg-gray-800">Bubble Sort</option>
-              <option value="selection" className="text-white bg-gray-800">Selection Sort</option>
-              <option value="insertion" className="text-white bg-gray-800">Insertion Sort</option>
-              <option value="merge" className="text-white bg-gray-800">Merge Sort</option>
-              <option value="quick" className="text-white bg-gray-800">Quick Sort</option>
-            </optgroup>
-            
-            <optgroup label="Searching" className="bg-gray-900 text-green-400 font-semibold">
-              <option value="linear" className="text-white bg-gray-800">Linear Search</option>
-              <option value="binary" className="text-white bg-gray-800">Binary Search</option>
-            </optgroup>
-            
-            <optgroup label="Graph Traversal" className="bg-gray-900 text-purple-400 font-semibold">
-              <option value="bfs" className="text-white bg-gray-800">Breadth-First Search (BFS)</option>
-              <option value="dfs" className="text-white bg-gray-800">Depth-First Search (DFS)</option>
-              <option value="dijkstra" className="text-white bg-gray-800">Dijkstra's Algorithm</option>
-            </optgroup>
-
-            <optgroup label="Advanced Algorithms" className="bg-gray-900 text-yellow-400 font-semibold">
-              <option value="dp" className="text-white bg-gray-800">Dynamic Programming</option>
-              <option value="sandbox" className="text-white bg-gray-800">Code Execution Sandbox</option>
-            </optgroup>
-          </select>
-        </div>
-      </div>
+            <div className="max-h-[350px] overflow-y-auto custom-scrollbar flex flex-col p-2 space-y-0.5">
+              {options.map((opt) => {
+                const isSelected = opt.value === value;
+                return (
+                  <button
+                    key={opt.value}
+                    onClick={() => {
+                      onChange(opt.value);
+                      setIsOpen(false);
+                    }}
+                    className={`w-full text-left px-3 py-2.5 rounded-lg text-sm mono transition-colors flex items-center gap-2 group ${
+                      isSelected
+                        ? 'bg-blue-600/20 text-blue-300'
+                        : 'text-white/70 hover:bg-white/5 hover:text-white'
+                    }`}
+                  >
+                    {isSelected ? (
+                      <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.8)] shrink-0" />
+                    ) : (
+                      <div className="w-1.5 h-1.5 rounded-full bg-transparent group-hover:bg-white/20 transition-colors shrink-0" />
+                    )}
+                    <span className="truncate">{opt.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

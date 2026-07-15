@@ -16,13 +16,11 @@ import {
   generateDijkstraFrames
 } from '@/utils/algorithmEngine';
 import { parseGraphInput } from '@/utils/graphParser';
-import { logger } from '@/utils/logger';
 
 import DataStructureControls from './DataStructureControls';
 
 export default function DataInputPanel() {
   const { setFrames, reset, selectedAlgorithm, mode } = useVisualizerStore();
-  // ... state declarations ...
   const [inputValue, setInputValue] = useState<string>('42, 15, 8, 99, 23, 4, 16, 7');
   const [targetValue, setTargetValue] = useState<string>('23');
   const [error, setError] = useState<string | null>(null);
@@ -31,45 +29,31 @@ export default function DataInputPanel() {
   const isGraphAlgo = selectedAlgorithm === 'bfs' || selectedAlgorithm === 'dfs' || selectedAlgorithm === 'dijkstra';
   const isDPAlgo = selectedAlgorithm === 'dp';
 
-  // ... (keeping handleGenerateRandom and handleSubmit exactly the same) ...
   const handleGenerateRandomTree = () => {
-    logger.debug('DataInputPanel: Triggered random tree generation');
-    
     if (isGraphAlgo) {
       const numNodes = Math.floor(Math.random() * 6) + 4;
       const labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
       const activeNodes = labels.slice(0, numNodes);
-      
       const edges = new Set<string>();
-      
       for (let i = 1; i < numNodes; i++) {
-        // connect to a random existing parent to form a tree
         const parent = activeNodes[Math.floor(Math.random() * i)];
         edges.add(`${parent}-${activeNodes[i]}`);
       }
-      
-      const randomString = Array.from(edges).join(', ');
-      setInputValue(randomString);
+      setInputValue(Array.from(edges).join(', '));
       setError(null);
-      logger.info('DataInputPanel: Random tree successfully generated', { randomString });
     }
   };
 
   const handleGenerateRandom = () => {
-    logger.debug('DataInputPanel: Triggered random generation', { isGraphAlgo });
-    
     if (isGraphAlgo) {
       const numNodes = Math.floor(Math.random() * 6) + 4;
       const numEdges = Math.floor(Math.random() * 10) + numNodes - 1;
       const labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
       const activeNodes = labels.slice(0, numNodes);
-      
       const edges = new Set<string>();
-      
       for (let i = 0; i < numNodes - 1; i++) {
         edges.add(`${activeNodes[i]}-${activeNodes[i+1]}`);
       }
-      
       let attempts = 0;
       while (edges.size < numEdges && attempts < 50) {
         const u = activeNodes[Math.floor(Math.random() * numNodes)];
@@ -80,25 +64,18 @@ export default function DataInputPanel() {
         }
         attempts++;
       }
-      
-      const randomString = Array.from(edges).join(', ');
-      setInputValue(randomString);
+      setInputValue(Array.from(edges).join(', '));
       setError(null);
-      logger.info('DataInputPanel: Random graph successfully generated', { randomString });
     } else {
       const length = Math.floor(Math.random() * 10) + 5; 
       const randomArray = Array.from({ length }, () => Math.floor(Math.random() * 100) + 1);
-      const randomString = randomArray.join(', ');
-      
-      setInputValue(randomString);
+      setInputValue(randomArray.join(', '));
       setError(null);
-      logger.info('DataInputPanel: Random array successfully generated', { array: randomArray });
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    logger.debug('DataInputPanel: Submit action intercepted', { rawInput: inputValue, selectedAlgorithm });
 
     let newFrames;
     if (isGraphAlgo) {
@@ -106,13 +83,11 @@ export default function DataInputPanel() {
         setError('Please enter an edge list for the graph (e.g. A-B, B-C).');
         return;
       }
-
       const parsed = parseGraphInput(inputValue);
       if ('error' in parsed) {
         setError(parsed.error);
         return;
       }
-
       setError(null);
       reset();
 
@@ -124,7 +99,6 @@ export default function DataInputPanel() {
       else newFrames = generateDFSFrames(parsed, startNode);
       
       setFrames(newFrames);
-      logger.info(`DataInputPanel: Pipeline complete for ${selectedAlgorithm}`, { frameCount: newFrames.length });
       return;
     }
 
@@ -137,14 +111,12 @@ export default function DataInputPanel() {
       setError('Please enter at least one number.');
       return;
     }
-
     if (parsedArray.length > 50) { 
-      setError('Maximum 50 elements allowed for optimal visualization.');
+      setError('Maximum 50 elements allowed.');
       return;
     }
-
     if (selectedAlgorithm === 'merge' && parsedArray.length > 20) {
-      setError('Merge Sort is restricted to a maximum of 20 elements to prevent visual clutter from auxiliary arrays.');
+      setError('Merge Sort is restricted to a maximum of 20 elements.');
       return;
     }
 
@@ -167,126 +139,82 @@ export default function DataInputPanel() {
     reset(); 
     
     switch (selectedAlgorithm) {
-      case 'selection':
-        newFrames = generateSelectionSortFrames(numericArray);
-        break;
-      case 'insertion':
-        newFrames = generateInsertionSortFrames(numericArray);
-        break;
-      case 'merge':
-        newFrames = generateMergeSortFrames(numericArray);
-        break;
-      case 'quick':
-        newFrames = generateQuickSortFrames(numericArray);
-        break;
-      case 'linear':
-        newFrames = generateLinearSearchFrames(numericArray, numericTarget);
-        break;
-      case 'binary':
-        newFrames = generateBinarySearchFrames(numericArray, numericTarget);
-        break;
-      case 'dp':
-        newFrames = generateDPFrames(numericArray[0]); // DP takes a single number N
-        break;
+      case 'selection': newFrames = generateSelectionSortFrames(numericArray); break;
+      case 'insertion': newFrames = generateInsertionSortFrames(numericArray); break;
+      case 'merge': newFrames = generateMergeSortFrames(numericArray); break;
+      case 'quick': newFrames = generateQuickSortFrames(numericArray); break;
+      case 'linear': newFrames = generateLinearSearchFrames(numericArray, numericTarget); break;
+      case 'binary': newFrames = generateBinarySearchFrames(numericArray, numericTarget); break;
+      case 'dp': newFrames = generateDPFrames(numericArray[0]); break;
       case 'bubble':
-      default:
-        newFrames = generateBubbleSortFrames(numericArray);
-        break;
+      default: newFrames = generateBubbleSortFrames(numericArray); break;
     }
 
     setFrames(newFrames);
-    logger.info(`DataInputPanel: Pipeline complete for ${selectedAlgorithm}`, { frameCount: newFrames.length });
   };
 
   return (
-    <div className="w-full text-white">
+    <div className="w-full card-mono p-4">
       {mode === 'data-structure' ? (
         <DataStructureControls />
       ) : (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="array-input" className="block text-sm font-medium text-gray-400 mb-2 pl-1">
-                {isGraphAlgo 
-                  ? "Enter edge list (e.g. A-B, B-C). Max 10 nodes, 20 edges." 
-                  : isDPAlgo
-                  ? "Enter a number N (Max 20) for Fibonacci DP"
-                  : `Enter comma-separated integers (Max ${selectedAlgorithm === 'merge' ? '20' : '50'} elements)`}
-              </label>
-              <input
-                id="array-input"
-                type="text"
-                value={inputValue}
-                onChange={(e) => {
-                  setInputValue(e.target.value);
-                  if (error) setError(null);
-                }}
-                placeholder={isGraphAlgo ? "A-B, A-C, B-D" : isDPAlgo ? "e.g. 5" : "e.g. 10, 20, 5, 8, 1"}
-                className="w-full bg-gray-950/50 border border-white/10 hover:border-white/20 rounded-2xl py-3.5 px-5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 font-mono tracking-wide transition-all shadow-inner"
-              />
-            </div>
-
-            {isSearchAlgo && (
-              <div>
-                <label htmlFor="target-input" className="block text-sm font-medium text-gray-400 mb-2 pl-1">
-                  Target Value to Search
-                </label>
-                <input
-                  id="target-input"
-                  type="text"
-                  value={targetValue}
-                  onChange={(e) => {
-                    setTargetValue(e.target.value);
-                    if (error) setError(null);
-                  }}
-                  placeholder="e.g. 23"
-                  className="w-full bg-gray-950/50 border border-white/10 hover:border-white/20 rounded-2xl py-3.5 px-5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 font-mono tracking-wide transition-all shadow-inner"
-                />
-              </div>
-            )}
-            {error && (
-              <p className="text-red-400 text-sm mt-2 flex items-center gap-1">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                {error}
-              </p>
-            )}
+        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-end gap-3 w-full">
+          <div className="flex-1 flex flex-col gap-1.5 w-full">
+            <label className="text-[10px] uppercase tracking-[0.18em] text-white/40 mono ml-1">
+              {isGraphAlgo 
+                ? "Edge List (A-B, B-C)" 
+                : isDPAlgo ? "N (Max 20)" : "Array Elements"}
+            </label>
+            <input
+              type="text"
+              value={inputValue}
+              onChange={(e) => {
+                setInputValue(e.target.value);
+                if (error) setError(null);
+              }}
+              placeholder={isGraphAlgo ? "A-B, B-C" : isDPAlgo ? "5" : "10, 20, 5, 8"}
+              className="w-full bg-white/[0.03] border border-white/10 focus:border-white/30 rounded-lg px-3 py-2 text-sm text-white placeholder-white/30 outline-none transition-colors mono"
+            />
           </div>
 
-          <div className="flex flex-row flex-wrap gap-3 pt-3">
+          {isSearchAlgo && (
+            <div className="w-full sm:w-32 flex flex-col gap-1.5">
+              <label className="text-[10px] uppercase tracking-[0.18em] text-white/40 mono ml-1">Target</label>
+              <input
+                type="text"
+                value={targetValue}
+                onChange={(e) => {
+                  setTargetValue(e.target.value);
+                  if (error) setError(null);
+                }}
+                className="w-full bg-white/[0.03] border border-white/10 focus:border-white/30 rounded-lg px-3 py-2 text-sm text-white outline-none transition-colors mono"
+              />
+            </div>
+          )}
+
+          <div className="flex gap-2 w-full sm:w-auto mt-3 sm:mt-0">
             {isGraphAlgo ? (
               <>
-                <button
-                  type="button"
-                  onClick={handleGenerateRandom}
-                  className="px-5 py-3 bg-white/5 hover:bg-white/10 text-gray-200 rounded-xl transition-all duration-300 text-sm font-semibold flex-1 min-w-[140px] flex items-center justify-center gap-2 border border-white/10 hover:border-white/20 backdrop-blur-sm"
-                >
-                  Randomize Graph
+                <button type="button" onClick={handleGenerateRandom} className="btn-ghost flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm flex items-center justify-center gap-1" title="Randomize Graph">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                  Graph
                 </button>
-                <button
-                  type="button"
-                  onClick={handleGenerateRandomTree}
-                  className="px-5 py-3 bg-white/5 hover:bg-white/10 text-gray-200 rounded-xl transition-all duration-300 text-sm font-semibold flex-1 min-w-[140px] flex items-center justify-center gap-2 border border-white/10 hover:border-white/20 backdrop-blur-sm"
-                >
-                  Randomize Tree
+                <button type="button" onClick={handleGenerateRandomTree} className="btn-ghost flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm flex items-center justify-center gap-1" title="Randomize Tree">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                  Tree
                 </button>
               </>
             ) : (
-              <button
-                type="button"
-                onClick={handleGenerateRandom}
-                className="px-5 py-3 bg-white/5 hover:bg-white/10 text-gray-200 rounded-xl transition-all duration-300 text-sm font-semibold flex-1 min-w-[140px] flex items-center justify-center gap-2 border border-white/10 hover:border-white/20 backdrop-blur-sm"
-              >
-                {isDPAlgo ? "Randomize N" : "Randomize Array"}
+              <button type="button" onClick={handleGenerateRandom} className="btn-ghost flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm flex items-center justify-center gap-1" title="Randomize">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
               </button>
             )}
-            
-            <button
-              type="submit"
-              className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl transition-all duration-300 text-sm font-bold flex-1 min-w-[140px] shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_30px_rgba(79,70,229,0.5)] transform hover:-translate-y-0.5"
-            >
-              Apply & Visualize
+            <button type="submit" className="btn-primary flex-1 sm:flex-none px-5 py-2 rounded-lg text-sm font-semibold">
+              Visualize
             </button>
           </div>
+          
+          {error && <div className="w-full text-xs text-red-400 mt-1 mono">{error}</div>}
         </form>
       )}
     </div>
