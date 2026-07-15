@@ -3,12 +3,18 @@
 import React, { useState } from 'react';
 import { useVisualizerStore } from '@/store/useVisualizerStore';
 import { 
+  generateArrayRead,
   generateArrayWrite, 
   generateArrayDelete,
+  generateVectorAccess,
   generateVectorPush, 
   generateVectorPop,
   generateLinkedListAppend,
+  generateLinkedListDelete,
+  generateLinkedListTraverse,
   generateHashMapSet,
+  generateHashMapGet,
+  generateHashMapDelete,
   generateStackPush,
   generateStackPop,
   generateQueueEnqueue,
@@ -63,12 +69,52 @@ export default function DataStructureControls() {
     setVal1('');
   };
 
+  const handleLinkedListDelete = () => {
+    if (!currentState) return;
+    appendFrames(generateLinkedListDelete(currentState));
+  };
+
+  const handleLinkedListTraverse = () => {
+    if (!currentState) return;
+    appendFrames(generateLinkedListTraverse(currentState));
+  };
+
+  const handleArrayRead = () => {
+    if (!currentState) return;
+    const index = parseInt(val1);
+    if (isNaN(index)) return;
+    appendFrames(generateArrayRead(currentState, index));
+    setVal1('');
+  };
+
+  const handleVectorAccess = () => {
+    if (!currentState) return;
+    const index = parseInt(val1);
+    if (isNaN(index)) return;
+    appendFrames(generateVectorAccess(currentState, index));
+    setVal1('');
+  };
+
   const handleHashMapSet = () => {
     if (!currentState) return;
     if (!val1 || !val2) return;
     appendFrames(generateHashMapSet(currentState, val1, val2));
     setVal1('');
     setVal2('');
+  };
+
+  const handleHashMapGet = () => {
+    if (!currentState) return;
+    if (!val1) return;
+    appendFrames(generateHashMapGet(currentState, val1));
+    setVal1('');
+  };
+
+  const handleHashMapDelete = () => {
+    if (!currentState) return;
+    if (!val1) return;
+    appendFrames(generateHashMapDelete(currentState, val1));
+    setVal1('');
   };
 
   const handleStackPush = () => {
@@ -142,6 +188,9 @@ export default function DataStructureControls() {
           />
         </div>
         <div className="flex flex-row flex-wrap gap-2">
+          <button onClick={handleArrayRead} className={`${btnClasses} bg-teal-600/20 hover:bg-teal-500/30 text-teal-300 border border-teal-500/30`}>
+            Read
+          </button>
           <button onClick={handleArrayWrite} className={`${btnClasses} bg-blue-600/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/30`}>
             Write
           </button>
@@ -168,6 +217,9 @@ export default function DataStructureControls() {
           />
         </div>
         <div className="flex flex-row flex-wrap gap-2">
+          <button onClick={handleVectorAccess} className={`${btnClasses} bg-teal-600/20 hover:bg-teal-500/30 text-teal-300 border border-teal-500/30`}>
+            Access
+          </button>
           <button onClick={handleVectorPush} className={`${btnClasses} bg-emerald-600/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30`}>
             Push
           </button>
@@ -194,6 +246,14 @@ export default function DataStructureControls() {
           <button onClick={handleLinkedListAppend} className={`${btnClasses} bg-blue-600/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/30`}>
             Append Node
           </button>
+          <button onClick={handleLinkedListDelete} className={`${btnClasses} bg-red-600/20 hover:bg-red-500/30 text-red-300 border border-red-500/30`}>
+            Delete Node
+          </button>
+          {(selectedAlgorithm === 'doubly_linked_list' || selectedAlgorithm === 'circular_linked_list') && (
+            <button onClick={handleLinkedListTraverse} className={`${btnClasses} bg-amber-600/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30`}>
+              {selectedAlgorithm === 'circular_linked_list' ? 'Loop' : 'Traverse'}
+            </button>
+          )}
         </div>
       </div>
     );
@@ -217,8 +277,14 @@ export default function DataStructureControls() {
           />
         </div>
         <div className="flex flex-row flex-wrap gap-2">
+          <button onClick={handleHashMapGet} className={`${btnClasses} bg-teal-600/20 hover:bg-teal-500/30 text-teal-300 border border-teal-500/30`}>
+            Get
+          </button>
           <button onClick={handleHashMapSet} className={`${btnClasses} bg-indigo-600/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/30`}>
-            Set Key/Value
+            Set
+          </button>
+          <button onClick={handleHashMapDelete} className={`${btnClasses} bg-red-600/20 hover:bg-red-500/30 text-red-300 border border-red-500/30`}>
+            Delete
           </button>
         </div>
       </div>

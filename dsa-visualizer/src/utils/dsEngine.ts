@@ -47,6 +47,28 @@ export const generateArrayWrite = (currentState: Frame, index: number, value: nu
   return frames;
 };
 
+export const generateArrayRead = (currentState: Frame, index: number): Frame[] => {
+  const values = currentState.dsArray?.values ? [...currentState.dsArray.values] : [];
+  if (index < 0 || index >= values.length || values[index] === null) {
+    return [{
+      ...currentState,
+      description: `Error: Cannot read at index ${index}.`
+    }];
+  }
+  return [
+    {
+      ...currentState,
+      activePointers: { target: index },
+      description: `Reading element at index ${index}. Value is ${values[index]}.`
+    },
+    {
+      ...currentState,
+      activePointers: {},
+      description: `Read operation complete.`
+    }
+  ];
+};
+
 export const generateArrayDelete = (currentState: Frame, index: number): Frame[] => {
   const values = currentState.dsArray?.values ? [...currentState.dsArray.values] : [];
   
@@ -147,6 +169,25 @@ export const generateVectorPush = (currentState: Frame, value: number): Frame[] 
   });
 
   return frames;
+};
+
+export const generateVectorAccess = (currentState: Frame, index: number): Frame[] => {
+  if (!currentState.dsVector || index < 0 || index >= currentState.dsVector.size) {
+    return [{ ...currentState, description: `Error: Index ${index} out of bounds.` }];
+  }
+  const value = currentState.dsVector.values[index];
+  return [
+    {
+      ...currentState,
+      activePointers: { target: index },
+      description: `Accessing element at index ${index}. Value is ${value}.`
+    },
+    {
+      ...currentState,
+      activePointers: {},
+      description: `Access operation complete.`
+    }
+  ];
 };
 
 export const generateVectorPop = (currentState: Frame): Frame[] => {
@@ -254,6 +295,86 @@ export const generateLinkedListAppend = (currentState: Frame, value: number): Fr
   return frames;
 };
 
+export const generateLinkedListDelete = (currentState: Frame): Frame[] => {
+  if (!currentState.dsLinkedList) return [];
+  const { nodes, head, tail, type, pointers, prevPointers } = currentState.dsLinkedList;
+  
+  if (nodes.length === 0) {
+    return [{ ...currentState, description: 'Error: Cannot delete from an empty list.' }];
+  }
+
+  const frames: Frame[] = [];
+  
+  // Highlighting tail for deletion (deleting from the end for simplicity)
+  frames.push({
+    ...currentState,
+    activePointers: { target: nodes.length - 1 },
+    description: `Preparing to delete Tail node.`
+  });
+
+  const newNodes = nodes.slice(0, -1);
+  const newPointers = { ...pointers };
+  const newPrevPointers = { ...prevPointers };
+  const deletedNodeId = tail!;
+  
+  let newHead = head;
+  let newTail = null;
+
+  if (newNodes.length === 0) {
+    newHead = null;
+    description: `Deleted the only node. List is now empty.`
+  } else {
+    newTail = newNodes[newNodes.length - 1].id;
+    delete newPointers[newTail]; // Remove pointer to deleted node
+    delete newPrevPointers[deletedNodeId];
+    
+    if (type === 'circular') {
+      newPointers[newTail] = newHead!;
+    }
+  }
+
+  frames.push({
+    ...currentState,
+    activePointers: {},
+    dsLinkedList: {
+      type,
+      nodes: newNodes,
+      head: newHead,
+      tail: newTail,
+      pointers: newPointers,
+      prevPointers: newPrevPointers
+    },
+    description: newNodes.length === 0 ? `Deleted the only node. List is empty.` : `Deleted node. Updated Tail pointer.`
+  });
+
+  return frames;
+};
+
+export const generateLinkedListTraverse = (currentState: Frame): Frame[] => {
+  if (!currentState.dsLinkedList || currentState.dsLinkedList.nodes.length === 0) return [];
+  const frames: Frame[] = [];
+  const { nodes, type } = currentState.dsLinkedList;
+  
+  let traverseCount = type === 'circular' ? nodes.length + 1 : nodes.length; // Show loop back for circular
+  
+  for (let i = 0; i < traverseCount; i++) {
+    const idx = i % nodes.length;
+    frames.push({
+      ...currentState,
+      activePointers: { target: idx },
+      description: `Traversing node at index ${idx} with value ${nodes[idx].value}.`
+    });
+  }
+  
+  frames.push({
+    ...currentState,
+    activePointers: {},
+    description: `Traversal complete.`
+  });
+  
+  return frames;
+};
+
 // --- HASH MAP ---
 
 export const generateHashMapInit = (): Frame[] => {
@@ -311,6 +432,97 @@ export const generateHashMapSet = (currentState: Frame, key: string, value: stri
     dsHashMap: { buckets },
     description: `Hash Map updated successfully.`
   });
+
+  return frames;
+};
+
+export const generateHashMapGet = (currentState: Frame, key: string): Frame[] => {
+  if (!currentState.dsHashMap) return [];
+  const buckets = currentState.dsHashMap.buckets;
+  const frames: Frame[] = [];
+
+  let hash = 0;
+  for (let i = 0; i < key.length; i++) {
+    hash += key.charCodeAt(i);
+  }
+  const index = hash % 5;
+
+  frames.push({
+    ...currentState,
+    description: `Hashing key "${key}" to bucket ${index}.`
+  });
+
+  const chain = buckets[index].chain;
+  const existingIdx = chain.findIndex((c: any) => c.key === key);
+
+  if (existingIdx >= 0) {
+    frames.push({
+      ...currentState,
+      activePointers: { bucket: index },
+      description: `Found key "${key}" in bucket ${index}. Value is "${chain[existingIdx].value}".`
+    });
+  } else {
+    frames.push({
+      ...currentState,
+      activePointers: { bucket: index },
+      description: `Key "${key}" not found in bucket ${index}.`
+    });
+  }
+
+  frames.push({
+    ...currentState,
+    activePointers: {},
+    description: `Get operation complete.`
+  });
+
+  return frames;
+};
+
+export const generateHashMapDelete = (currentState: Frame, key: string): Frame[] => {
+  if (!currentState.dsHashMap) return [];
+  const buckets = JSON.parse(JSON.stringify(currentState.dsHashMap.buckets));
+  const frames: Frame[] = [];
+
+  let hash = 0;
+  for (let i = 0; i < key.length; i++) {
+    hash += key.charCodeAt(i);
+  }
+  const index = hash % 5;
+
+  frames.push({
+    ...currentState,
+    description: `Hashing key "${key}" to bucket ${index} for deletion.`
+  });
+
+  const chain = buckets[index].chain;
+  const existingIdx = chain.findIndex((c: any) => c.key === key);
+
+  if (existingIdx >= 0) {
+    frames.push({
+      ...currentState,
+      activePointers: { bucket: index },
+      description: `Found key "${key}". Deleting from bucket ${index}.`
+    });
+    chain.splice(existingIdx, 1);
+    
+    frames.push({
+      ...currentState,
+      activePointers: {},
+      dsHashMap: { buckets },
+      description: `Deleted key "${key}" successfully.`
+    });
+  } else {
+    frames.push({
+      ...currentState,
+      activePointers: { bucket: index },
+      description: `Key "${key}" not found. Nothing to delete.`
+    });
+    frames.push({
+      ...currentState,
+      activePointers: {},
+      description: `Delete operation complete.`
+    });
+  }
 
   return frames;
 };

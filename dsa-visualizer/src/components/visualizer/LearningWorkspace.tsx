@@ -75,29 +75,29 @@ export default function LearningWorkspace({ title, allowedModules }: LearningWor
   };
 
   const algoMap = {
-    array: { name: 'Static Array', time: 'O(1)', space: 'O(n)' },
-    vector: { name: 'Vector (Dynamic)', time: 'O(1) avg', space: 'O(n)' },
-    linked_list: { name: 'Singly Linked List', time: 'O(n)', space: 'O(n)' },
-    doubly_linked_list: { name: 'Doubly Linked List', time: 'O(n)', space: 'O(n)' },
-    circular_linked_list: { name: 'Circular Linked List', time: 'O(n)', space: 'O(n)' },
-    hash_map: { name: 'Hash Map (Chaining)', time: 'O(1) avg', space: 'O(n)' },
-    bubble: { name: 'Bubble Sort', time: 'O(n²)', space: 'O(1)' },
-    selection: { name: 'Selection Sort', time: 'O(n²)', space: 'O(1)' },
-    insertion: { name: 'Insertion Sort', time: 'O(n²)', space: 'O(1)' },
-    merge: { name: 'Merge Sort', time: 'O(n log n)', space: 'O(n)' },
-    quick: { name: 'Quick Sort', time: 'O(n log n)', space: 'O(log n)' },
-    linear: { name: 'Linear Search', time: 'O(n)', space: 'O(1)' },
-    binary: { name: 'Binary Search', time: 'O(log n)', space: 'O(1)' },
-    bfs: { name: 'Breadth-First Search', time: 'O(V + E)', space: 'O(V)' },
-    dfs: { name: 'Depth-First Search', time: 'O(V + E)', space: 'O(V)' },
-    dijkstra: { name: "Dijkstra's Algo", time: 'O(E log V)', space: 'O(V)' },
-    dp: { name: 'Dynamic Programming', time: 'O(n)', space: 'O(n)' },
-    stack: { name: 'Stack', time: 'O(1)', space: 'O(n)' },
-    queue: { name: 'Queue', time: 'O(1)', space: 'O(n)' },
-    heap: { name: 'Heap / PQ', time: 'O(log n)', space: 'O(n)' },
+    array: { name: 'Static Array', time: 'O(1)', space: 'O(n)', ops: 'Read / Write' },
+    vector: { name: 'Vector (Dynamic)', time: 'O(1) avg', space: 'O(n)', ops: 'Push / Pop / Access' },
+    linked_list: { name: 'Singly Linked List', time: 'O(n)', space: 'O(n)', ops: 'Append / Delete' },
+    doubly_linked_list: { name: 'Doubly Linked List', time: 'O(n)', space: 'O(n)', ops: 'Append / Delete / Traverse' },
+    circular_linked_list: { name: 'Circular Linked List', time: 'O(n)', space: 'O(n)', ops: 'Append / Loop' },
+    hash_map: { name: 'Hash Map (Chaining)', time: 'O(1) avg', space: 'O(n)', ops: 'Put / Get / Delete' },
+    bubble: { name: 'Bubble Sort', time: 'O(n²)', space: 'O(1)', ops: 'Compare & Swap' },
+    selection: { name: 'Selection Sort', time: 'O(n²)', space: 'O(1)', ops: 'Compare & Swap' },
+    insertion: { name: 'Insertion Sort', time: 'O(n²)', space: 'O(1)', ops: 'Compare & Shift' },
+    merge: { name: 'Merge Sort', time: 'O(n log n)', space: 'O(n)', ops: 'Divide & Merge' },
+    quick: { name: 'Quick Sort', time: 'O(n log n)', space: 'O(log n)', ops: 'Partition & Swap' },
+    linear: { name: 'Linear Search', time: 'O(n)', space: 'O(1)', ops: 'Compare' },
+    binary: { name: 'Binary Search', time: 'O(log n)', space: 'O(1)', ops: 'Divide & Compare' },
+    bfs: { name: 'Breadth-First Search', time: 'O(V + E)', space: 'O(V)', ops: 'Enqueue / Visit' },
+    dfs: { name: 'Depth-First Search', time: 'O(V + E)', space: 'O(V)', ops: 'Push / Visit' },
+    dijkstra: { name: "Dijkstra's Algo", time: 'O(E log V)', space: 'O(V)', ops: 'Relax Edges' },
+    dp: { name: 'Dynamic Programming', time: 'O(n)', space: 'O(n)', ops: 'Memoize / Tabulate' },
+    stack: { name: 'Stack', time: 'O(1)', space: 'O(n)', ops: 'Push / Pop' },
+    queue: { name: 'Queue', time: 'O(1)', space: 'O(n)', ops: 'Enqueue / Dequeue' },
+    heap: { name: 'Heap / PQ', time: 'O(log n)', space: 'O(n)', ops: 'Insert / Extract' },
   };
   
-  const algoDetails = algoMap[selectedAlgorithm as keyof typeof algoMap] || { name: 'Algorithm', time: '-', space: '-' };
+  const algoDetails = algoMap[selectedAlgorithm as keyof typeof algoMap] || { name: 'Algorithm', time: '-', space: '-', ops: 'N/A' };
   const isGraphAlgo = selectedAlgorithm === 'bfs' || selectedAlgorithm === 'dfs' || selectedAlgorithm === 'dijkstra' || selectedAlgorithm === 'heap';
 
   return (
@@ -160,46 +160,56 @@ export default function LearningWorkspace({ title, allowedModules }: LearningWor
       {viewMode === 'theory' ? (
         <TheoryModeView />
       ) : (
-        <div className={`flex flex-col flex-1 z-10 w-full mx-auto overflow-hidden ${
+        <div className={`flex flex-col lg:flex-row flex-1 z-10 w-full mx-auto overflow-hidden ${
           selectedAlgorithm === 'sandbox' 
             ? 'max-w-full p-4 gap-4' 
-            : 'max-w-[1200px] p-4 sm:p-8 gap-6'
+            : 'max-w-[1400px] p-4 sm:p-8 gap-6'
         }`}>
           
-          {/* Top Config & Controls */}
+          {/* Left Panel: Config, Controls, & Stats */}
           {selectedAlgorithm !== 'sandbox' && (
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-6 w-full lg:w-[350px] shrink-0 overflow-y-auto scrollbar-hide pb-4">
               <DataInputPanel />
               <PlaybackControls />
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="card-mono p-4 flex flex-col items-start gap-1">
+                  <span className="text-[9px] uppercase tracking-[0.2em] text-white/40 mono leading-none">Status</span>
+                  <span className="text-sm font-semibold text-white mono">
+                    Active
+                  </span>
+                </div>
+                <div className="card-mono p-4 flex flex-col items-start gap-1">
+                  <span className="text-[9px] uppercase tracking-[0.2em] text-white/40 mono leading-none">Operations</span>
+                  <span className="text-sm font-semibold text-white mono">{algoDetails.ops}</span>
+                </div>
+                <div className="card-mono p-4 flex flex-col items-start gap-1">
+                  <span className="text-[9px] uppercase tracking-[0.2em] text-white/40 mono leading-none">Time Complexity</span>
+                  <span className="text-sm font-semibold text-white mono">{algoDetails.time}</span>
+                </div>
+                <div className="card-mono p-4 flex flex-col items-start gap-1">
+                  <span className="text-[9px] uppercase tracking-[0.2em] text-white/40 mono leading-none">Space Complexity</span>
+                  <span className="text-sm font-semibold text-white mono">{algoDetails.space}</span>
+                </div>
+              </div>
             </div>
           )}
 
-          {/* Canvas Section */}
-          <section className="flex-1 flex flex-col gap-4 min-h-0">
+          {/* Right Panel: Canvas Section */}
+          <section className="flex-1 flex flex-col gap-4 min-h-0 relative">
             
             {selectedAlgorithm !== 'sandbox' && (
               <div className="flex items-end justify-between px-1">
                 <h2 className="text-2xl font-medium tracking-tight text-white">
                   {algoDetails.name}
                 </h2>
-                <div className="flex gap-2">
-                  <div className="flex flex-col items-end">
-                    <span className="text-[9px] uppercase tracking-[0.2em] text-white/40 mono leading-none mb-1">Time</span>
-                    <span className="text-xs text-white/80 mono">{algoDetails.time}</span>
-                  </div>
-                  <div className="w-px bg-white/10 mx-2" />
-                  <div className="flex flex-col items-end">
-                    <span className="text-[9px] uppercase tracking-[0.2em] text-white/40 mono leading-none mb-1">Space</span>
-                    <span className="text-xs text-white/80 mono">{algoDetails.space}</span>
-                  </div>
-                </div>
               </div>
             )}
             
             <div className={`w-full bg-[#0a0a0a] border border-white/10 shadow-2xl overflow-hidden flex flex-col relative shrink-0 ${
               selectedAlgorithm === 'sandbox' 
                 ? 'flex-1 rounded-xl' 
-                : 'rounded-2xl min-h-[500px]'
+                : 'flex-1 rounded-2xl min-h-[500px]'
             }`}>
               {selectedAlgorithm === 'sandbox' ? (
                 <CodeEditor onExecute={handleExecuteCode} isExecuting={isExecuting} output={sandboxOutput} allowedModules={allowedModules} />
@@ -211,32 +221,6 @@ export default function LearningWorkspace({ title, allowedModules }: LearningWor
                selectedAlgorithm === 'queue' ? <DSQueueVisualizer /> :
                isGraphAlgo ? <GraphVisualizerBoard /> : <VisualizerBoard />}
             </div>
-
-            {/* Stat Cards underneath Canvas */}
-            {selectedAlgorithm !== 'sandbox' && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
-                <div className="card-mono p-4 flex flex-col items-start gap-1">
-                  <span className="text-[9px] uppercase tracking-[0.2em] text-white/40 mono leading-none">Status</span>
-                  <span className="text-sm font-semibold text-white mono">
-                    {/* Access state from store implicitly or pass a prop */}
-                    Active
-                  </span>
-                </div>
-                <div className="card-mono p-4 flex flex-col items-start gap-1">
-                  <span className="text-[9px] uppercase tracking-[0.2em] text-white/40 mono leading-none">Operations</span>
-                  <span className="text-sm font-semibold text-white mono">N/A</span>
-                </div>
-                <div className="card-mono p-4 flex flex-col items-start gap-1">
-                  <span className="text-[9px] uppercase tracking-[0.2em] text-white/40 mono leading-none">Time Complexity</span>
-                  <span className="text-sm font-semibold text-white mono">{algoDetails.time}</span>
-                </div>
-                <div className="card-mono p-4 flex flex-col items-start gap-1">
-                  <span className="text-[9px] uppercase tracking-[0.2em] text-white/40 mono leading-none">Space Complexity</span>
-                  <span className="text-sm font-semibold text-white mono">{algoDetails.space}</span>
-                </div>
-              </div>
-            )}
-            
           </section>
         </div>
       )}
