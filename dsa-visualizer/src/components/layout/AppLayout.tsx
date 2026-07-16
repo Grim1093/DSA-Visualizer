@@ -22,10 +22,25 @@ export default function AppLayout({ children, progress }: AppLayoutProps) {
   const { isSidebarOpen, toggleSidebar } = useVisualizerStore();
   const [searchInput, setSearchInput] = useState('');
 
-  const xp = progress?.points ?? 0;
-  const level = Math.floor(xp / 100) + 1;
-  const xpInLevel = xp % 100;
-  const pct = (xpInLevel / 100) * 100;
+  const completedCount = progress?.completedModules?.length || 0;
+  
+  // Total items = 18 dashboard modules + 6 coding challenges = 24 total
+  let rank = "Novice";
+  let tier = 1;
+  let nextThreshold = 8;
+  
+  if (completedCount >= 16) {
+    rank = "Master";
+    tier = 3;
+    nextThreshold = 24; // Max tier
+  } else if (completedCount >= 8) {
+    rank = "Architect";
+    tier = 2;
+    nextThreshold = 16;
+  }
+
+  // Cap at 100% if they exceed 24 somehow
+  const progressPct = tier === 3 && completedCount >= 24 ? 100 : (completedCount / nextThreshold) * 100;
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && searchInput.trim()) {
@@ -52,7 +67,7 @@ export default function AppLayout({ children, progress }: AppLayoutProps) {
           {isSidebarOpen && (
             <div className="overflow-hidden whitespace-nowrap">
               <h1 className="font-headline-md text-headline-md text-primary tracking-tighter uppercase">AlgoQuest</h1>
-              <p className="font-label-caps text-[10px] leading-none text-on-surface-variant mt-0.5">Level {level} Architect</p>
+              <p className="font-label-caps text-[10px] leading-none text-on-surface-variant mt-0.5">Tier {tier} {rank}</p>
             </div>
           )}
         </div>
@@ -106,17 +121,19 @@ export default function AppLayout({ children, progress }: AppLayoutProps) {
         
         <div className="hidden lg:flex items-center gap-6 border border-outline-variant rounded-sm px-4 py-1 bg-surface-container-low/50">
           <div className="flex items-center gap-2">
-            <span className="font-label-caps text-label-caps text-on-surface-variant">LVL</span>
-            <span className="font-code-sm text-code-sm text-primary">{level.toString().padStart(2, '0')}</span>
+            <span className="font-label-caps text-label-caps text-on-surface-variant">TIER</span>
+            <span className="font-code-sm text-code-sm text-primary">{tier.toString().padStart(2, '0')}</span>
           </div>
           <div className="w-px h-4 bg-outline-variant"></div>
           <div className="flex items-center gap-2">
-            <span className="font-label-caps text-label-caps text-on-surface-variant">XP</span>
+            <span className="font-label-caps text-label-caps text-on-surface-variant">TASKS</span>
             <div className="flex flex-col gap-0.5">
               <div className="w-24 h-1 bg-surface-container border border-outline-variant rounded-sm overflow-hidden">
-                <div className="h-full bg-primary transition-all duration-500 ease-out" style={{width: `${pct}%`}}></div>
+                <div className="h-full bg-primary transition-all duration-500 ease-out" style={{width: `${progressPct}%`}}></div>
               </div>
-              <span className="font-code-sm text-code-sm text-primary text-[10px] leading-none">{xpInLevel}/100</span>
+              <span className="font-code-sm text-code-sm text-primary text-[10px] leading-none">
+                {tier === 3 ? 'MAX' : `${completedCount}/${nextThreshold}`}
+              </span>
             </div>
           </div>
         </div>
