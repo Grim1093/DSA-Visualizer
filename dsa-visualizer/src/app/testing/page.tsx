@@ -1,83 +1,152 @@
-"use client";
+'use client';
 
-import React from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import StarField from '@/components/StarField';
+import { useSession } from 'next-auth/react';
+import { getChallengesByCategory } from '@/utils/mockChallenges';
+import AppLayout, { ProgressData } from '@/components/layout/AppLayout';
 
-export default function TestingHubPage() {
+// Use ProgressData from AppLayout
+
+export default function TestingPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
+  const [progress, setProgress] = useState<ProgressData | null>(null);
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/');
+    }
+  }, [status, router]);
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      fetch('/api/progress')
+        .then(res => res.json())
+        .then(data => {
+          if (!data.error) setProgress(data);
+        })
+        .catch(console.error);
+    }
+  }, [status]);
+
+  if (status === 'loading') {
+    return <div className="min-h-screen flex items-center justify-center bg-background text-on-surface">Loading...</div>;
+  }
+
+  const xp = progress?.points ?? 0;
+  const level = Math.floor(xp / 100) + 1;
+
+  const isCompleted = (id: string) => progress?.completedModules.some(m => m.module_id === id);
+
+  const formatDesc = (desc: string) => {
+    const firstLine = desc.split('\n')[0];
+    return firstLine.length > 70 ? firstLine.substring(0, 70) + '...' : firstLine;
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 16 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } }
+  const algoChallenges = getChallengesByCategory('algorithms').map((c, i) => ({
+    id: c.id,
+    number: String(i + 1).padStart(2, '0'),
+    title: c.title,
+    desc: formatDesc(c.description),
+    difficulty: c.difficulty,
+    locked: c.difficulty === 'Hard' && level < 5
+  }));
+
+  const dsChallenges = getChallengesByCategory('data-structures').map((c, i) => ({
+    id: c.id,
+    number: String(i + algoChallenges.length + 1).padStart(2, '0'),
+    title: c.title,
+    desc: formatDesc(c.description),
+    difficulty: c.difficulty,
+    locked: c.difficulty === 'Hard' && level < 5
+  }));
+
+  const renderChallenge = (mod: any) => {
+    const completed = isCompleted(mod.id);
+    return (
+      <div key={mod.id} className="group flex flex-col md:flex-row items-stretch border-b border-outline-variant hover:bg-surface-container-high transition-colors duration-200">
+        <div className="w-16 border-r border-outline-variant flex items-center justify-center font-code-lg text-code-lg text-on-surface-variant group-hover:text-primary transition-colors py-4">
+          {mod.number}
+        </div>
+        <div className="flex-1 p-4 flex flex-col justify-center">
+          <div className="flex items-center gap-2 mb-1">
+            <h4 className={`font-headline-md text-headline-md ${completed ? 'text-green-400' : 'text-primary'} group-hover:translate-x-1 transition-transform duration-200 flex items-center gap-2`}>
+              {mod.title}
+              {completed && <span className="material-symbols-outlined text-[16px]">check_circle</span>}
+            </h4>
+            {mod.locked && <span className="material-symbols-outlined text-[14px] text-primary" style={{fontVariationSettings: "'FILL' 1"}}>lock</span>}
+          </div>
+          <p className={`font-code-sm text-code-sm text-on-surface-variant ${mod.locked ? 'opacity-50' : ''}`}>
+            {mod.desc}
+          </p>
+        </div>
+        <div className="w-32 p-4 flex items-center justify-center md:border-l border-t md:border-t-0 border-outline-variant/30">
+          <span className="font-code-sm text-code-sm text-on-surface-variant border border-outline-variant px-2 py-1 uppercase tracking-widest">{mod.difficulty}</span>
+        </div>
+        <div className="w-40 p-4 flex items-center justify-center border-t md:border-t-0 border-outline-variant/30">
+          {mod.locked ? (
+            <button className="font-label-caps text-label-caps bg-transparent border border-outline-variant text-on-surface-variant px-6 py-2 opacity-50 cursor-not-allowed tracking-widest uppercase w-full">
+              LOCKED
+            </button>
+          ) : (
+            <button 
+              onClick={() => {
+                router.push(`/testing/challenge/${mod.id}`);
+              }}
+              className={`font-label-caps text-label-caps bg-transparent border px-6 py-2 transition-all tracking-widest uppercase w-full ${
+                completed 
+                  ? 'border-green-400 text-green-400 hover:bg-green-400 hover:text-surface' 
+                  : 'border-outline-variant text-on-surface-variant hover:bg-primary hover:text-surface hover:border-primary'
+              }`}
+            >
+              {completed ? 'REVIEW' : 'SOLVE'}
+            </button>
+          )}
+        </div>
+      </div>
+    );
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center bg-black text-white font-sans p-6 md:p-10 relative overflow-hidden grain">
-      <StarField />
-      <div className="fixed inset-0 dot-bg opacity-40 pointer-events-none z-0" />
+    <AppLayout progress={progress}>
+      <div className="absolute inset-0 dot-bg z-0 pointer-events-none opacity-40 mix-blend-overlay"></div>
       
-      <header className="w-full max-w-5xl flex items-center justify-between mb-12 z-10">
-        <div>
-          <div className="text-[10px] uppercase tracking-[0.24em] text-white/40 mono">Code Execution Sandbox</div>
-          <h1 className="text-3xl font-semibold tracking-tight mt-1">Test Mode</h1>
+      <div className="p-6 pb-24 relative z-10 max-w-5xl mx-auto">
+        {/* Header Section */}
+        <div className="mb-12 flex justify-between items-end border-b border-outline-variant pb-6 pt-4 gap-4">
+            <div className="flex flex-col gap-4">
+              <h2 className="font-headline-lg text-headline-lg text-primary tracking-tighter uppercase">KNOWLEDGE ASSESSMENT TERMINAL</h2>
+            </div>
+            <div className="font-code-sm text-code-sm text-on-surface-variant flex items-center gap-3 border border-outline-variant px-4 py-1.5 bg-surface-container-lowest/50 backdrop-blur-sm rounded-sm">
+              <span className="w-2 h-2 rounded-full bg-primary animate-[pulse_2s_ease-in-out_infinite]"></span> Assessment Mode
+            </div>
         </div>
-        <button onClick={() => router.push('/dashboard')} className="btn-ghost px-3 py-1.5 rounded-lg text-sm flex items-center gap-1.5">
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-          Back
-        </button>
-      </header>
 
-      <div className="w-full max-w-5xl z-10 flex flex-col gap-12">
-        
-        <section>
-          <div className="flex items-center gap-2 mb-6">
-            <span className="w-4 h-[1px] bg-white/30" />
-            <span className="text-[10px] uppercase tracking-[0.24em] text-white/50 mono">Challenge Categories</span>
-          </div>
-          
-          <motion.div variants={containerVariants} initial="hidden" animate="visible" className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            
-            <motion.button variants={itemVariants} onClick={() => router.push('/testing/algorithms')} className="group text-left card-mono p-5 hover:border-white/25 transition-all">
-              <div className="flex items-center justify-between mb-8">
-                <div className="w-9 h-9 rounded-lg bg-white/[0.04] border border-white/10 flex items-center justify-center">
-                  <svg className="w-4 h-4 text-white/80" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
-                </div>
-                <span className="text-[10px] mono text-white/30 tracking-[0.18em]">TEST.1</span>
-              </div>
-              <h3 className="text-lg font-medium tracking-tight mb-1.5">Algorithms</h3>
-              <p className="text-sm text-white/50 leading-relaxed mb-6">Test your skills in sorting, searching, and pathfinding.</p>
-              <div className="pt-4 border-t border-white/5 flex items-center justify-between">
-                <span className="text-[11px] mono text-white/40">Enter Sandbox</span>
-                <svg className="w-4 h-4 text-white/30 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
-              </div>
-            </motion.button>
-
-            <motion.button variants={itemVariants} onClick={() => router.push('/testing/data-structures')} className="group text-left card-mono p-5 hover:border-white/25 transition-all">
-              <div className="flex items-center justify-between mb-8">
-                <div className="w-9 h-9 rounded-lg bg-white/[0.04] border border-white/10 flex items-center justify-center">
-                  <svg className="w-4 h-4 text-white/80" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
-                </div>
-                <span className="text-[10px] mono text-white/30 tracking-[0.18em]">TEST.2</span>
-              </div>
-              <h3 className="text-lg font-medium tracking-tight mb-1.5">Data Structures</h3>
-              <p className="text-sm text-white/50 leading-relaxed mb-6">Solve problems using arrays, linked lists, trees, and graphs.</p>
-              <div className="pt-4 border-t border-white/5 flex items-center justify-between">
-                <span className="text-[11px] mono text-white/40">Enter Sandbox</span>
-                <svg className="w-4 h-4 text-white/30 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
-              </div>
-            </motion.button>
-
-          </motion.div>
+        {/* Section 01: Algorithm Challenges */}
+        <section className="flex flex-col gap-4 mb-12">
+            <div className="flex items-center gap-3 border-b border-outline-variant/50 pb-2">
+              <span className="bg-primary text-surface font-label-caps text-label-caps px-2 py-0.5 rounded-sm">TEST.1</span>
+              <h3 className="font-label-caps text-label-caps text-on-surface-variant tracking-widest uppercase">ALGORITHM CHALLENGES</h3>
+              <div className="flex-1 h-px bg-outline-variant/30 ml-4"></div>
+            </div>
+            <div className="border border-outline-variant bg-surface-container-lowest/40 backdrop-blur-md flex flex-col rounded-sm overflow-hidden">
+              {algoChallenges.map(renderChallenge)}
+            </div>
         </section>
 
+        {/* Section 02: Data Structure Challenges */}
+        <section className="flex flex-col gap-4">
+            <div className="flex items-center gap-3 border-b border-outline-variant/50 pb-2">
+              <span className="bg-primary text-surface font-label-caps text-label-caps px-2 py-0.5 rounded-sm">TEST.2</span>
+              <h3 className="font-label-caps text-label-caps text-on-surface-variant tracking-widest uppercase">DATA STRUCTURE CHALLENGES</h3>
+              <div className="flex-1 h-px bg-outline-variant/30 ml-4"></div>
+            </div>
+            <div className="border border-outline-variant bg-surface-container-lowest/40 backdrop-blur-md flex flex-col rounded-sm overflow-hidden">
+              {dsChallenges.map(renderChallenge)}
+            </div>
+        </section>
       </div>
-    </main>
+    </AppLayout>
   );
 }

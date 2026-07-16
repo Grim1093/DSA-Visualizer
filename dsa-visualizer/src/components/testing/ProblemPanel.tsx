@@ -11,42 +11,42 @@ export default function ProblemPanel({ challenge }: ProblemPanelProps) {
       case 'Easy': return 'text-green-400 bg-green-400/10 border-green-400/20';
       case 'Medium': return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20';
       case 'Hard': return 'text-red-400 bg-red-400/10 border-red-400/20';
-      default: return 'text-gray-400 bg-gray-400/10 border-gray-400/20';
+      default: return 'text-on-surface-variant bg-surface-container border-outline-variant';
     }
   };
 
   return (
-    <div className="h-full bg-[#0a0a0a] text-gray-200 p-6 overflow-y-auto custom-scrollbar border-r border-gray-800">
+    <div className="h-full bg-surface-container-lowest text-on-surface p-6 overflow-y-auto custom-scrollbar">
       <div className="flex items-center gap-4 mb-6">
-        <h1 className="text-2xl font-bold">{challenge.title}</h1>
-        <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getDifficultyColor(challenge.difficulty)}`}>
+        <h1 className="font-headline-lg text-headline-lg tracking-tight">{challenge.title}</h1>
+        <span className={`px-3 py-1 rounded-sm font-label-caps text-label-caps uppercase tracking-widest border ${getDifficultyColor(challenge.difficulty)}`}>
           {challenge.difficulty}
         </span>
       </div>
 
       <div className="prose prose-invert max-w-none">
-        <div className="whitespace-pre-wrap text-gray-300 leading-relaxed mb-8">
+        <div className="whitespace-pre-wrap text-on-surface-variant font-body-md text-body-md leading-relaxed mb-8">
           {challenge.description}
         </div>
 
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-white mb-4">Examples</h2>
+          <h2 className="font-headline-sm text-headline-sm text-primary tracking-widest uppercase mb-4">Examples</h2>
           {challenge.examples.map((ex, idx) => (
-            <div key={idx} className="bg-[#111] border border-gray-800 rounded-xl p-4 mb-4">
-              <p className="mb-2"><span className="text-gray-400 font-medium">Input:</span> <span className="font-mono text-sm text-blue-300">{ex.input}</span></p>
-              <p className="mb-2"><span className="text-gray-400 font-medium">Output:</span> <span className="font-mono text-sm text-green-300">{ex.output}</span></p>
+            <div key={idx} className="bg-surface-container-low border border-outline-variant rounded-sm p-4 mb-4">
+              <p className="mb-2"><span className="text-on-surface-variant font-label-caps text-label-caps mr-2 tracking-widest">INPUT:</span> <span className="font-code-sm text-code-sm text-primary bg-primary/10 px-2 py-0.5 rounded-sm">{ex.input}</span></p>
+              <p className="mb-2"><span className="text-on-surface-variant font-label-caps text-label-caps mr-2 tracking-widest">OUTPUT:</span> <span className="font-code-sm text-code-sm text-green-400 bg-green-400/10 px-2 py-0.5 rounded-sm">{ex.output}</span></p>
               {ex.explanation && (
-                <p><span className="text-gray-400 font-medium">Explanation:</span> <span className="text-sm">{ex.explanation}</span></p>
+                <p className="mt-4"><span className="text-on-surface-variant font-label-caps text-label-caps mr-2 tracking-widest block mb-1">EXPLANATION:</span> <span className="font-body-md text-body-md text-on-surface opacity-80">{ex.explanation}</span></p>
               )}
             </div>
           ))}
         </div>
 
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-white mb-4">Constraints</h2>
-          <ul className="list-disc list-inside bg-[#111] border border-gray-800 rounded-xl p-4">
+          <h2 className="font-headline-sm text-headline-sm text-primary tracking-widest uppercase mb-4">Constraints</h2>
+          <ul className="list-disc list-inside bg-surface-container-low border border-outline-variant rounded-sm p-4">
             {challenge.constraints.map((constraint, idx) => (
-              <li key={idx} className="text-gray-300 font-mono text-sm mb-1">{constraint}</li>
+              <li key={idx} className="text-on-surface font-code-sm text-code-sm mb-2 opacity-80">{constraint}</li>
             ))}
           </ul>
         </div>

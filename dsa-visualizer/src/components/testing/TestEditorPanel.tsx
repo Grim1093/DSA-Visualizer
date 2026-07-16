@@ -67,9 +67,9 @@ export default function TestEditorPanel({ challenge }: TestEditorPanelProps) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#111] overflow-hidden">
+    <div className="flex flex-col h-full bg-surface-container-lowest overflow-hidden">
       {/* Header */}
-      <div className="flex justify-between items-center bg-[#1a1a1a] px-4 py-3 border-b border-gray-800">
+      <div className="flex justify-between items-center bg-surface-container-low px-4 py-3 border-b border-outline-variant">
         <div className="flex items-center gap-4">
           <DropdownSelector
             value={language}
@@ -88,16 +88,18 @@ export default function TestEditorPanel({ challenge }: TestEditorPanelProps) {
           <button 
             onClick={handleRunCode}
             disabled={isExecuting}
-            className="px-4 py-1.5 text-sm font-semibold rounded bg-[#2a2a2a] hover:bg-[#333] text-gray-300 border border-gray-700 transition-colors disabled:opacity-50"
+            className="px-4 py-1.5 font-label-caps text-label-caps rounded-sm bg-surface hover:bg-surface-container text-on-surface border border-outline-variant transition-colors disabled:opacity-50 flex items-center gap-2 tracking-widest"
           >
-            Run Code
+            <span className="material-symbols-outlined text-[16px]">play_arrow</span>
+            RUN CODE
           </button>
           <button 
             onClick={handleSubmit}
             disabled={isExecuting}
-            className="px-4 py-1.5 text-sm font-semibold rounded bg-green-600/20 hover:bg-green-600/30 text-green-400 border border-green-600/50 transition-colors disabled:opacity-50"
+            className="px-4 py-1.5 font-label-caps text-label-caps rounded-sm bg-primary/20 hover:bg-primary/30 text-primary border border-primary/50 transition-colors disabled:opacity-50 flex items-center gap-2 tracking-widest"
           >
-            {isExecuting ? 'Submitting...' : 'Submit'}
+            <span className="material-symbols-outlined text-[16px]">cloud_upload</span>
+            {isExecuting ? 'SUBMITTING...' : 'SUBMIT'}
           </button>
         </div>
       </div>
@@ -121,23 +123,23 @@ export default function TestEditorPanel({ challenge }: TestEditorPanelProps) {
       </div>
 
       {/* Bottom Panel (Tabs) */}
-      <div className="h-64 bg-[#0a0a0a] border-t border-gray-800 flex flex-col shrink-0">
-        <div className="bg-[#1a1a1a] px-4 pt-2 flex items-center gap-6 border-b border-gray-800">
+      <div className="h-64 bg-surface-container-lowest border-t border-outline-variant flex flex-col shrink-0">
+        <div className="bg-surface-container-low px-4 pt-2 flex items-center gap-6 border-b border-outline-variant">
           <button
             onClick={() => setActiveTab('testcases')}
-            className={`pb-2 text-sm font-medium transition-colors border-b-2 ${
-              activeTab === 'testcases' ? 'border-green-500 text-green-400' : 'border-transparent text-gray-400 hover:text-gray-300'
+            className={`pb-2 font-label-caps text-label-caps tracking-widest transition-colors border-b-2 ${
+              activeTab === 'testcases' ? 'border-primary text-primary' : 'border-transparent text-on-surface-variant hover:text-on-surface'
             }`}
           >
-            Testcases
+            TESTCASES
           </button>
           <button
             onClick={() => setActiveTab('results')}
-            className={`pb-2 text-sm font-medium transition-colors border-b-2 ${
-              activeTab === 'results' ? 'border-green-500 text-green-400' : 'border-transparent text-gray-400 hover:text-gray-300'
+            className={`pb-2 font-label-caps text-label-caps tracking-widest transition-colors border-b-2 ${
+              activeTab === 'results' ? 'border-primary text-primary' : 'border-transparent text-on-surface-variant hover:text-on-surface'
             }`}
           >
-            Test Results
+            TEST RESULTS
           </button>
         </div>
         
@@ -149,36 +151,38 @@ export default function TestEditorPanel({ challenge }: TestEditorPanelProps) {
                   <button
                     key={idx}
                     onClick={() => setActiveTestCase(idx)}
-                    className={`px-3 py-1 text-sm rounded ${
-                      activeTestCase === idx ? 'bg-[#333] text-gray-200' : 'bg-[#1a1a1a] text-gray-400 hover:bg-[#222]'
+                    className={`px-4 py-1.5 rounded-sm font-label-caps text-label-caps tracking-widest border transition-colors ${
+                      activeTestCase === idx
+                        ? 'bg-primary/20 border-primary text-primary'
+                        : 'bg-surface border-outline-variant text-on-surface-variant hover:bg-surface-container'
                     }`}
                   >
-                    Case {idx + 1}
+                    CASE {idx + 1}
                   </button>
                 ))}
               </div>
-              <div className="flex-1 overflow-y-auto space-y-4">
-                {challenge.testCases[activeTestCase] && (
-                  <>
-                    <div>
-                      <div className="text-xs text-gray-500 font-semibold mb-1">Input:</div>
-                      <div className="bg-[#1a1a1a] text-gray-300 font-mono text-sm p-3 rounded">
-                        {JSON.stringify(challenge.testCases[activeTestCase].input)}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs text-gray-500 font-semibold mb-1">Expected Output:</div>
-                      <div className="bg-[#1a1a1a] text-gray-300 font-mono text-sm p-3 rounded">
-                        {JSON.stringify(challenge.testCases[activeTestCase].expected)}
-                      </div>
-                    </div>
-                  </>
-                )}
+              <div className="flex-1 bg-surface-container-low border border-outline-variant rounded-sm p-4 overflow-y-auto custom-scrollbar">
+                <div className="mb-4">
+                  <p className="text-on-surface-variant font-label-caps text-label-caps mb-1 tracking-widest">INPUT:</p>
+                  <pre className="font-code-sm text-code-sm text-on-surface bg-surface-container p-2 rounded-sm border border-outline-variant whitespace-pre-wrap">{challenge.testCases[activeTestCase]?.input}</pre>
+                </div>
+                <div>
+                  <p className="text-on-surface-variant font-label-caps text-label-caps mb-1 tracking-widest">EXPECTED OUTPUT:</p>
+                  <pre className="font-code-sm text-code-sm text-on-surface bg-surface-container p-2 rounded-sm border border-outline-variant whitespace-pre-wrap">{challenge.testCases[activeTestCase]?.expectedOutput}</pre>
+                </div>
               </div>
             </div>
           ) : (
-            <div className="h-full p-4 overflow-y-auto custom-scrollbar font-mono text-sm text-gray-300 whitespace-pre-wrap">
-              {output || 'Run your code to see the output here.'}
+            <div className="h-full bg-surface-container-lowest p-4">
+              <pre className={`font-code-sm text-code-sm p-4 rounded-sm border h-full overflow-auto custom-scrollbar whitespace-pre-wrap ${
+                output.includes('Error') 
+                  ? 'text-red-400 bg-red-400/5 border-red-400/20' 
+                  : output 
+                    ? 'text-primary bg-primary/5 border-primary/20' 
+                    : 'text-on-surface-variant bg-surface border-outline-variant'
+              }`}>
+                {output || 'Run your code to see results here...'}
+              </pre>
             </div>
           )}
         </div>

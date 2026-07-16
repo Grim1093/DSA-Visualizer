@@ -47,6 +47,7 @@ interface VisualizerState {
   playbackSpeed: number; 
   selectedAlgorithm: string; 
   mode: AppMode; // Are we playing a full algorithm, or in an interactive playground?
+  isSidebarOpen: boolean; // Global sidebar state
 
   setFrames: (frames: Frame[]) => void;
   appendFrames: (newFrames: Frame[]) => void; // For interactive DS operations
@@ -57,6 +58,7 @@ interface VisualizerState {
   reset: () => void;
   setPlaybackSpeed: (speed: number) => void;
   setSelectedAlgorithm: (algo: string, mode?: AppMode) => void;
+  toggleSidebar: () => void;
 }
 
 import { 
@@ -76,6 +78,9 @@ export const useVisualizerStore = create<VisualizerState>((set, get) => ({
   playbackSpeed: 500, 
   selectedAlgorithm: 'bubble',
   mode: 'algorithm',
+  isSidebarOpen: true,
+
+  toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
 
   setFrames: (frames) => {
     logger.info('VisualizerStore: Setting new execution frames', { frameCount: frames.length });

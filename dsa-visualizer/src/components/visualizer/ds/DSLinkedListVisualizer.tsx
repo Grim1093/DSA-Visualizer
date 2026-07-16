@@ -13,7 +13,7 @@ export default function DSLinkedListVisualizer() {
   const { nodes, pointers, head, tail, type } = currentFrame.dsLinkedList;
   const targetIndex = currentFrame.activePointers?.target;
 
-  const orderedNodes = [];
+  const orderedNodes: any[] = [];
   let curr = head;
   const visited = new Set();
   
