@@ -62,16 +62,16 @@ export default function DSLinkedListVisualizer() {
             
             // Determine previous node based on list type and layout
             let prevNodeId = null;
-            if ((type === 'doubly' || type === 'doubly_linked_list') && node.prev) {
+            if (type === 'doubly' && node.prev) {
               prevNodeId = node.prev;
             } else if (idx > 0) {
               prevNodeId = orderedNodes[idx - 1].id;
-            } else if ((type === 'circular' || type === 'circular_linked_list') && idx === 0 && orderedNodes.length > 0) {
+            } else if (type === 'circular' && idx === 0 && orderedNodes.length > 0) {
               prevNodeId = orderedNodes[orderedNodes.length - 1].id;
             }
             const prevAddr = getAddr(prevNodeId);
             
-            const isCircular = type === 'circular' || type === 'circular_linked_list';
+            const isCircular = type === 'circular';
             
             return (
               <React.Fragment key={node.id}>
@@ -145,7 +145,7 @@ export default function DSLinkedListVisualizer() {
                     <svg className="w-8 h-4 sm:w-10 drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 12">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M14 2l7 4m0 0l-7 4m7-4H3"></path>
                     </svg>
-                    {(type === 'doubly' || type === 'doubly_linked_list') && (
+                    {type === 'doubly' && (
                       <svg className="w-8 h-4 sm:w-10 mt-1 drop-shadow-md text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 12">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M10 10l-7-4m0 0l7-4m-7 4h18"></path>
                       </svg>
