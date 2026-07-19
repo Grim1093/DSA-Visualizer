@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import AppLayout, { ProgressData } from '@/components/layout/AppLayout';
@@ -16,7 +16,7 @@ const algoModules = [
   { id: 'complex', code: 'AL.3', icon: 'route', name: 'Complex', desc: 'Pathfinding, DP, Graph Traversals.' }
 ];
 
-export default function LearningHubPage() {
+function LearningHubContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { status } = useSession();
@@ -137,5 +137,13 @@ export default function LearningHubPage() {
         </div>
       </div>
     </AppLayout>
+  );
+}
+
+export default function LearningHubPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-background text-on-surface">Loading...</div>}>
+      <LearningHubContent />
+    </Suspense>
   );
 }
