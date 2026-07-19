@@ -1,9 +1,23 @@
-FROM node:18-alpine
-
-# Install Docker inside the container so it can spawn sibling containers (Docker-out-of-Docker / DooD approach)
-RUN apk add --no-cache docker-cli
+FROM node:18-bullseye
 
 WORKDIR /app
+
+# Install all required compilers
+RUN apt-get update && apt-get install -y \
+    python3 \
+    g++ \
+    openjdk-17-jdk \
+    golang \
+    wget \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Kotlin compiler manually
+RUN wget https://github.com/JetBrains/kotlin/releases/download/v1.9.22/kotlin-compiler-1.9.22.zip \
+    && unzip kotlin-compiler-1.9.22.zip -d /opt/ \
+    && rm kotlin-compiler-1.9.22.zip
+
+ENV PATH="${PATH}:/opt/kotlinc/bin"
 
 # Install dependencies
 COPY package*.json ./
