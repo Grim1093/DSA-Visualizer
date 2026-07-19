@@ -88,7 +88,15 @@ export default function TestEditorPanel({ challenge }: TestEditorPanelProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code: codeToRun, language }),
       });
-      const data = await response.json();
+      
+      let data;
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        data = await response.json();
+      } else {
+        const textError = await response.text();
+        throw new Error(`Server returned non-JSON response (Status ${response.status}). Are you sure your backend URL is correct?\n\nResponse preview:\n${textError.slice(0, 150)}...`);
+      }
       
       if (data.error) {
         setOutput(`Execution Error:\n${data.error}`);

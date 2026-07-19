@@ -57,10 +57,20 @@ export default function LearningWorkspace({ title, allowedModules, icon }: Learn
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code, language }),
       });
-      const data = await response.json();
-      if (data.error) setSandboxOutput(`Error:\n${data.error}`);
-      else {
-        setSandboxOutput(data.output || 'No output.');
+      
+      let data;
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        data = await response.json();
+      } else {
+        const textError = await response.text();
+        throw new Error(`Server returned non-JSON response (Status ${response.status}). Are you sure your backend URL is correct?\n\nResponse preview:\n${textError.slice(0, 150)}...`);
+      }
+
+      if (data.error) {
+        setSandboxOutput(`Execution Error:\n${data.error}`);
+      } else {
+        setSandboxOutput(data.output || 'Code executed successfully with no output.');
         if (selectedAlgorithm !== 'sandbox') {
           fetch('/api/progress', {
             method: 'POST',
