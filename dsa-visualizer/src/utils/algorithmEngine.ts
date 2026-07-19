@@ -841,6 +841,7 @@ export const generateDPFrames = (n: number): Frame[] => {
   
   frames.push({
     frameIndex: frameIndex++,
+    arrayState: [],
     dsArray: { values: [...dp] },
     activePointers: {},
     comparing: [],
@@ -851,6 +852,7 @@ export const generateDPFrames = (n: number): Frame[] => {
   dp[0] = 0;
   frames.push({
     frameIndex: frameIndex++,
+    arrayState: [],
     dsArray: { values: [...dp] },
     activePointers: { target: 0 },
     comparing: [],
@@ -862,7 +864,8 @@ export const generateDPFrames = (n: number): Frame[] => {
     dp[1] = 1;
     frames.push({
       frameIndex: frameIndex++,
-      dsArray: { values: [...dp] },
+      arrayState: [],
+    dsArray: { values: [...dp] },
       activePointers: { target: 1 },
       comparing: [],
       swapping: false,
@@ -873,7 +876,8 @@ export const generateDPFrames = (n: number): Frame[] => {
   for (let i = 2; i <= n; i++) {
     frames.push({
       frameIndex: frameIndex++,
-      dsArray: { values: [...dp] },
+      arrayState: [],
+    dsArray: { values: [...dp] },
       activePointers: { target: i },
       comparing: [i - 1, i - 2],
       swapping: false,
@@ -884,7 +888,8 @@ export const generateDPFrames = (n: number): Frame[] => {
 
     frames.push({
       frameIndex: frameIndex++,
-      dsArray: { values: [...dp] },
+      arrayState: [],
+    dsArray: { values: [...dp] },
       activePointers: { target: i },
       comparing: [],
       swapping: true,
@@ -894,6 +899,7 @@ export const generateDPFrames = (n: number): Frame[] => {
 
   frames.push({
     frameIndex: frameIndex++,
+    arrayState: [],
     dsArray: { values: [...dp] },
     activePointers: {},
     comparing: [],
