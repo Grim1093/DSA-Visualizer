@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { v4 as uuidv4 } from 'uuid';
+import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { exec } from 'child_process';
@@ -27,7 +27,7 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'Code and language are required.' });
   }
 
-  const fileId = uuidv4();
+  const fileId = crypto.randomUUID();
   // Create an isolated directory for this execution to prevent concurrency issues
   const runDir = path.join(TEMP_DIR, fileId);
   fs.mkdirSync(runDir, { recursive: true });
