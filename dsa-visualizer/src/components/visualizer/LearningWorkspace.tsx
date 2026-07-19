@@ -51,7 +51,8 @@ export default function LearningWorkspace({ title, allowedModules, icon }: Learn
     setIsExecuting(true);
     setSandboxOutput('Executing...');
     try {
-      const response = await fetch('http://localhost:5000/api/execute', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const response = await fetch(`${apiUrl}/api/execute`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code, language }),

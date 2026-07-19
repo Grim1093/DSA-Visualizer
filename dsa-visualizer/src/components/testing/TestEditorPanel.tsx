@@ -82,7 +82,8 @@ export default function TestEditorPanel({ challenge }: TestEditorPanelProps) {
     setOutput(isSubmit ? 'Running all test cases (including hidden)...' : 'Running visible test cases...');
     
     try {
-      const response = await fetch('http://localhost:5000/api/execute', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const response = await fetch(`${apiUrl}/api/execute`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code: codeToRun, language }),
