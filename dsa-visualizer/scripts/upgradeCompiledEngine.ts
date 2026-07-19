@@ -197,7 +197,7 @@ int main() {
 };
 `;
 
-const javaLogic = \`
+const javaLogic = `
 const generateJavaWrapper = (userCode: string, functionName: string, testCases: TestCase[]) => {
   const sig = functionSignatures[functionName];
   if (!sig) {
@@ -206,7 +206,7 @@ const generateJavaWrapper = (userCode: string, functionName: string, testCases: 
   // implementation for Java
   return "placeholder";
 };
-\`
+`;
 
 // Replace the block from const generateCppWrapper = ... to the end of file
 const startIndex = content.indexOf('const generateCppWrapper');
