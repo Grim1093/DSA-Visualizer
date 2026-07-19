@@ -8,6 +8,7 @@ export default function SearchingAlgorithmsPage() {
     <LearningWorkspace 
       title="Searching Algorithms" 
       allowedModules={['linear', 'binary', 'sandbox']}
+      icon="search"
     />
   );
 }

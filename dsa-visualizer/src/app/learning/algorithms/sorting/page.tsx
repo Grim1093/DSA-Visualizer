@@ -8,6 +8,7 @@ export default function SortingAlgorithmsPage() {
     <LearningWorkspace 
       title="Sorting Algorithms" 
       allowedModules={['bubble', 'selection', 'insertion', 'merge', 'quick', 'sandbox']}
+      icon="sort"
     />
   );
 }

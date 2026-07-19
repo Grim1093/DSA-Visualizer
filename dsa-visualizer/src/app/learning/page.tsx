@@ -60,9 +60,9 @@ export default function LearningHubPage() {
     <AppLayout progress={progress}>
       <div className="absolute inset-0 dot-bg z-0 pointer-events-none opacity-40 mix-blend-overlay"></div>
       
-      <div className="p-6 pb-24 relative z-10">
+      <div className="p-6 pb-24 relative z-10 max-w-7xl mx-auto w-full">
         {/* Header Section */}
-        <div className="mb-12 flex justify-between items-end border-b border-outline-variant pb-6">
+        <div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end border-b border-outline-variant pb-6 gap-4">
           <div>
             <h1 className="font-headline-lg text-headline-lg text-primary tracking-tighter uppercase mb-2">Learning Hub</h1>
             <p className="font-body-lg text-body-lg text-on-surface-variant opacity-80 max-w-2xl">
@@ -72,7 +72,7 @@ export default function LearningHubPage() {
         </div>
 
         {/* Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto pb-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pb-24">
           
           {/* Data Structures Column */}
           <div className="flex flex-col gap-4">
@@ -82,7 +82,7 @@ export default function LearningHubPage() {
               <div className="text-on-surface-variant opacity-50 py-4 font-code-sm">No modules found.</div>
             ) : (
               filteredDsModules.map((mod) => (
-                <div key={mod.id} onClick={() => router.push(`/learning/data-structures/${mod.id}`)} className="card-mono bg-white/[0.02] border border-outline-variant hover:bg-white/[0.05] hover:border-white p-6 transition-all duration-200 cursor-pointer group flex flex-col justify-between h-56">
+                <div key={mod.id} onClick={() => router.push(`/learning/data-structures/${mod.id}`)} className="card-mono bg-white/[0.02] border border-outline-variant hover:bg-white/[0.05] hover:border-white p-6 transition-all duration-200 cursor-pointer group flex flex-col justify-between h-full min-h-[14rem]">
                   <div className="flex justify-between items-start mb-4">
                     <div className="bg-surface-variant border border-outline-variant p-2 flex items-center justify-center">
                       <span className="material-symbols-outlined text-on-surface">{mod.icon}</span>
@@ -112,7 +112,7 @@ export default function LearningHubPage() {
               <div className="text-on-surface-variant opacity-50 py-4 font-code-sm">No modules found.</div>
             ) : (
               filteredAlgoModules.map((mod) => (
-                <div key={mod.id} onClick={() => router.push(`/learning/algorithms/${mod.id}`)} className="card-mono bg-white/[0.02] border border-outline-variant hover:bg-white/[0.05] hover:border-white p-6 transition-all duration-200 cursor-pointer group flex flex-col justify-between h-56">
+                <div key={mod.id} onClick={() => router.push(`/learning/algorithms/${mod.id}`)} className="card-mono bg-white/[0.02] border border-outline-variant hover:bg-white/[0.05] hover:border-white p-6 transition-all duration-200 cursor-pointer group flex flex-col justify-between h-full min-h-[14rem]">
                   <div className="flex justify-between items-start mb-4">
                     <div className="bg-surface-variant border border-outline-variant p-2 flex items-center justify-center">
                       <span className="material-symbols-outlined text-on-surface">{mod.icon}</span>

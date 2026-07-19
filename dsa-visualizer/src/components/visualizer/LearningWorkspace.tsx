@@ -22,9 +22,10 @@ import TheoryModeView from './TheoryModeView';
 interface LearningWorkspaceProps {
   title: string;
   allowedModules: string[];
+  icon?: string;
 }
 
-export default function LearningWorkspace({ title, allowedModules }: LearningWorkspaceProps) {
+export default function LearningWorkspace({ title, allowedModules, icon }: LearningWorkspaceProps) {
   const router = useRouter();
   const { selectedAlgorithm, mode, setSelectedAlgorithm } = useVisualizerStore();
   const [isExecuting, setIsExecuting] = useState(false);
@@ -101,7 +102,7 @@ export default function LearningWorkspace({ title, allowedModules }: LearningWor
   const isGraphAlgo = selectedAlgorithm === 'bfs' || selectedAlgorithm === 'dfs' || selectedAlgorithm === 'dijkstra' || selectedAlgorithm === 'heap';
 
   return (
-    <main className="flex min-h-screen flex-col bg-black text-white font-sans relative overflow-hidden grain">
+    <main className="flex min-h-screen flex-col bg-black text-white font-sans relative overflow-hidden">
       
       <StarField />
       <div className="fixed inset-0 dot-bg opacity-40 pointer-events-none z-0" />
@@ -115,7 +116,11 @@ export default function LearningWorkspace({ title, allowedModules }: LearningWor
           </button>
           <h1 className="text-xl font-semibold tracking-tight text-white flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-black shadow-lg">
-              <span className="font-bold text-xs mono">{"</>"}</span>
+              {icon ? (
+                <span className="material-symbols-outlined text-[20px]">{icon}</span>
+              ) : (
+                <span className="font-bold text-xs mono">{"</>"}</span>
+              )}
             </div>
             <span className="hidden md:inline">{title}</span>
           </h1>

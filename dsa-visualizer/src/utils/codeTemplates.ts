@@ -1553,6 +1553,121 @@ int main() {
     bfs(graph, "A");
     cout << endl;
     return 0;
+}`,
+    java: `import java.util.*;
+
+public class Main {
+    static void bfs(Map<String, List<String>> graph, String start) {
+        Set<String> visited = new HashSet<>();
+        Queue<String> q = new LinkedList<>();
+        
+        visited.add(start);
+        q.add(start);
+        
+        while (!q.isEmpty()) {
+            String vertex = q.poll();
+            System.out.print(vertex + " ");
+            
+            for (String neighbour : graph.getOrDefault(vertex, new ArrayList<>())) {
+                if (!visited.contains(neighbour)) {
+                    visited.add(neighbour);
+                    q.add(neighbour);
+                }
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Map<String, List<String>> graph = new HashMap<>();
+        graph.put("A", Arrays.asList("B", "C"));
+        graph.put("B", Arrays.asList("A", "D", "E"));
+        graph.put("C", Arrays.asList("A", "F"));
+        graph.put("D", Arrays.asList("B"));
+        graph.put("E", Arrays.asList("B", "F"));
+        graph.put("F", Arrays.asList("C", "E"));
+        
+        System.out.print("BFS Traversal starting from A: ");
+        bfs(graph, "A");
+        System.out.println();
+    }
+}`,
+    go: `package main
+
+import (
+	"fmt"
+)
+
+func bfs(graph map[string][]string, start string) {
+	visited := make(map[string]bool)
+	var q []string
+	
+	visited[start] = true
+	q = append(q, start)
+	
+	for len(q) > 0 {
+		vertex := q[0]
+		q = q[1:]
+		fmt.Print(vertex, " ")
+		
+		for _, neighbour := range graph[vertex] {
+			if !visited[neighbour] {
+				visited[neighbour] = true
+				q = append(q, neighbour)
+			}
+		}
+	}
+}
+
+func main() {
+	graph := map[string][]string{
+		"A": {"B", "C"},
+		"B": {"A", "D", "E"},
+		"C": {"A", "F"},
+		"D": {"B"},
+		"E": {"B", "F"},
+		"F": {"C", "E"},
+	}
+	
+	fmt.Print("BFS Traversal starting from A: ")
+	bfs(graph, "A")
+	fmt.Println()
+}`,
+    kotlin: `import java.util.LinkedList
+import java.util.Queue
+
+fun bfs(graph: Map<String, List<String>>, start: String) {
+    val visited = mutableSetOf<String>()
+    val q: Queue<String> = LinkedList()
+    
+    visited.add(start)
+    q.add(start)
+    
+    while (q.isNotEmpty()) {
+        val vertex = q.poll()
+        print("$vertex ")
+        
+        for (neighbour in graph[vertex] ?: emptyList()) {
+            if (neighbour !in visited) {
+                visited.add(neighbour)
+                q.add(neighbour)
+            }
+        }
+    }
+}
+
+fun main() {
+    val graph = mapOf(
+        "A" to listOf("B", "C"),
+        "B" to listOf("A", "D", "E"),
+        "C" to listOf("A", "F"),
+        "D" to listOf("B"),
+        "E" to listOf("B", "F"),
+        "F" to listOf("C", "E")
+    )
+    
+    print("BFS Traversal starting from A: ")
+    bfs(graph, "A")
+    println()
 }`
   },
   dfs: {
@@ -1672,6 +1787,87 @@ int main() {
     dfs(graph, "A", visited);
     cout << endl;
     return 0;
+}`,
+    java: `import java.util.*;
+
+public class Main {
+    static void dfs(Map<String, List<String>> graph, String vertex, Set<String> visited) {
+        if (!visited.contains(vertex)) {
+            System.out.print(vertex + " ");
+            visited.add(vertex);
+            for (String neighbour : graph.getOrDefault(vertex, new ArrayList<>())) {
+                dfs(graph, neighbour, visited);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Map<String, List<String>> graph = new HashMap<>();
+        graph.put("A", Arrays.asList("B", "C"));
+        graph.put("B", Arrays.asList("A", "D", "E"));
+        graph.put("C", Arrays.asList("A", "F"));
+        graph.put("D", Arrays.asList("B"));
+        graph.put("E", Arrays.asList("B", "F"));
+        graph.put("F", Arrays.asList("C", "E"));
+        
+        System.out.print("DFS Traversal starting from A: ");
+        dfs(graph, "A", new HashSet<>());
+        System.out.println();
+    }
+}`,
+    go: `package main
+
+import (
+	"fmt"
+)
+
+func dfs(graph map[string][]string, vertex string, visited map[string]bool) {
+	if !visited[vertex] {
+		fmt.Print(vertex, " ")
+		visited[vertex] = true
+		for _, neighbour := range graph[vertex] {
+			dfs(graph, neighbour, visited)
+		}
+	}
+}
+
+func main() {
+	graph := map[string][]string{
+		"A": {"B", "C"},
+		"B": {"A", "D", "E"},
+		"C": {"A", "F"},
+		"D": {"B"},
+		"E": {"B", "F"},
+		"F": {"C", "E"},
+	}
+	
+	fmt.Print("DFS Traversal starting from A: ")
+	dfs(graph, "A", make(map[string]bool))
+	fmt.Println()
+}`,
+    kotlin: `fun dfs(graph: Map<String, List<String>>, vertex: String, visited: MutableSet<String>) {
+    if (vertex !in visited) {
+        print("$vertex ")
+        visited.add(vertex)
+        for (neighbour in graph[vertex] ?: emptyList()) {
+            dfs(graph, neighbour, visited)
+        }
+    }
+}
+
+fun main() {
+    val graph = mapOf(
+        "A" to listOf("B", "C"),
+        "B" to listOf("A", "D", "E"),
+        "C" to listOf("A", "F"),
+        "D" to listOf("B"),
+        "E" to listOf("B", "F"),
+        "F" to listOf("C", "E")
+    )
+    
+    print("DFS Traversal starting from A: ")
+    dfs(graph, "A", mutableSetOf())
+    println()
 }`
   },
   array: {
@@ -1763,6 +1959,846 @@ int main() {
     }
     
     return 0;
+}`,
+    java: `import java.util.Arrays;
+import java.util.Random;
+
+public class Main {
+    public static void main(String[] args) {
+        Random rand = new Random();
+        
+        // Step 1: Initialize a random array
+        int[] arr = new int[5];
+        for(int i = 0; i < 5; i++) {
+            arr[i] = rand.nextInt(100) + 1;
+        }
+        System.out.println("Original Array: " + Arrays.toString(arr));
+        
+        // Step 2: Array Access
+        int accIdx = rand.nextInt(arr.length);
+        System.out.println("Element at index " + accIdx + ": " + arr[accIdx]);
+    }
+}`,
+    go: `package main
+
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+func main() {
+	rand.Seed(time.Now().UnixNano())
+	
+	// Step 1: Initialize a random array
+	arr := make([]int, 5)
+	for i := 0; i < 5; i++ {
+		arr[i] = rand.Intn(100) + 1
+	}
+	fmt.Println("Original Array:", arr)
+	
+	// Step 2: Array Access
+	accIdx := rand.Intn(len(arr))
+	fmt.Printf("Element at index %d: %d\\n", accIdx, arr[accIdx])
+}`,
+    kotlin: `import java.util.Random
+
+fun main() {
+    val rand = Random()
+    
+    // Step 1: Initialize a random array
+    val arr = IntArray(5) { rand.nextInt(100) + 1 }
+    println("Original Array: \${arr.joinToString(", ")}")
+    
+    // Step 2: Array Access
+    val accIdx = rand.nextInt(arr.size)
+    println("Element at index $accIdx: \${arr[accIdx]}")
+}
+}`
+  },
+  vector: {
+    python: `import random
+
+# Step 1: Initialize a vector (using a list)
+vec = [random.randint(1, 100) for _ in range(5)]
+print(f"Original Vector: {vec}")
+
+# Step 2: Push elements
+val = random.randint(1, 100)
+vec.append(val)
+print(f"After pushing {val}: {vec}")
+
+# Step 3: Pop elements
+if len(vec) > 0:
+    popped = vec.pop()
+    print(f"After popping {popped}: {vec}")
+
+# Step 4: Access elements
+if len(vec) > 0:
+    idx = random.randint(0, len(vec)-1)
+    print(f"Element at index {idx}: {vec[idx]}")`,
+    javascript: `// Step 1: Initialize a vector (using an array)
+let vec = Array.from({ length: 5 }, () => Math.floor(Math.random() * 100) + 1);
+console.log("Original Vector:", vec);
+
+// Step 2: Push elements
+let val = Math.floor(Math.random() * 100) + 1;
+vec.push(val);
+console.log(\`After pushing \${val}:\`, vec);
+
+// Step 3: Pop elements
+if (vec.length > 0) {
+    let popped = vec.pop();
+    console.log(\`After popping \${popped}:\`, vec);
+}
+
+// Step 4: Access elements
+if (vec.length > 0) {
+    let idx = Math.floor(Math.random() * vec.length);
+    console.log(\`Element at index \${idx}:\`, vec[idx]);
+}`,
+    cpp: `#include <iostream>
+#include <vector>
+#include <cstdlib>
+#include <ctime>
+using namespace std;
+
+int main() {
+    srand(time(0));
+    
+    // Step 1: Initialize a vector
+    vector<int> vec(5);
+    cout << "Original Vector: ";
+    for(int i=0; i<5; i++) {
+        vec[i] = rand() % 100 + 1;
+        cout << vec[i] << " ";
+    }
+    cout << "\\n";
+
+    // Step 2: Push elements
+    int val = rand() % 100 + 1;
+    vec.push_back(val);
+    
+    cout << "After pushing " << val << ": ";
+    for(int num : vec) cout << num << " ";
+    cout << "\\n";
+
+    // Step 3: Pop elements
+    if(vec.size() > 0) {
+        int popped = vec.back();
+        vec.pop_back();
+        cout << "After popping " << popped << ": ";
+        for(int num : vec) cout << num << " ";
+        cout << "\\n";
+    }
+    
+    // Step 4: Access elements
+    if (vec.size() > 0) {
+        int idx = rand() % vec.size();
+        cout << "Element at index " << idx << ": " << vec[idx] << endl;
+    }
+    
+    return 0;
+}`,
+    java: `import java.util.Vector;
+import java.util.Random;
+
+public class Main {
+    public static void main(String[] args) {
+        Random rand = new Random();
+        
+        // Step 1: Initialize a vector
+        Vector<Integer> vec = new Vector<>();
+        for(int i = 0; i < 5; i++) {
+            vec.add(rand.nextInt(100) + 1);
+        }
+        System.out.println("Original Vector: " + vec);
+        
+        // Step 2: Push elements
+        int val = rand.nextInt(100) + 1;
+        vec.add(val);
+        System.out.println("After pushing " + val + ": " + vec);
+        
+        // Step 3: Pop elements
+        if (!vec.isEmpty()) {
+            int popped = vec.remove(vec.size() - 1);
+            System.out.println("After popping " + popped + ": " + vec);
+        }
+        
+        // Step 4: Access elements
+        if (!vec.isEmpty()) {
+            int idx = rand.nextInt(vec.size());
+            System.out.println("Element at index " + idx + ": " + vec.get(idx));
+        }
+    }
+}`,
+    go: `package main
+
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+func main() {
+	rand.Seed(time.Now().UnixNano())
+	
+	// Step 1: Initialize a vector (using slice)
+	vec := make([]int, 5)
+	for i := 0; i < 5; i++ {
+		vec[i] = rand.Intn(100) + 1
+	}
+	fmt.Println("Original Vector:", vec)
+	
+	// Step 2: Push elements
+	val := rand.Intn(100) + 1
+	vec = append(vec, val)
+	fmt.Printf("After pushing %d: %v\\n", val, vec)
+	
+	// Step 3: Pop elements
+	if len(vec) > 0 {
+		popped := vec[len(vec)-1]
+		vec = vec[:len(vec)-1]
+		fmt.Printf("After popping %d: %v\\n", popped, vec)
+	}
+	
+	// Step 4: Access elements
+	if len(vec) > 0 {
+		idx := rand.Intn(len(vec))
+		fmt.Printf("Element at index %d: %d\\n", idx, vec[idx])
+	}
+}`,
+    kotlin: `import java.util.Random
+
+fun main() {
+    val rand = Random()
+    
+    // Step 1: Initialize a vector
+    val vec = mutableListOf<Int>()
+    for (i in 0 until 5) vec.add(rand.nextInt(100) + 1)
+    println("Original Vector: $vec")
+    
+    // Step 2: Push elements
+    val valToAdd = rand.nextInt(100) + 1
+    vec.add(valToAdd)
+    println("After pushing $valToAdd: $vec")
+    
+    // Step 3: Pop elements
+    if (vec.isNotEmpty()) {
+        val popped = vec.removeAt(vec.size - 1)
+        println("After popping $popped: $vec")
+    }
+    
+    // Step 4: Access elements
+    if (vec.isNotEmpty()) {
+        val idx = rand.nextInt(vec.size)
+        println("Element at index $idx: \${vec[idx]}")
+    }
+}
+}`
+  },
+  doubly_linked_list: {
+    python: `import random
+
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.prev = None
+        self.next = None
+
+class DoublyLinkedList:
+    def __init__(self):
+        self.head = None
+
+    def append(self, data):
+        new_node = Node(data)
+        if not self.head:
+            self.head = new_node
+            return
+        last = self.head
+        while last.next:
+            last = last.next
+        last.next = new_node
+        new_node.prev = last
+
+    def display(self):
+        temp = self.head
+        while temp:
+            print(temp.data, end=" <-> ")
+            temp = temp.next
+        print("None")
+
+dll = DoublyLinkedList()
+for _ in range(5):
+    dll.append(random.randint(1, 100))
+print("Doubly Linked List structure:")
+dll.display()`,
+    javascript: `class Node {
+    constructor(data) {
+        this.data = data;
+        this.prev = null;
+        this.next = null;
+    }
+}
+
+class DoublyLinkedList {
+    constructor() {
+        this.head = null;
+    }
+
+    append(data) {
+        const newNode = new Node(data);
+        if (!this.head) {
+            this.head = newNode;
+            return;
+        }
+        let last = this.head;
+        while (last.next) {
+            last = last.next;
+        }
+        last.next = newNode;
+        newNode.prev = last;
+    }
+
+    display() {
+        let temp = this.head;
+        let out = "";
+        while (temp) {
+            out += temp.data + " <-> ";
+            temp = temp.next;
+        }
+        console.log("Doubly Linked List structure:\\n" + out + "null");
+    }
+}
+
+const dll = new DoublyLinkedList();
+for (let i = 0; i < 5; i++) {
+    dll.append(Math.floor(Math.random() * 100) + 1);
+}
+dll.display();`,
+    cpp: `#include <iostream>
+#include <cstdlib>
+#include <ctime>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* prev;
+    Node* next;
+    Node(int val) : data(val), prev(nullptr), next(nullptr) {}
+};
+
+class DoublyLinkedList {
+    Node* head;
+public:
+    DoublyLinkedList() : head(nullptr) {}
+    void append(int data) {
+        Node* newNode = new Node(data);
+        if (!head) {
+            head = newNode;
+            return;
+        }
+        Node* last = head;
+        while (last->next) last = last->next;
+        last->next = newNode;
+        newNode->prev = last;
+    }
+    void display() {
+        Node* temp = head;
+        while (temp) {
+            cout << temp->data << " <-> ";
+            temp = temp->next;
+        }
+        cout << "null\\n";
+    }
+};
+
+int main() {
+    srand(time(0));
+    DoublyLinkedList dll;
+    for(int i=0; i<5; i++) dll.append(rand() % 100 + 1);
+    cout << "Doubly Linked List structure:\\n";
+    dll.display();
+    return 0;
+}`,
+    java: `import java.util.LinkedList;
+import java.util.Random;
+
+public class Main {
+    public static void main(String[] args) {
+        Random rand = new Random();
+        
+        // Java's LinkedList is a doubly-linked list implementation
+        LinkedList<Integer> dll = new LinkedList<>();
+        for(int i = 0; i < 5; i++) {
+            dll.add(rand.nextInt(100) + 1);
+        }
+        
+        System.out.println("Doubly Linked List structure: ");
+        System.out.println(dll);
+    }
+}`,
+    go: `package main
+
+import (
+	"container/list"
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+func main() {
+	rand.Seed(time.Now().UnixNano())
+	
+	// Go's container/list is a doubly linked list
+	dll := list.New()
+	for i := 0; i < 5; i++ {
+		dll.PushBack(rand.Intn(100) + 1)
+	}
+	
+	fmt.Print("Doubly Linked List structure:\\n")
+	for e := dll.Front(); e != nil; e = e.Next() {
+		fmt.Printf("%v <-> ", e.Value)
+	}
+	fmt.Println("nil")
+}`,
+    kotlin: `import java.util.LinkedList
+import java.util.Random
+
+fun main() {
+    val rand = Random()
+    
+    // Kotlin's LinkedList is a doubly-linked list
+    val dll = LinkedList<Int>()
+    for (i in 0 until 5) dll.add(rand.nextInt(100) + 1)
+    
+    println("Doubly Linked List structure:")
+    println(dll)
+}`
+  },
+  circular_linked_list: {
+    python: `import random
+
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+class CircularLinkedList:
+    def __init__(self):
+        self.head = None
+
+    def append(self, data):
+        new_node = Node(data)
+        if not self.head:
+            self.head = new_node
+            new_node.next = self.head
+            return
+        last = self.head
+        while last.next != self.head:
+            last = last.next
+        last.next = new_node
+        new_node.next = self.head
+
+    def display(self):
+        if not self.head: return
+        temp = self.head
+        while True:
+            print(temp.data, end=" -> ")
+            temp = temp.next
+            if temp == self.head: break
+        print("(head)")
+
+cll = CircularLinkedList()
+for _ in range(5):
+    cll.append(random.randint(1, 100))
+print("Circular Linked List structure:")
+cll.display()`,
+    javascript: `class Node {
+    constructor(data) {
+        this.data = data;
+        this.next = null;
+    }
+}
+
+class CircularLinkedList {
+    constructor() {
+        this.head = null;
+    }
+
+    append(data) {
+        const newNode = new Node(data);
+        if (!this.head) {
+            this.head = newNode;
+            newNode.next = this.head;
+            return;
+        }
+        let last = this.head;
+        while (last.next !== this.head) {
+            last = last.next;
+        }
+        last.next = newNode;
+        newNode.next = this.head;
+    }
+
+    display() {
+        if (!this.head) return;
+        let temp = this.head;
+        let out = "";
+        do {
+            out += temp.data + " -> ";
+            temp = temp.next;
+        } while (temp !== this.head);
+        console.log("Circular Linked List structure:\\n" + out + "(head)");
+    }
+}
+
+const cll = new CircularLinkedList();
+for (let i = 0; i < 5; i++) {
+    cll.append(Math.floor(Math.random() * 100) + 1);
+}
+cll.display();`,
+    cpp: `#include <iostream>
+#include <cstdlib>
+#include <ctime>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* next;
+    Node(int val) : data(val), next(nullptr) {}
+};
+
+class CircularLinkedList {
+    Node* head;
+public:
+    CircularLinkedList() : head(nullptr) {}
+    void append(int data) {
+        Node* newNode = new Node(data);
+        if (!head) {
+            head = newNode;
+            newNode->next = head;
+            return;
+        }
+        Node* last = head;
+        while (last->next != head) last = last->next;
+        last->next = newNode;
+        newNode->next = head;
+    }
+    void display() {
+        if (!head) return;
+        Node* temp = head;
+        do {
+            cout << temp->data << " -> ";
+            temp = temp->next;
+        } while (temp != head);
+        cout << "(head)\\n";
+    }
+};
+
+int main() {
+    srand(time(0));
+    CircularLinkedList cll;
+    for(int i=0; i<5; i++) cll.append(rand() % 100 + 1);
+    cout << "Circular Linked List structure:\\n";
+    cll.display();
+    return 0;
+}`,
+    java: `import java.util.Random;
+
+class Node {
+    int data;
+    Node next;
+    Node(int data) { this.data = data; }
+}
+
+public class Main {
+    static Node head = null;
+    
+    static void append(int data) {
+        Node newNode = new Node(data);
+        if (head == null) {
+            head = newNode;
+            newNode.next = head;
+            return;
+        }
+        Node last = head;
+        while (last.next != head) {
+            last = last.next;
+        }
+        last.next = newNode;
+        newNode.next = head;
+    }
+    
+    public static void main(String[] args) {
+        Random rand = new Random();
+        for(int i = 0; i < 5; i++) append(rand.nextInt(100) + 1);
+        
+        System.out.println("Circular Linked List structure:");
+        if (head != null) {
+            Node temp = head;
+            do {
+                System.out.print(temp.data + " -> ");
+                temp = temp.next;
+            } while (temp != head);
+            System.out.println("(head)");
+        }
+    }
+}`,
+    go: `package main
+
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+type Node struct {
+	data int
+	next *Node
+}
+
+type CircularLinkedList struct {
+	head *Node
+}
+
+func (cll *CircularLinkedList) append(data int) {
+	newNode := &Node{data: data}
+	if cll.head == nil {
+		cll.head = newNode
+		newNode.next = cll.head
+		return
+	}
+	last := cll.head
+	for last.next != cll.head {
+		last = last.next
+	}
+	last.next = newNode
+	newNode.next = cll.head
+}
+
+func main() {
+	rand.Seed(time.Now().UnixNano())
+	cll := &CircularLinkedList{}
+	for i := 0; i < 5; i++ {
+		cll.append(rand.Intn(100) + 1)
+	}
+	
+	fmt.Println("Circular Linked List structure:")
+	if cll.head != nil {
+		temp := cll.head
+		for {
+			fmt.Printf("%d -> ", temp.data)
+			temp = temp.next
+			if temp == cll.head {
+				break
+			}
+		}
+		fmt.Println("(head)")
+	}
+}`,
+    kotlin: `import java.util.Random
+
+class Node(val data: Int) {
+    var next: Node? = null
+}
+
+fun main() {
+    val rand = Random()
+    var head: Node? = null
+    
+    fun append(data: Int) {
+        val newNode = Node(data)
+        if (head == null) {
+            head = newNode
+            newNode.next = head
+            return
+        }
+        var last = head
+        while (last?.next !== head) {
+            last = last?.next
+        }
+        last?.next = newNode
+        newNode.next = head
+    }
+    
+    for (i in 0 until 5) append(rand.nextInt(100) + 1)
+    
+    println("Circular Linked List structure:")
+    if (head != null) {
+        var temp = head
+        do {
+            print("\${temp?.data} -> ")
+            temp = temp?.next
+        } while (temp !== head)
+        println("(head)")
+    }
+}
+}`
+  },
+  hash_map: {
+    python: `import random
+
+# Step 1: Initialize a Hash Map (dictionary)
+hash_map = {}
+print("Initializing Hash Map...")
+
+# Step 2: Insert key-value pairs
+keys = ['A', 'B', 'C', 'D', 'E']
+for k in keys:
+    hash_map[k] = random.randint(1, 100)
+print("Hash Map contents:", hash_map)
+
+# Step 3: Access value by key
+query_key = random.choice(keys)
+print(f"Value for '{query_key}': {hash_map[query_key]}")
+
+# Step 4: Delete key-value pair
+del_key = random.choice(keys)
+del hash_map[del_key]
+print(f"Hash Map after deleting '{del_key}':", hash_map)`,
+    javascript: `// Step 1: Initialize a Hash Map (using Map)
+const hashMap = new Map();
+console.log("Initializing Hash Map...");
+
+// Step 2: Insert key-value pairs
+const keys = ['A', 'B', 'C', 'D', 'E'];
+for (const k of keys) {
+    hashMap.set(k, Math.floor(Math.random() * 100) + 1);
+}
+console.log("Hash Map contents:", Object.fromEntries(hashMap));
+
+// Step 3: Access value by key
+const queryKey = keys[Math.floor(Math.random() * keys.length)];
+console.log(\`Value for '\${queryKey}': \${hashMap.get(queryKey)}\`);
+
+// Step 4: Delete key-value pair
+const delKey = keys[Math.floor(Math.random() * keys.length)];
+hashMap.delete(delKey);
+console.log(\`Hash Map after deleting '\${delKey}':\`, Object.fromEntries(hashMap));`,
+    cpp: `#include <iostream>
+#include <unordered_map>
+#include <cstdlib>
+#include <ctime>
+using namespace std;
+
+int main() {
+    srand(time(0));
+    
+    // Step 1: Initialize a Hash Map
+    unordered_map<string, int> hashMap;
+    cout << "Initializing Hash Map...\\n";
+    
+    // Step 2: Insert key-value pairs
+    string keys[] = {"A", "B", "C", "D", "E"};
+    for(int i=0; i<5; i++) {
+        hashMap[keys[i]] = rand() % 100 + 1;
+    }
+    
+    cout << "Hash Map contents: ";
+    for(auto const& [k, v] : hashMap) {
+        cout << "[" << k << ": " << v << "] ";
+    }
+    cout << "\\n";
+    
+    // Step 3: Access value by key
+    string queryKey = keys[rand() % 5];
+    cout << "Value for '" << queryKey << "': " << hashMap[queryKey] << "\\n";
+    
+    // Step 4: Delete key-value pair
+    string delKey = keys[rand() % 5];
+    hashMap.erase(delKey);
+    cout << "Hash Map after deleting '" << delKey << "': ";
+    for(auto const& [k, v] : hashMap) {
+        cout << "[" << k << ": " << v << "] ";
+    }
+    cout << "\\n";
+    
+    return 0;
+}`,
+    java: `import java.util.HashMap;
+import java.util.Random;
+
+public class Main {
+    public static void main(String[] args) {
+        Random rand = new Random();
+        
+        // Step 1: Initialize a Hash Map
+        HashMap<String, Integer> hashMap = new HashMap<>();
+        System.out.println("Initializing Hash Map...");
+        
+        // Step 2: Insert key-value pairs
+        String[] keys = {"A", "B", "C", "D", "E"};
+        for(String k : keys) {
+            hashMap.put(k, rand.nextInt(100) + 1);
+        }
+        System.out.println("Hash Map contents: " + hashMap);
+        
+        // Step 3: Access value by key
+        String queryKey = keys[rand.nextInt(5)];
+        System.out.println("Value for '" + queryKey + "': " + hashMap.get(queryKey));
+        
+        // Step 4: Delete key-value pair
+        String delKey = keys[rand.nextInt(5)];
+        hashMap.remove(delKey);
+        System.out.println("Hash Map after deleting '" + delKey + "': " + hashMap);
+    }
+}`,
+    go: `package main
+
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+func main() {
+	rand.Seed(time.Now().UnixNano())
+	
+	// Step 1: Initialize a Hash Map (using map)
+	hashMap := make(map[string]int)
+	fmt.Println("Initializing Hash Map...")
+	
+	// Step 2: Insert key-value pairs
+	keys := []string{"A", "B", "C", "D", "E"}
+	for _, k := range keys {
+		hashMap[k] = rand.Intn(100) + 1
+	}
+	fmt.Println("Hash Map contents:", hashMap)
+	
+	// Step 3: Access value by key
+	queryKey := keys[rand.Intn(len(keys))]
+	fmt.Printf("Value for '%s': %d\\n", queryKey, hashMap[queryKey])
+	
+	// Step 4: Delete key-value pair
+	delKey := keys[rand.Intn(len(keys))]
+	delete(hashMap, delKey)
+	fmt.Printf("Hash Map after deleting '%s': %v\\n", delKey, hashMap)
+}`,
+    kotlin: `import java.util.Random
+
+fun main() {
+    val rand = Random()
+    
+    // Step 1: Initialize a Hash Map
+    val hashMap = hashMapOf<String, Int>()
+    println("Initializing Hash Map...")
+    
+    // Step 2: Insert key-value pairs
+    val keys = listOf("A", "B", "C", "D", "E")
+    for (k in keys) {
+        hashMap[k] = rand.nextInt(100) + 1
+    }
+    println("Hash Map contents: $hashMap")
+    
+    // Step 3: Access value by key
+    val queryKey = keys[rand.nextInt(keys.size)]
+    println("Value for '$queryKey': \${hashMap[queryKey]}")
+    
+    // Step 4: Delete key-value pair
+    val delKey = keys[rand.nextInt(keys.size)]
+    hashMap.remove(delKey)
+    println("Hash Map after deleting '$delKey': $hashMap")
 }`
   },
   linked_list: {
@@ -1910,6 +2946,72 @@ int main() {
     cout << "Linked List structure:" << endl;
     ll.display();
     return 0;
+}`,
+    java: `import java.util.LinkedList;
+import java.util.Random;
+
+public class Main {
+    public static void main(String[] args) {
+        Random rand = new Random();
+        
+        // Step 1: Initialize a LinkedList
+        LinkedList<Integer> list = new LinkedList<>();
+        System.out.println("Initializing random linked list...");
+        
+        // Step 2: Insert elements
+        for(int i = 0; i < 5; i++) {
+            list.add(rand.nextInt(100) + 1);
+        }
+        
+        // Step 3: Traverse and print
+        System.out.println("Linked List structure: " + list);
+    }
+}`,
+    go: `package main
+
+import (
+	"container/list"
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+func main() {
+	rand.Seed(time.Now().UnixNano())
+	
+	// Step 1: Initialize a LinkedList
+	l := list.New()
+	fmt.Println("Initializing random linked list...")
+	
+	// Step 2: Insert elements
+	for i := 0; i < 5; i++ {
+		l.PushBack(rand.Intn(100) + 1)
+	}
+	
+	// Step 3: Traverse and print
+	fmt.Print("Linked List structure: ")
+	for e := l.Front(); e != nil; e = e.Next() {
+		fmt.Printf("%v -> ", e.Value)
+	}
+	fmt.Println("null")
+}`,
+    kotlin: `import java.util.LinkedList
+import java.util.Random
+
+fun main() {
+    val rand = Random()
+    
+    // Step 1: Initialize a LinkedList
+    val list = LinkedList<Int>()
+    println("Initializing random linked list...")
+    
+    // Step 2: Insert elements
+    for (i in 0 until 5) {
+        list.add(rand.nextInt(100) + 1)
+    }
+    
+    // Step 3: Traverse and print
+    println("Linked List structure: $list")
 }`
   },
   dijkstra: {

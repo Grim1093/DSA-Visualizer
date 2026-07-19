@@ -10,6 +10,21 @@ interface TestEditorPanelProps {
   challenge: Challenge;
 }
 
+const formatTestCaseValue = (val: any): string => {
+  if (Array.isArray(val)) {
+    if (val.length > 20) {
+      return `[${val.slice(0, 10).join(', ')}, ..., ${val.slice(-3).join(', ')}] (${val.length} elements)`;
+    }
+    return JSON.stringify(val);
+  }
+  return JSON.stringify(val);
+};
+
+const formatInputArgs = (input: any[]): string => {
+  if (!input) return '';
+  return input.map(arg => formatTestCaseValue(arg)).join('\n');
+};
+
 export default function TestEditorPanel({ challenge }: TestEditorPanelProps) {
   const [language, setLanguage] = useState<'python' | 'javascript' | 'cpp' | 'java' | 'go' | 'kotlin'>('python');
   const [code, setCode] = useState('');
@@ -19,14 +34,47 @@ export default function TestEditorPanel({ challenge }: TestEditorPanelProps) {
   const [activeTab, setActiveTab] = useState<'testcases' | 'results'>('testcases');
   const [activeTestCase, setActiveTestCase] = useState(0);
 
-  // Load starter code when language or challenge changes
+  const testCasesToShow = challenge.testCases.slice(0, 2);
+
+  // Load saved code from DB, fallback to localStorage, then starter code
   useEffect(() => {
-    if (challenge.starterCode && challenge.starterCode[language]) {
-      setCode(challenge.starterCode[language]);
-    } else {
-      setCode('// No starter code available for this language.');
-    }
+    let isMounted = true;
+    
+    const loadCode = async () => {
+      try {
+        const res = await fetch(`/api/code/load?moduleId=${challenge.id}&language=${language}`);
+        const data = await res.json();
+        
+        if (!isMounted) return;
+
+        if (data.code) {
+          setCode(data.code);
+        } else {
+          // Fallback to local storage if nothing in DB
+          const savedCode = localStorage.getItem(`saved_code_${challenge.id}_${language}`);
+          if (savedCode) {
+            setCode(savedCode);
+          } else if (challenge.starterCode && challenge.starterCode[language]) {
+            setCode(challenge.starterCode[language]);
+          } else {
+            setCode('// No starter code available for this language.');
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load code from DB:', err);
+      }
+    };
+    
+    loadCode();
+    
+    return () => { isMounted = false; };
   }, [challenge, language]);
+
+  const handleCodeChange = (value: string | undefined) => {
+    const newCode = value || '';
+    setCode(newCode);
+    localStorage.setItem(`saved_code_${challenge.id}_${language}`, newCode);
+  };
 
   const executeCode = async (codeToRun: string, isSubmit: boolean) => {
     setIsExecuting(true);
@@ -44,7 +92,34 @@ export default function TestEditorPanel({ challenge }: TestEditorPanelProps) {
       if (data.error) {
         setOutput(`Execution Error:\n${data.error}`);
       } else {
-        setOutput(data.output || 'Code executed successfully with no output.');
+        const out = data.output || 'Code executed successfully with no output.';
+        let finalOutput = out;
+        
+        // If they submitted and passed all tests, save their progress and code!
+        if (isSubmit && !out.includes('FAIL') && !out.includes('ERROR') && out.includes('PASS')) {
+          finalOutput += '\n\n========================================\n🎉 CHALLENGE SOLVED! XP AWARDED!\n========================================';
+          
+          fetch('/api/progress', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              moduleId: challenge.id, 
+              points: challenge.difficulty === 'Hard' ? 300 : challenge.difficulty === 'Medium' ? 150 : 50 
+            })
+          }).catch(console.error);
+
+          fetch('/api/code/save', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              moduleId: challenge.id, 
+              language,
+              code: code // Save the raw user code, not the test wrapper
+            })
+          }).catch(console.error);
+        }
+        
+        setOutput(finalOutput);
       }
     } catch (error) {
       setOutput('Failed to connect to the execution engine. Ensure the backend is running.');
@@ -111,7 +186,7 @@ export default function TestEditorPanel({ challenge }: TestEditorPanelProps) {
           language={language === 'python' ? 'python' : language === 'cpp' ? 'cpp' : language === 'javascript' ? 'javascript' : language === 'java' ? 'java' : language === 'go' ? 'go' : 'kotlin'}
           theme="vs-dark"
           value={code}
-          onChange={(value) => setCode(value || '')}
+          onChange={handleCodeChange}
           options={{
             minimap: { enabled: false },
             fontSize: 14,
@@ -147,7 +222,7 @@ export default function TestEditorPanel({ challenge }: TestEditorPanelProps) {
           {activeTab === 'testcases' ? (
             <div className="h-full flex flex-col p-4">
               <div className="flex gap-2 mb-4">
-                {challenge.testCases.slice(0, 2).map((tc, idx) => (
+                {testCasesToShow.map((tc, idx) => (
                   <button
                     key={idx}
                     onClick={() => setActiveTestCase(idx)}
@@ -164,11 +239,11 @@ export default function TestEditorPanel({ challenge }: TestEditorPanelProps) {
               <div className="flex-1 bg-surface-container-low border border-outline-variant rounded-sm p-4 overflow-y-auto custom-scrollbar">
                 <div className="mb-4">
                   <p className="text-on-surface-variant font-label-caps text-label-caps mb-1 tracking-widest">INPUT:</p>
-                  <pre className="font-code-sm text-code-sm text-on-surface bg-surface-container p-2 rounded-sm border border-outline-variant whitespace-pre-wrap">{challenge.testCases[activeTestCase]?.input}</pre>
+                  <pre className="font-code-sm text-code-sm text-on-surface bg-surface-container p-2 rounded-sm border border-outline-variant whitespace-pre-wrap">{formatInputArgs(testCasesToShow[activeTestCase]?.input)}</pre>
                 </div>
                 <div>
                   <p className="text-on-surface-variant font-label-caps text-label-caps mb-1 tracking-widest">EXPECTED OUTPUT:</p>
-                  <pre className="font-code-sm text-code-sm text-on-surface bg-surface-container p-2 rounded-sm border border-outline-variant whitespace-pre-wrap">{challenge.testCases[activeTestCase]?.expectedOutput}</pre>
+                  <pre className="font-code-sm text-code-sm text-on-surface bg-surface-container p-2 rounded-sm border border-outline-variant whitespace-pre-wrap">{formatTestCaseValue(testCasesToShow[activeTestCase]?.expected)}</pre>
                 </div>
               </div>
             </div>

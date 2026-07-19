@@ -158,9 +158,9 @@ export default function DataInputPanel() {
       {mode === 'data-structure' ? (
         <DataStructureControls />
       ) : (
-        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-end gap-3 w-full">
-          <div className="flex-1 flex flex-col gap-1.5 w-full">
-            <label className="text-[10px] uppercase tracking-[0.18em] text-white/40 mono ml-1">
+        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row flex-wrap items-end gap-3 w-full">
+          <div className="flex-1 flex flex-col gap-1.5 w-full min-w-[150px]">
+            <label className="text-[10px] uppercase tracking-[0.18em] text-white/40 mono ml-1 whitespace-nowrap overflow-hidden text-ellipsis">
               {isGraphAlgo 
                 ? "Edge List (A-B, B-C)" 
                 : isDPAlgo ? "N (Max 20)" : "Array Elements"}

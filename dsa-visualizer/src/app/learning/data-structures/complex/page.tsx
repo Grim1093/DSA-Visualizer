@@ -8,6 +8,7 @@ export default function ComplexDataStructuresPage() {
     <LearningWorkspace 
       title="Complex Data Structures" 
       allowedModules={['heap', 'sandbox']}
+      icon="account_tree"
     />
   );
 }

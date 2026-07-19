@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { Challenge } from '@/utils/mockChallenges';
 
 interface ProblemPanelProps {
@@ -6,6 +7,8 @@ interface ProblemPanelProps {
 }
 
 export default function ProblemPanel({ challenge }: ProblemPanelProps) {
+  const router = useRouter();
+
   const getDifficultyColor = (diff: string) => {
     switch (diff) {
       case 'Easy': return 'text-green-400 bg-green-400/10 border-green-400/20';
@@ -17,6 +20,14 @@ export default function ProblemPanel({ challenge }: ProblemPanelProps) {
 
   return (
     <div className="h-full bg-surface-container-lowest text-on-surface p-6 overflow-y-auto custom-scrollbar">
+      <button 
+        onClick={() => router.back()}
+        className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors mb-6 font-label-caps text-label-caps tracking-widest"
+      >
+        <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+        BACK TO CHALLENGES
+      </button>
+
       <div className="flex items-center gap-4 mb-6">
         <h1 className="font-headline-lg text-headline-lg tracking-tight">{challenge.title}</h1>
         <span className={`px-3 py-1 rounded-sm font-label-caps text-label-caps uppercase tracking-widest border ${getDifficultyColor(challenge.difficulty)}`}>

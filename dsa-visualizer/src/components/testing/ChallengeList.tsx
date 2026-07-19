@@ -22,7 +22,7 @@ export default function ChallengeList({ title, description, challenges }: Challe
   };
 
   return (
-    <div className="min-h-screen bg-black text-white p-6 sm:p-8 overflow-y-auto pt-24 relative grain">
+    <div className="min-h-screen bg-black text-white p-6 sm:p-8 overflow-y-auto pt-24 relative">
       <div className="fixed inset-0 dot-bg opacity-40 pointer-events-none z-0" />
       
       <div className="max-w-6xl mx-auto relative z-10">

@@ -59,11 +59,11 @@ export default function VisualizerBoard() {
       >
         <motion.div
           layout
-          className={`w-full rounded-t-lg shadow-lg flex items-end justify-center pb-2 transition-colors duration-200 ${colorClass}`}
-          style={{ height: heightPercentage }}
+          className={`w-full rounded-t-lg shadow-lg flex items-end justify-center pb-1 transition-colors duration-200 ${colorClass}`}
+          style={{ height: heightPercentage, minHeight: '24px' }}
         >
           {arrayState.length <= 20 && (
-            <span className="text-black text-xs font-bold font-mono rotate-[-90deg] sm:rotate-0 mb-2 sm:mb-0 opacity-80 mix-blend-overlay">
+            <span className="text-black/70 text-xs font-bold font-mono rotate-[-90deg] sm:rotate-0 mb-1 sm:mb-0">
               {value}
             </span>
           )}

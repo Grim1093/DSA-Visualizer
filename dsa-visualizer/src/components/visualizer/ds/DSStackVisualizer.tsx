@@ -22,7 +22,7 @@ export default function DSStackVisualizer() {
         </div>
       </div>
 
-      <div className="flex flex-col-reverse gap-2 justify-end items-center h-64 border-b-4 border-l-4 border-r-4 border-gray-600 rounded-b-lg p-4 w-48 bg-gray-900/50">
+      <div className="flex flex-col-reverse gap-2 justify-end items-center min-h-64 border-b-4 border-l-4 border-r-4 border-gray-600 rounded-b-lg p-4 w-48 bg-gray-900/50">
         <AnimatePresence mode="popLayout">
           {values.map((val: number, idx: number) => {
             const isTarget = targetIndex === idx;

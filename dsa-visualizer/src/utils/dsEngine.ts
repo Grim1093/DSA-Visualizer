@@ -543,6 +543,9 @@ export const generateStackInit = (): Frame[] => {
 
 export const generateStackPush = (currentState: Frame, value: number): Frame[] => {
   if (!currentState.dsStack) return [];
+  if (currentState.dsStack.values.length >= 10) {
+    return [{ ...currentState, description: 'Error: Stack overflow! Maximum capacity (10) reached.' }];
+  }
   const values = [...currentState.dsStack.values];
   values.push(value);
   return [{
@@ -652,6 +655,9 @@ const getHeapGraphState = (values: number[]) => {
 
 export const generateHeapInsert = (currentState: Frame, value: number): Frame[] => {
   if (!currentState.dsHeap) return [];
+  if (currentState.dsHeap.values.length >= 15) {
+    return [{ ...currentState, description: 'Error: Maximum heap capacity (15) reached.' }];
+  }
   const values = [...currentState.dsHeap.values];
   const frames: Frame[] = [];
   

@@ -20,33 +20,37 @@ export default function AppLayout({ children, progress }: AppLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { isSidebarOpen, toggleSidebar } = useVisualizerStore();
-  const [searchInput, setSearchInput] = useState('');
 
   const completedCount = progress?.completedModules?.length || 0;
   
-  // Total items = 18 dashboard modules + 6 coding challenges = 24 total
+  // Total items = 18 dashboard modules + 18 coding challenges (Arrays, Linked Lists, Hash Maps) = 36 total
   let rank = "Novice";
   let tier = 1;
   let nextThreshold = 8;
   
-  if (completedCount >= 16) {
+  if (completedCount >= 36) {
+    rank = "Grandmaster";
+    tier = 6;
+    nextThreshold = 36;
+  } else if (completedCount >= 32) {
     rank = "Master";
-    tier = 3;
-    nextThreshold = 24; // Max tier
-  } else if (completedCount >= 8) {
+    tier = 5;
+    nextThreshold = 36;
+  } else if (completedCount >= 24) {
+    rank = "Expert";
+    tier = 4;
+    nextThreshold = 32;
+  } else if (completedCount >= 16) {
     rank = "Architect";
+    tier = 3;
+    nextThreshold = 24;
+  } else if (completedCount >= 8) {
+    rank = "Apprentice";
     tier = 2;
     nextThreshold = 16;
   }
 
-  // Cap at 100% if they exceed 24 somehow
-  const progressPct = tier === 3 && completedCount >= 24 ? 100 : (completedCount / nextThreshold) * 100;
-
-  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && searchInput.trim()) {
-      router.push(`/learning?search=${encodeURIComponent(searchInput.trim())}`);
-    }
-  };
+  const progressPct = completedCount >= 36 ? 100 : (completedCount / nextThreshold) * 100;
 
   const navItems = [
     { label: 'Overview', icon: 'dashboard', path: '/dashboard' },
@@ -132,23 +136,9 @@ export default function AppLayout({ children, progress }: AppLayoutProps) {
                 <div className="h-full bg-primary transition-all duration-500 ease-out" style={{width: `${progressPct}%`}}></div>
               </div>
               <span className="font-code-sm text-code-sm text-primary text-[10px] leading-none">
-                {tier === 3 ? 'MAX' : `${completedCount}/${nextThreshold}`}
+                {completedCount >= 36 ? 'MAX' : `${completedCount}/${nextThreshold}`}
               </span>
             </div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <div className="relative hidden sm:block">
-            <input 
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={handleSearch}
-              className="bg-surface-container-low border border-outline-variant rounded-sm pl-8 pr-3 py-1 font-code-sm text-code-sm text-on-surface focus:outline-none focus:border-primary w-48 transition-colors" 
-              placeholder="Search modules..." 
-              type="text"
-            />
-            <span className="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-[16px] text-on-surface-variant pointer-events-none">search</span>
           </div>
         </div>
       </header>

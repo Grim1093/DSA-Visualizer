@@ -8,6 +8,7 @@ export default function BasicDataStructuresPage() {
     <LearningWorkspace 
       title="Basic Data Structures" 
       allowedModules={['array', 'vector', 'linked_list', 'doubly_linked_list', 'circular_linked_list', 'hash_map', 'stack', 'queue', 'sandbox']}
+      icon="notes"
     />
   );
 }

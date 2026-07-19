@@ -27,8 +27,9 @@ export const authOptions: NextAuthOptions = {
         await pool.query(query, [user.id, user.email, user.name, user.image]);
         return true;
       } catch (error) {
-        console.error("Error syncing user to DB during sign-in:", error);
-        return false;
+        console.warn("⚠️ Warning: Database synchronization failed (PostgreSQL might not be running or tables are missing). Allowing sign-in for development.", error);
+        // We return true anyway so development isn't blocked if DB isn't running
+        return true;
       }
     },
     async jwt({ token, user }) {
